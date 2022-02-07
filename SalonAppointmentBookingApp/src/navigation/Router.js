@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { AuthStack } from "./AuthStack";
 import { AppStack } from "./AppStack";
 
-const Route = () => {
+const Router = () => {
 
     const [isSignedIn, setIsSignedIn] = useState(false);
 
@@ -13,3 +13,5 @@ const Route = () => {
         </NavigationContainer>
     );
 }
+
+export default Router;
