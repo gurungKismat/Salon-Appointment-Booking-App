@@ -1,6 +1,6 @@
 import React from "react";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Home from "../screens/SalonHome/SalonHome";
+import HomeScreen from "../screens/SalonScreens/SalonHome/SalonHome";
 
 
 const Stack = createNativeStackNavigator();
@@ -8,7 +8,7 @@ const Stack = createNativeStackNavigator();
 const  SalonStack = () => {
     return (
         <Stack.Navigator>
-            <Stack.Screen name="SalonHome" component={Home}/>
+            <Stack.Screen name="SalonHome" component={HomeScreen}/>
         </Stack.Navigator>
     );
 }

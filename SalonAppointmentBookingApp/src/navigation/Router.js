@@ -12,7 +12,7 @@ const GetStack = ({ stackName }) => {
 
     }else if (stackName === "Customer") {
         return <CustomerStack/>
-        
+
     } else if (stackName === "Salon") {
         return <SalonStack/>
     }
@@ -21,7 +21,7 @@ const GetStack = ({ stackName }) => {
 const Router = () => {
 
     const [isSignedIn, setIsSignedIn] = useState(false);
-    const [userToken, setUserToken] = useState("Salon");
+    const [userToken, setUserToken] = useState("Customer");
 
     return (
         <>
