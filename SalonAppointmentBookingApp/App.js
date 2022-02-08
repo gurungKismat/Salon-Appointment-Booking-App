@@ -1,17 +1,52 @@
-import React from "react"; 
-import Router from "./src/navigation/Router";
-import {View, Text} from 'react-native';
-// import {NavigationContainer} from '@react-navigation/native';
-// import AuthStack from "./src/navigation/AuthStack";
+// import React from "react"; 
+// import Router from "./src/navigation/Router";
+// import {View, Text} from 'react-native';
+// // import {NavigationContainer} from '@react-navigation/native';
+// // import AuthStack from "./src/navigation/AuthStack";
 
 
-const App = () => {
+// const App = () => {
+//   return (
+//     // <NavigationContainer>
+//     //   <AuthStack/>
+//     // </NavigationContainer>
+//     <Router/>
+//   );
+// }
+
+// export default App;
+
+
+import * as React from 'react';
+import { Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+function HomeScreen() {
   return (
-    // <NavigationContainer>
-    //   <AuthStack/>
-    // </NavigationContainer>
-    <Router/>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Home!</Text>
+    </View>
   );
 }
 
-export default App;
+function SettingsScreen() {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Settings!</Text>
+    </View>
+  );
+}
+
+const Tab = createBottomTabNavigator();
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Tab.Navigator>
+        <Tab.Screen name="Home" component={HomeScreen} />
+        <Tab.Screen name="Settings" component={SettingsScreen} />
+      </Tab.Navigator>
+    </NavigationContainer>
+  );
+}
