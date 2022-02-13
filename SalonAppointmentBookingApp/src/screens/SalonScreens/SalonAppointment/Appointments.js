@@ -1,13 +1,13 @@
 import React from "react";
 import { View, Text } from "react-native";
 
-const HomeScreen = () => {
+
+const Appointment = () => {
     return (
         <View style={{flex:1, justifyContent: "center", alignItems: "center"}}>
-            <Text style={{color: "black"}}>Customer Home Screen</Text>
+            <Text style={{color: "black"}}>Salon Appointment Screen</Text>
         </View>
     );
 }
 
-export default HomeScreen;
-
+export default Appointment;

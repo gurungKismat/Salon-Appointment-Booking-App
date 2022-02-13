@@ -1,13 +1,13 @@
 import React from "react";
 import { View, Text } from "react-native";
 
-const HomeScreen = () => {
+
+const Notification = () => {
     return (
         <View style={{flex:1, justifyContent: "center", alignItems: "center"}}>
-            <Text style={{color: "black"}}>Customer Home Screen</Text>
+            <Text style={{color: "black"}}>Salon Notification Screen</Text>
         </View>
     );
 }
 
-export default HomeScreen;
-
+export default Notification;
