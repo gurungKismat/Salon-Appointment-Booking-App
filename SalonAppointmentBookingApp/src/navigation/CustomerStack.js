@@ -23,20 +23,58 @@ const Detail = () => {
 
 const SearchNavigator = () => {
   return (
-    <SearchStack.Navigator screenOptions={{headerShown: false}}>
-      <SearchStack.Screen name="Search" component={SearchScreen} />
-      <SearchStack.Screen name="Detail" component={Detail} />
+    <SearchStack.Navigator initialRouteName="Search" headerMode="screen">
+      <SearchStack.Screen
+        name="Search"
+        component={SearchScreen}
+        options={{
+          title: 'Search',
+          headerStyle: {
+            backgroundColor: '#6200ee',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 20,
+          },
+        }}
+      />
+      <SearchStack.Screen
+        name="Detail"
+        component={Detail}
+        options={{
+          title: 'Detail',
+          headerStyle: {
+            backgroundColor: '#6200ee',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 20,
+          },
+        }}
+      />
     </SearchStack.Navigator>
   );
 };
 
 const Main = () => {
   return (
-    <Tab.Navigator>
+    <Tab.Navigator headerMode="screen">
       <Tab.Screen
         name="Home"
         component={HomeScreen}
         options={{
+          title: 'Home',
+          headerStyle: {
+            backgroundColor: '#6200ee',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 20,
+          },
+
           tabBarLabel: 'Home',
           tabBarIcon: ({color, size}) => (
             <Icon name="home" color={color} size={size} />
@@ -49,24 +87,36 @@ const Main = () => {
         name="Discover"
         component={SearchNavigator}
         options={{
+          headerShown: false,
           tabBarLabel: 'Discover',
           tabBarIcon: ({color, size}) => (
             <Icon name="magnify" color={color} size={size} />
           ),
           tabBarActiveTintColor: 'tomato',
           tabBarInactiveTintColor: 'gray',
+
         }}
       />
       <Tab.Screen
         name="CustomerAppointment"
         component={AppointmentScreen}
         options={{
+          title: 'Appointment',
+          headerStyle: {
+            backgroundColor: '#6200ee',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 20,
+          },
           tabBarLabel: 'Appointment',
           tabBarIcon: ({color, size}) => (
-            <Icon name="calendar-question" color={color} size={size} />   
+            <Icon name="calendar-question" color={color} size={size} />
           ),
           tabBarActiveTintColor: 'tomato',
           tabBarInactiveTintColor: 'gray',
+         
         }}
       />
 
@@ -74,15 +124,24 @@ const Main = () => {
         name="CustomerNotification"
         component={NotificationScreen}
         options={{
+          title: 'Notification',
+          headerStyle: {
+            backgroundColor: '#6200ee',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 20,
+          },
           tabBarLabel: 'Notification',
           tabBarIcon: ({color, size}) => (
-            <Icon name="bell" color={color} size={size} />   
+            <Icon name="bell" color={color} size={size} />
           ),
           tabBarActiveTintColor: 'tomato',
           tabBarInactiveTintColor: 'gray',
+      
         }}
-        
-      />   
+      />
     </Tab.Navigator>
   );
 };
