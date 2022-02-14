@@ -140,7 +140,6 @@ const LoginForm = () => {
           )}
 
           <Link
-            onPress={() => navigation.navigate('Register')}
             _text={{
               fontSize: 'xs',
               fontWeight: '500',
@@ -163,12 +162,12 @@ const LoginForm = () => {
               Don't have an account?.{' '}
             </Text>
             <Link
+              onPress={() => navigation.navigate('RegisterSelection')}
               _text={{
                 color: 'indigo.500',
                 fontWeight: 'medium',
                 fontSize: 'sm',
-              }}
-              href="#">
+              }}>
               Sign Up
             </Link>
           </HStack>
