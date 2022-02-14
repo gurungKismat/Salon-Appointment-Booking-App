@@ -21,7 +21,7 @@ const GetStack = ({ stackName }) => {
 const Router = () => {
 
     const [isSignedIn, setIsSignedIn] = useState(false);
-    const [userToken, setUserToken] = useState("Salon");
+    const [userToken, setUserToken] = useState(null);
 
     return (
         <>
