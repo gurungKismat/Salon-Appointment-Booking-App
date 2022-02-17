@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "413609658236",
+    "project_id": "salon-appointment-booking-app",
+    "storage_bucket": "salon-appointment-booking-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:413609658236:android:25afe663c2062a4d1d86f9",
+        "android_client_info": {
+          "package_name": "com.salonappointmentbookingapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "413609658236-d2mojvdbiu45i1isl9qp2fpjmmjlrh1q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOzzLiJ2TUd6xMFx1o9jYsq98v2RTcbJU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "413609658236-d2mojvdbiu45i1isl9qp2fpjmmjlrh1q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
