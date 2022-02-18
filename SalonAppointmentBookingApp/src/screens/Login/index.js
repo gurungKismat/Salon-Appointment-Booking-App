@@ -12,16 +12,19 @@ import {
   HStack,
   Center,
   WarningOutlineIcon,
+  Icon,
 } from 'native-base';
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const LoginForm = () => {
   const navigation = useNavigation();
+  const [show, setShow] = useState(false);
   const [emailId, setEmailId] = useState('');
   const [password, setPassword] = useState('');
   const [showEmailError, setShowEmailError] = useState(false);
   const [showPasswordError, setShowPasswordError] = useState(false);
   const [detail, setDetail] = useState({email: 'hello', password: '123'});
-  const [errorMsg, setErrorMsg] = useState({message: 'Can not be empty.'});
+  const [errorMsg, setErrorMsg] = useState({message: 'Require'});
 
   const validateDetails = () => {
     if (emailId === detail.email && password === detail.password) {
@@ -49,13 +52,13 @@ const LoginForm = () => {
   const isEmpty = () => {
     console.log('email id: ' + emailId);
     console.log('password: ' + password);
-    if (emailId === '') {
+    if (emailId.length === 0) {
       setShowEmailError(true);
     } else {
       setShowEmailError(false);
     }
 
-    if (password === '') {
+    if (password.length === 0) {
       setShowPasswordError(true);
     } else {
       setShowPasswordError(false);
@@ -94,6 +97,14 @@ const LoginForm = () => {
             <FormControl isInvalid>
               <FormControl.Label>Email ID</FormControl.Label>
               <Input
+                InputLeftElement={
+                  <Icon
+                    as={<MaterialCommunityIcon name="account" />}
+                    size={6}
+                    ml="2"
+                    color="muted.400"
+                  />
+                }
                 placeholder="Email"
                 value={emailId}
                 onChangeText={text => setEmailId(text)}
@@ -106,7 +117,16 @@ const LoginForm = () => {
           ) : (
             <FormControl>
               <FormControl.Label>Email ID</FormControl.Label>
+
               <Input
+                InputLeftElement={
+                  <Icon
+                    as={<MaterialCommunityIcon name="account" />}
+                    size={6}
+                    ml="2"
+                    color="muted.400"
+                  />
+                }
                 placeholder="Email"
                 value={emailId}
                 onChangeText={text => setEmailId(text)}
@@ -117,8 +137,19 @@ const LoginForm = () => {
             <FormControl isInvalid>
               <FormControl.Label>Password</FormControl.Label>
               <Input
+                type={show ? 'text' : 'password'}
+                InputRightElement={
+                  <Icon
+                    as={
+                      <MaterialCommunityIcon name={show ? 'eye' : 'eye-off'} />
+                    }
+                    size={6}
+                    mr="2"
+                    color="muted.400"
+                    onPress={() => setShow(!show)}
+                  />
+                }
                 placeholder="Password"
-                type="password"
                 value={password}
                 onChangeText={text => setPassword(text)}
               />
@@ -131,8 +162,19 @@ const LoginForm = () => {
             <FormControl>
               <FormControl.Label>Password</FormControl.Label>
               <Input
+                type={show ? 'text' : 'password'}
+                InputRightElement={
+                  <Icon
+                    as={
+                      <MaterialCommunityIcon name={show ? 'eye' : 'eye-off'} />
+                    }
+                    size={6}
+                    mr="2"
+                    color="muted.400"
+                    onPress={() => setShow(!show)}
+                  />
+                }
                 placeholder="Password"
-                type="password"
                 value={password}
                 onChangeText={text => setPassword(text)}
               />
