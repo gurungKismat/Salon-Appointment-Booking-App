@@ -79,7 +79,7 @@ const Main = () => {
           tabBarIcon: ({color, size}) => (
             <Icon name="home" color={color} size={size} />
           ),
-          tabBarActiveTintColor: 'tomato',
+          tabBarActiveTintColor: '#6200ee',
           tabBarInactiveTintColor: 'gray',
         }}
       />
@@ -92,7 +92,7 @@ const Main = () => {
           tabBarIcon: ({color, size}) => (
             <Icon name="magnify" color={color} size={size} />
           ),
-          tabBarActiveTintColor: 'tomato',
+          tabBarActiveTintColor: '#6200ee',
           tabBarInactiveTintColor: 'gray',
 
         }}
@@ -114,7 +114,7 @@ const Main = () => {
           tabBarIcon: ({color, size}) => (
             <Icon name="calendar-question" color={color} size={size} />
           ),
-          tabBarActiveTintColor: 'tomato',
+          tabBarActiveTintColor: '#6200ee',
           tabBarInactiveTintColor: 'gray',
          
         }}
@@ -137,7 +137,7 @@ const Main = () => {
           tabBarIcon: ({color, size}) => (
             <Icon name="bell" color={color} size={size} />
           ),
-          tabBarActiveTintColor: 'tomato',
+          tabBarActiveTintColor: '#6200ee',
           tabBarInactiveTintColor: 'gray',
       
         }}

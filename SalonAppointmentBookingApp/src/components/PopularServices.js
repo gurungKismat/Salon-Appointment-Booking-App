@@ -17,9 +17,14 @@ const data = [
     },
     {
       serviceImg: require('../assets/icons/massage.png'),
-      serviceName: 'Massages',
+      serviceName: 'Massage',
       containerColor: 'rose.200'
     },
+    {
+        serviceImg: require('../assets/icons/more.png'),
+        serviceName: 'See More',
+        containerColor: 'violet.400'
+      },
   ];
 
   export default data;

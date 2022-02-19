@@ -1,23 +1,3 @@
-// import React from 'react';
-// import auth from '@react-native-firebase/auth';
-// import {View, Text, Button} from 'react-native';
-
-// const HomeScreen = () => {
-//   const signout = () => {
-//     auth()
-//       .signOut()
-//       .then(() => console.log('User signed out!'));
-//   };
-
-//   return (
-//     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-//       <Text style={{color: 'black'}}>Customer Home Screen</Text>
-//       <Button title="signout" onPress={signout} />
-//     </View>
-//   );
-// };
-
-// export default HomeScreen;
 
 import React from 'react';
 import {
@@ -39,12 +19,13 @@ import {
 } from 'native-base';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import popularServices from '../../../components/PopularServices';
+import PopularSalons from '../../../components/PopularSalons';
 
 const HomeUi = () => {
   return (
     <ScrollView>
-      <VStack space={4} mt={4}>
-        <HStack space={48}>
+      <VStack space={5} mt={8} mb={5}>
+        <HStack justifyContent={"space-between"}>
           <Center>
             <Heading size={'md'}>Hi Kismat</Heading>
           </Center>
@@ -97,7 +78,9 @@ const HomeUi = () => {
                 overflow="hidden"
                 borderColor="coolGray.200"
                 borderWidth="1"
-                background={item.containerColor}>
+                background={item.containerColor}
+                shadow="3"
+                >
                 <Box mt="4">
                   <AspectRatio w="100%" ratio={16 / 9}>
                     <Center>
@@ -118,6 +101,19 @@ const HomeUi = () => {
               </Box>
             </Pressable>
           )}
+        />
+
+        {/* popular Salons */}
+        <Heading size="md" mt="4">
+          Popular Salons
+        </Heading>
+
+        {/* card view with pic */}
+        <FlatList
+          horizontal
+          data={popularServices}
+          renderItem={({item}) => 
+            <PopularSalons/>}
         />
       </VStack>
     </ScrollView>
