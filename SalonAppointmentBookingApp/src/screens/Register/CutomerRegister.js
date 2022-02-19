@@ -328,7 +328,7 @@ const CustomerRegister = () => {
               <FormControl isInvalid>
                 <FormControl.Label>User Name</FormControl.Label>
                 <Input
-                  value={userName}
+                  value={String(userName)}
                   onChangeText={setName}
                   placeholder="User Name"
                 />
@@ -341,7 +341,7 @@ const CustomerRegister = () => {
               <FormControl>
                 <FormControl.Label>User Name</FormControl.Label>
                 <Input
-                  value={userNameError}
+                  value={String(userNameError)}
                   onChangeText={setName}
                   placeholder="User Name"
                 />
@@ -352,7 +352,7 @@ const CustomerRegister = () => {
               <FormControl isInvalid>
                 <FormControl.Label>Mobile Number</FormControl.Label>
                 <Input
-                  value={mobileNo}
+                  value={String(mobileNo)}
                   onChangeText={setMobileNo}
                   placeholder="Mobile Number"
                 />
@@ -365,7 +365,7 @@ const CustomerRegister = () => {
               <FormControl>
                 <FormControl.Label>Mobile Number</FormControl.Label>
                 <Input
-                  value={mobileNo}
+                  value={String(mobileNo)}
                   onChangeText={setMobileNo}
                   placeholder="Mobile Number"
                 />
@@ -376,7 +376,7 @@ const CustomerRegister = () => {
               <FormControl isInvalid>
                 <FormControl.Label>Email</FormControl.Label>
                 <Input
-                  value={email}
+                  value={String(email)}
                   onChangeText={setEmail}
                   placeholder="Email"
                 />
@@ -389,7 +389,7 @@ const CustomerRegister = () => {
               <FormControl>
                 <FormControl.Label>Email</FormControl.Label>
                 <Input
-                  value={email}
+                  value={String(email)}
                   onChangeText={setEmail}
                   placeholder="Email"
                 />
@@ -415,7 +415,7 @@ const CustomerRegister = () => {
                     />
                   }
                   placeholder="Password"
-                  value={password}
+                  value={String(password)}
                   onChangeText={setPassword}
                 />
                 <FormControl.ErrorMessage
@@ -443,7 +443,7 @@ const CustomerRegister = () => {
                     />
                   }
                   placeholder="Password"
-                  value={password}
+                  value={String(password)}
                   onChangeText={setPassword}
                 />
               </FormControl>
@@ -477,7 +477,7 @@ const CustomerRegister = () => {
                     />
                   }
                   placeholder="Confirm Password"
-                  value={confirmPassword}
+                  value={String(confirmPassword)}
                   onChangeText={setConfirmPassword}
                 />
                 <FormControl.ErrorMessage
@@ -488,12 +488,7 @@ const CustomerRegister = () => {
             ) : (
               <FormControl>
                 <FormControl.Label>Confirm Password</FormControl.Label>
-                {/* <Input
-                  type="password"
-                  value={confirmPassword}
-                  onChangeText={setConfirmPassword}
-                  placeholder="Confirm Password"
-                /> */}
+           
 
                 <Input
                   type={showConfirmPassword ? 'text' : 'password'}
@@ -513,7 +508,7 @@ const CustomerRegister = () => {
                     />
                   }
                   placeholder="Confirm Password"
-                  value={confirmPassword}
+                  value={String(confirmPassword)}
                   onChangeText={setConfirmPassword}
                 />
               </FormControl>

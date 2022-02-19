@@ -23,7 +23,7 @@ const GetStack = ({ stackName }) => {
 const Router = () => {
 
     const [isSignedIn, setIsSignedIn] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     // callback function that handles the user state changed
     const ouAuthStateChanged = (user) => {
@@ -51,7 +51,7 @@ const Router = () => {
 
     return (
         <>
-         {<GetStack stackName={isSignedIn}/>}
+         {<GetStack stackName={"Customer"}/>}
         </>
        
     );

@@ -174,6 +174,14 @@ const LoginForm = () => {
                     onPress={() => setShow(!show)}
                   />
                 }
+                InputLeftElement={
+                  <Icon
+                    as={<MaterialCommunityIcon name="lock" />}
+                    size={6}
+                    ml="2"
+                    color="muted.400"
+                  />
+                }
                 placeholder="Password"
                 value={password}
                 onChangeText={text => setPassword(text)}
