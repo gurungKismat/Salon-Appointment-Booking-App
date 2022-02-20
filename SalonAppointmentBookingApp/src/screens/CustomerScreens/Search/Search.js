@@ -13,7 +13,6 @@ import SearchBar from '../../../components/SearchBar';
 
 const SearchScreen = ({navigation}) => {
   const [searchPhrase, setSearchPhrase] = useState('');
-  const [clicked, setClicked] = useState(false);
 
   const datas = [
     {
@@ -31,8 +30,6 @@ const SearchScreen = ({navigation}) => {
       <SearchBar
         searchPhrase={searchPhrase}
         setSearchPhrase={setSearchPhrase}
-        clicked={clicked}
-        setClicked={setClicked}
       />
       <Stack px="5" mt="5">
         <FlatList
@@ -48,7 +45,10 @@ const SearchScreen = ({navigation}) => {
               backgroundColor="gray.50"
               shadow="5">
               <Stack p="4" space={2}>
-                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="center">
                   <Avatar
                     bg="indigo.500"
                     source={{
@@ -56,7 +56,7 @@ const SearchScreen = ({navigation}) => {
                     }}>
                     KG
                   </Avatar>
-                  
+
                   <Heading size="sm" ml="-1">
                     Reaver Salon
                   </Heading>

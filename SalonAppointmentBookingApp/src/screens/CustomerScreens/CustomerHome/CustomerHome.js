@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, {useState} from 'react';
 import {
   VStack,
   HStack,
@@ -20,12 +19,15 @@ import {
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import popularServices from '../../../components/PopularServices';
 import PopularSalons from '../../../components/PopularSalons';
+import SearchBar from '../../../components/SearchBar';
 
 const HomeUi = () => {
+  const [searchPhrase, setSearchPhrase] = useState('');
+  const [clicked, setClicked] = useState(false);
   return (
     <ScrollView>
       <VStack space={5} mt={8} mb={5}>
-        <HStack justifyContent={"space-between"}>
+        <HStack justifyContent={'space-between'}>
           <Center>
             <Heading size={'md'}>Hi Kismat</Heading>
           </Center>
@@ -70,7 +72,7 @@ const HomeUi = () => {
           horizontal
           data={popularServices}
           renderItem={({item}) => (
-            <Pressable onPress={() => alert("clicked")}>
+            <Pressable onPress={() => alert('clicked')}>
               <Box
                 mx="2"
                 size={40}
@@ -79,8 +81,7 @@ const HomeUi = () => {
                 borderColor="coolGray.200"
                 borderWidth="1"
                 background={item.containerColor}
-                shadow="3"
-                >
+                shadow="3">
                 <Box mt="4">
                   <AspectRatio w="100%" ratio={16 / 9}>
                     <Center>
@@ -112,8 +113,7 @@ const HomeUi = () => {
         <FlatList
           horizontal
           data={popularServices}
-          renderItem={({item}) => 
-            <PopularSalons/>}
+          renderItem={({item}) => <PopularSalons />}
         />
       </VStack>
     </ScrollView>
