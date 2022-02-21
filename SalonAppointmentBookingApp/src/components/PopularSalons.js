@@ -1,4 +1,5 @@
 import React from 'react';
+import {useNavigation} from '@react-navigation/native';
 import {
   Box,
   Heading,
@@ -12,9 +13,11 @@ import {
 } from 'native-base';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
+
 const PopularSalons = () => {
+  const navigation = useNavigation();
   return (
-    <Pressable onPress={() => alert("pressed")}>
+    <Pressable onPress={() => navigation.navigate("SalonInfo")}>
       <Box
         mx="2"
         maxW="80"

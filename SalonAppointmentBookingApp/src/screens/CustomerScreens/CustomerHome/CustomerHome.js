@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import {
   VStack,
   HStack,
@@ -21,11 +21,7 @@ import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIc
 import popularServices from '../../../components/PopularServices';
 import PopularSalons from '../../../components/PopularSalons';
 
-
-
 const HomeUi = () => {
-  const [searchPhrase, setSearchPhrase] = useState('');
-  const [clicked, setClicked] = useState(false);
   const navigation = useNavigation();
   return (
     <ScrollView>
@@ -54,7 +50,7 @@ const HomeUi = () => {
                 py="2"
                 px="2"
                 borderWidth="1"
-                onPressIn={() => navigation.navigate("Discover")}
+                onPressIn={() => navigation.navigate('Discover')}
                 InputLeftElement={
                   <Icon
                     ml="2"
