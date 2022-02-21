@@ -15,9 +15,7 @@ const SearchBar = props => {
             px="2"
             borderWidth="1"
             value={props.searchPhrase}
-            onChangeText={props.setSearchPhrase}
-     
-
+            onChangeText={props.setSearchPhrase}  
             InputLeftElement={
               <Icon
                 ml="2"

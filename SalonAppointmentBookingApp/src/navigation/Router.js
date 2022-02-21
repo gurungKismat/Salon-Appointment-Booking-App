@@ -51,7 +51,7 @@ const Router = () => {
 
     return (
         <>
-         {<GetStack stackName={"Customer"}/>}
+         {<GetStack stackName={"Salon"}/>}
         </>
        
     );

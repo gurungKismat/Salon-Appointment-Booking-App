@@ -6,16 +6,19 @@ import Home from '../screens/SalonScreens/SalonHome/SalonHome';
 import Notification from '../screens/SalonScreens/SalonNotification/Notification';
 import Appointment from '../screens/SalonScreens/SalonAppointment/Appointments';
 import Profile from '../screens/SalonScreens/SalonProfile/Profile';
-
+import SalonAvailability from '../screens/SalonScreens/SalonAvailability/SalonAvailability';
+import SalonServices from '../screens/SalonScreens/SalonServices/SalonServices';
+import SalonTransactionScreen from '../screens/SalonScreens/SalonTransactionHistory/SalonTransactionHistory';
 
 const Stack = createNativeStackNavigator();
+const HomeStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const SalonTabScreen = () => {
+const HomeNavigator = () => {
   return (
-    <Tab.Navigator headerMode="screen">
-      <Tab.Screen
-        name="Home"
+    <HomeStack.Navigator initialRouteName="SalonHome">
+      <HomeStack.Screen
+        name="SalonHome"
         component={Home}
         options={{
           title: 'Home',
@@ -27,13 +30,71 @@ const SalonTabScreen = () => {
             fontWeight: 'bold',
             fontSize: 20,
           },
+        }}
+      />
+      <HomeStack.Screen
+        name="SalonAvailability"
+        component={SalonAvailability}
+        options={{
+          title: 'Salon Availability',
+          headerStyle: {
+            backgroundColor: '#6200ee',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 20,
+          },
+        }}
+      />
+       <HomeStack.Screen
+        name="SalonServices"
+        component={SalonServices}
+        options={{
+          title: 'Salon Services',
+          headerStyle: {
+            backgroundColor: '#6200ee',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 20,
+          },
+        }}
+      />
+       <HomeStack.Screen
+        name="SalonTransaction"
+        component={SalonTransactionScreen}
+        options={{
+          title: 'Salon Transaction',
+          headerStyle: {
+            backgroundColor: '#6200ee',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 20,
+          },
+        }}
+      />
+    </HomeStack.Navigator>
+  );
+};
+
+const SalonTabScreen = () => {
+  return (
+    <Tab.Navigator headerMode="screen">
+      <Tab.Screen
+        name="Home"
+        component={HomeNavigator}
+        options={{
+          headerShown: false,
           tabBarLabel: 'Home',
           tabBarIcon: ({color, size}) => (
             <Icon name="home" color={color} size={size} />
           ),
           tabBarActiveTintColor: '#6200ee',
           tabBarInactiveTintColor: 'gray',
-     
         }}
       />
 
@@ -56,7 +117,6 @@ const SalonTabScreen = () => {
           ),
           tabBarActiveTintColor: '#6200ee',
           tabBarInactiveTintColor: 'gray',
-   
         }}
       />
 
@@ -79,7 +139,6 @@ const SalonTabScreen = () => {
           ),
           tabBarActiveTintColor: '#6200ee',
           tabBarInactiveTintColor: 'gray',
-
         }}
       />
 
@@ -102,7 +161,6 @@ const SalonTabScreen = () => {
           ),
           tabBarActiveTintColor: '#6200ee',
           tabBarInactiveTintColor: 'gray',
-
         }}
       />
     </Tab.Navigator>
