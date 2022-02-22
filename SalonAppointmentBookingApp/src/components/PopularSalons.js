@@ -32,7 +32,7 @@ const PopularSalons = () => {
         _light={{
           backgroundColor: 'gray.50',
         }}>
-        <Box>
+        <Box>s
           <AspectRatio w="100%" ratio={16 / 9}>
             <Image
               source={{
