@@ -8,26 +8,57 @@ import {
   Image,
   Heading,
 } from 'native-base';
+import {Rating} from 'react-native-ratings';
+import CustomTabBar from '../../../components/CustomTabbar';
+
 
 const SalonInfoUi = () => {
+  function ratingCompleted(rating) {
+    console.log('Rating is: ' + rating);
+  }
+
   return (
-    <Stack space={4}>
-      <Box>
-        <AspectRatio w="100%" ratio={16 / 9}>
-          <Image
-            source={{
-              uri: 'https://www.holidify.com/images/cmsuploads/compressed/Bangalore_citycover_20190613234056.jpg',
-            }}
-            alt="image"
-          />
-        </AspectRatio>
-      </Box>
-      <Stack space={4} bg="amber.100" direction="column" px={4}>
-        <Heading size="lg">Reaver Salon</Heading>
-        <Stack space={1}>
-        <Heading size="sm">Naxal, Kathmandu</Heading>
-        <Heading size="sm">Available Time: 9:00 AM to 5:00 PM</Heading>
+    <Stack flex={1}>
+      <Stack space={2} flex={1}>
+        <Box>
+          <AspectRatio w="100%" ratio={16 / 9}>
+            <Image
+              source={{
+                uri: 'https://www.holidify.com/images/cmsuploads/compressed/Bangalore_citycover_20190613234056.jpg',
+              }}
+              alt="image"
+            />
+          </AspectRatio>
+        </Box>
+
+        <Stack
+          space={2}
+          bg="white"
+          direction="column"
+          px={4}
+          rounded="lg"
+          m="2">
+          <Stack direction={'row'} justifyContent="space-between">
+            <Heading size="md">Reaver Salon</Heading>
+
+            <Rating
+              type="custom"
+              showRating={false}
+              imageSize={25}
+              onFinishRating={ratingCompleted}
+              tintColor="white"
+              readonly={true}
+            />
+          </Stack>
+          <Stack space={1}>
+            <Text fontSize="sm">Naxal, Kathmandu</Text>
+            <Text fontSize="sm">Available Time: 9:00 AM to 5:00 PM</Text>
+          </Stack>
         </Stack>
+      </Stack>
+
+      <Stack flex={1}>
+        <CustomTabBar />
       </Stack>
     </Stack>
   );
@@ -35,7 +66,7 @@ const SalonInfoUi = () => {
 
 const SalonInfo = () => {
   return (
-    <Box flex="1" bg="red.100">
+    <Box flex={1}>
       <SalonInfoUi />
     </Box>
   );
