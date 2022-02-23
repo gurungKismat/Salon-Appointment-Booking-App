@@ -22,7 +22,7 @@ const Detail = () => {
   );
 };
 
-// Screens inside Search Tab bar 
+// Screens inside Search Tab bar
 const SearchNavigator = () => {
   return (
     <SearchStack.Navigator initialRouteName="Search" headerMode="screen">
@@ -83,21 +83,21 @@ const HomeNavigator = () => {
         name="SalonInfo"
         component={SalonInfo}
         options={{
-          title: 'Salon Info',
-          headerStyle: {
-            backgroundColor: '#6200ee',
-          },
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-            fontSize: 20,
-          },
+          // title: 'Salon Info',
+          // headerStyle: {
+          //   backgroundColor: '#6200ee',
+          // },
+          // headerTintColor: '#fff',
+          // headerTitleStyle: {
+          //   fontWeight: 'bold',
+          //   fontSize: 20,
+          // },
+          headerShown: false,
         }}
       />
     </HomeStack.Navigator>
   );
 };
-
 
 // Main navigator with tab screens
 const Main = () => {

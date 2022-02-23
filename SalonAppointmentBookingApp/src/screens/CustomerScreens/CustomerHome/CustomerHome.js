@@ -16,6 +16,7 @@ import {
   Stack,
   FlatList,
   Pressable,
+  StatusBar,
 } from 'native-base';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import popularServices from '../../../components/PopularServices';
@@ -25,6 +26,9 @@ const HomeUi = () => {
   const navigation = useNavigation();
   return (
     <ScrollView>
+      <StatusBar
+        backgroundColor={"#6200ee"}
+      />
       <VStack space={5} mt={8} mb={5}>
         <HStack justifyContent={'space-between'}>
           <Center>

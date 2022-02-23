@@ -8,6 +8,7 @@ import {
   Heading,
   Text,
   Avatar,
+  StatusBar,
 } from 'native-base';
 import SearchBar from '../../../components/SearchBar';
 
@@ -27,6 +28,9 @@ const SearchScreen = ({navigation}) => {
 
   return (
     <Box w="100%" mt="5">
+      <StatusBar
+        backgroundColor={"#6200ee"}
+      />
       <SearchBar
         searchPhrase={searchPhrase}
         setSearchPhrase={setSearchPhrase}

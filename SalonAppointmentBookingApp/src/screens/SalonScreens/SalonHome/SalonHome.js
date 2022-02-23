@@ -8,6 +8,7 @@ import {
   Image,
   Stack,
   Pressable,
+  StatusBar,
 } from 'native-base';
 import GetIcons from '../../../components/GetIcons';
 import { useNavigation } from '@react-navigation/native';
@@ -16,6 +17,7 @@ const Home = () => {
     const navigation = useNavigation();
   return (
     <Stack space={2} direction="row">
+            <StatusBar backgroundColor={'#6200ee'} />
       <VStack space={2}>
         <Pressable onPress={() => navigation.navigate("SalonAppointment")}>
           <Box
