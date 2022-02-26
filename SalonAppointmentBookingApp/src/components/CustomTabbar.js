@@ -2,11 +2,10 @@ import React from 'react';
 import {View, Dimensions, Animated, StyleSheet, Text} from 'react-native';
 import StickyParallaxHeader from 'react-native-sticky-parallax-header';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {
-  Icon,
-} from 'native-base';
+import {Icon} from 'native-base';
 import {useNavigation} from '@react-navigation/native';
-import Demo from './ServicesList';
+import ServiceList from './ServicesList';
+import ViewCart from './ViewCart';
 
 const {event, ValueXY} = Animated;
 const scrollY = new ValueXY();
@@ -29,11 +28,11 @@ const CutomHeaderScreen = () => {
     </View>
   );
 
+  // displays the salon services
   const renderServices = serviceList => {
     return (
       <View style={styles.contentContiner}>
-        {/* <Text style={styles.contentText}>{serviceList}</Text> */}
-        <Demo />
+        <ServiceList />
       </View>
     );
   };

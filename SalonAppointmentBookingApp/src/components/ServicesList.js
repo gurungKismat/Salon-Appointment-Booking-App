@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Icon, Actionsheet, useDisclose, Box, Checkbox} from 'native-base';
+import ViewCart from './ViewCart';
 
 const DATA = [
   {
@@ -32,10 +33,8 @@ const DATA = [
 
 const Item = ({title}) => {
   const [select, setSelect] = useState(false);
-  const {isOpen, onOpen, onClose} = useDisclose();
 
   const onPress = () => {
-    onOpen;
     setSelect(!select);
   };
 
@@ -43,47 +42,20 @@ const Item = ({title}) => {
     <View style={styles.item}>
       <TouchableOpacity style={styles.servicesItem} onPress={onPress}>
         <Text style={styles.title}>{title}</Text>
-        {/* {select ? (
-          <Icon
-            ml="1"
-            size="8"
-            color="#e8ecf1"
-            as={<MaterialCommunityIcon name="check" />}
-          />
-        ) : (
-          <Icon
-            ml="1"
-            size="8"
-            color="#e8ecf1"
-            as={<MaterialCommunityIcon name="plus" />}
-          />
-        )} */}
         <Checkbox
           value="#6200ee"
           colorScheme="purple"
           size="md"
-          icon={<Icon as={<MaterialCommunityIcon name="plus" />} />}
-          defaultIsChecked={true}
+          icon={<Icon as={<MaterialCommunityIcon name="check" />} />}
+          isChecked={select}
           aria-label="Add"
         />
       </TouchableOpacity>
-      <Actionsheet isOpen={isOpen} onClose={onClose}>
-        <Actionsheet.Content>
-          <Box w="100%" h={60} px={4} justifyContent="center">
-            <Text style={{fontSize: 12, color: 'gray'}}>Albums</Text>
-          </Box>
-          <Actionsheet.Item>Delete</Actionsheet.Item>
-          <Actionsheet.Item>Share</Actionsheet.Item>
-          <Actionsheet.Item>Play</Actionsheet.Item>
-          <Actionsheet.Item>Favourite</Actionsheet.Item>
-          <Actionsheet.Item>Cancel</Actionsheet.Item>
-        </Actionsheet.Content>
-      </Actionsheet>
     </View>
   );
 };
 
-const App = () => {
+const ServiceList = () => {
   return (
     <View style={styles.container}>
       <SectionList
@@ -94,6 +66,7 @@ const App = () => {
           <Text style={styles.header}>{title}</Text>
         )}
       />
+   
     </View>
   );
 };
@@ -125,4 +98,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default App;
+export default ServiceList;
