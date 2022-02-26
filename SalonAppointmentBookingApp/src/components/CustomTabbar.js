@@ -164,6 +164,7 @@ const styles = StyleSheet.create({
     // height: windowHeight,
     marginTop: 10,
     padding: 10,
+    marginBottom: 70,
   },
   contentText: {
     fontSize: 16,

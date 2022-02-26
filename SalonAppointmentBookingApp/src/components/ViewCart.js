@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
   viewCartBg: {
     marginTop: 20,
     backgroundColor: 'red',
-    padding: 20,
+    padding: 13,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 30,
