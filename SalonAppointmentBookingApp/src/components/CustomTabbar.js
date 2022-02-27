@@ -5,7 +5,7 @@ import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIc
 import {Icon} from 'native-base';
 import {useNavigation} from '@react-navigation/native';
 import ServiceList from './ServicesList';
-import ViewCart from './ViewCart';
+
 
 const {event, ValueXY} = Animated;
 const scrollY = new ValueXY();

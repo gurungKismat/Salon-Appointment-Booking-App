@@ -2,54 +2,80 @@ import React, {useState} from 'react';
 import {
   StyleSheet,
   View,
-  SafeAreaView,
   SectionList,
   StatusBar,
   Text,
   TouchableOpacity,
 } from 'react-native';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {Icon, Actionsheet, useDisclose, Box, Checkbox} from 'native-base';
-import ViewCart from './ViewCart';
+import {Icon, Checkbox} from 'native-base';
+import {useDispatch} from 'react-redux';
+import {serviceAdded} from '../redux/store/features/service/serviceSlice';
+import {useSelector} from 'react-redux';
 
 const DATA = [
   {
-    title: 'Main dishes',
-    data: ['Pizza', 'Burger', 'Risotto'],
+    title: 'HairCut',
+    data: ['SkinFade', 'Buzzcut', 'HighFade'],
+  },
+
+  {
+    title: 'Massage',
+    data: ['Feet', 'Message - Neck & Shoulders', 'Massage - Relaxation'],
+  },
+
+  {
+    title: 'Skin Care',
+    data: ['Facial Anti Acne', 'Facial Alovera', 'Fried Cleanup'],
   },
   {
-    title: 'Sides',
-    data: ['French Fries', 'Onion Rings', 'Fried Shrimps'],
-  },
-  {
-    title: 'Drinks',
-    data: ['Water', 'Coke', 'Beer'],
-  },
-  {
-    title: 'Desserts',
-    data: ['Cheese Cake', 'Ice Cream'],
+    title: 'Nails',
+    data: ['Removal', 'Pedicure', 'Paraffin'],
   },
 ];
 
-const Item = ({title}) => {
+const Item = ({title, headers, index}) => {
   const [select, setSelect] = useState(false);
+  const dispatch = useDispatch();
+  const service = useSelector(state => state.service);
 
-  const onPress = () => {
-    setSelect(!select);
+  const onValChange = value => {
+    // alert(value)
+    // console.warn(value);
+    setSelect(value);
+    dispatch(
+      serviceAdded({
+        id: index,
+        serviceHeading: headers,
+        serviceName: title,
+        isSelected: value,
+      }),
+    );
   };
 
   return (
     <View style={styles.item}>
-      <TouchableOpacity style={styles.servicesItem} onPress={onPress}>
+      <TouchableOpacity
+        style={styles.servicesItem}
+        onPress={() => onValChange(!select)}>
         <Text style={styles.title}>{title}</Text>
-        <Checkbox
-          value="#6200ee"
-          colorScheme="purple"
-          size="md"
-          icon={<Icon as={<MaterialCommunityIcon name="check" />} />}
-          isChecked={select}
-          aria-label="Add"
-        />
+        {!select ? (
+          <Icon
+            ml="1"
+            size="8"
+            color="white"
+            onPress={() => navigation.goBack()}
+            as={<MaterialCommunityIcon name="plus" />}
+          />
+        ) : (
+          <Icon
+            ml="1"
+            size="8"
+            color="white"
+            onPress={() => navigation.goBack()}
+            as={<MaterialCommunityIcon name="check" />}
+          />
+        )}
       </TouchableOpacity>
     </View>
   );
@@ -61,12 +87,13 @@ const ServiceList = () => {
       <SectionList
         sections={DATA}
         keyExtractor={(item, index) => item + index}
-        renderItem={({item}) => <Item title={item} />}
+        renderItem={({item, section, index}) => (
+          <Item title={item} headers={section.title} index={index} />
+        )}
         renderSectionHeader={({section: {title}}) => (
           <Text style={styles.header}>{title}</Text>
         )}
       />
-   
     </View>
   );
 };
@@ -81,6 +108,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#6200ee',
     padding: 15,
     marginVertical: 8,
+    borderRadius: 20,
   },
   header: {
     marginTop: 10,
@@ -88,7 +116,8 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   title: {
-    fontSize: 20,
+    fontSize: 15,
+    fontWeight: 'bold',
     color: '#e8ecf1',
   },
   servicesItem: {
