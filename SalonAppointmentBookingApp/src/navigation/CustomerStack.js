@@ -8,6 +8,7 @@ import AppointmentScreen from '../screens/CustomerScreens/Appointments/Appointme
 import NotificationScreen from '../screens/CustomerScreens/Notifications/Notification';
 import SalonInfo from '../screens/CustomerScreens/ViewSalonInfo/SalonInfo';
 import {View, Text} from 'react-native';
+import SelectedServices from "../redux/store/features/service/SelectedService";
 
 const Stack = createNativeStackNavigator();
 const HomeStack = createNativeStackNavigator();
@@ -93,6 +94,22 @@ const HomeNavigator = () => {
           //   fontSize: 20,
           // },
           headerShown: false,
+        }}
+      />
+       <HomeStack.Screen
+        name="ServiceList"
+        component={SelectedServices}
+        options={{
+          title: 'Book Service',
+          headerStyle: {
+            backgroundColor: '#6200ee',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 20,
+          },
+          // headerShown: false,
         }}
       />
     </HomeStack.Navigator>
