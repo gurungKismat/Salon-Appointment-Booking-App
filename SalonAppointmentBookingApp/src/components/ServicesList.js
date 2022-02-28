@@ -3,12 +3,11 @@ import {
   StyleSheet,
   View,
   SectionList,
-  StatusBar,
   Text,
   TouchableOpacity,
 } from 'react-native';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {Icon, Checkbox} from 'native-base';
+import {Icon} from 'native-base';
 import {useDispatch} from 'react-redux';
 import {serviceAdded} from '../redux/store/features/service/serviceSlice';
 import {useSelector} from 'react-redux';
@@ -35,13 +34,19 @@ const DATA = [
 ];
 
 const Item = ({title, headers, index}) => {
-  const [select, setSelect] = useState(false);
+  const [select, setSelect] = useState();
   const dispatch = useDispatch();
   const service = useSelector(state => state.service);
 
+  const selectedService = () => {
+    const isServiceSelected = Boolean(
+      service.find(item => title === item.serviceName),
+    );
+    // console.log("isServiceSelected: "+isServiceSelected)
+    return isServiceSelected;
+  };
+
   const onValChange = value => {
-    // alert(value)
-    // console.warn(value);
     setSelect(value);
     dispatch(
       serviceAdded({
@@ -59,12 +64,11 @@ const Item = ({title, headers, index}) => {
         style={styles.servicesItem}
         onPress={() => onValChange(!select)}>
         <Text style={styles.title}>{title}</Text>
-        {!select ? (
+        {!selectedService() ? (
           <Icon
             ml="1"
             size="8"
             color="white"
-            onPress={() => navigation.goBack()}
             as={<MaterialCommunityIcon name="plus" />}
           />
         ) : (
@@ -72,7 +76,6 @@ const Item = ({title, headers, index}) => {
             ml="1"
             size="8"
             color="white"
-            onPress={() => navigation.goBack()}
             as={<MaterialCommunityIcon name="check" />}
           />
         )}
@@ -123,6 +126,7 @@ const styles = StyleSheet.create({
   servicesItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     color: 'blue',
   },
 });

@@ -1,11 +1,11 @@
 import React from 'react';
-import TabBarr from '../../../components/CustomTabBar';
+import Tabbar from '../../../components/CustomTabbar';
 import ViewCart from '../../../components/ViewCart';
 
 const SalonInfo = () => {
   return (
     <>
-      <TabBarr />
+      <Tabbar />
       <ViewCart />
     </>
   );

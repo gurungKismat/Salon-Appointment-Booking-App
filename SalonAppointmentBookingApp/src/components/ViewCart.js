@@ -1,16 +1,14 @@
 import React from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
-import {useSelector ,useDispatch} from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
 
 const ViewCart = () => {
   const cartItems = useSelector(state => state.service);
   const navigation = useNavigation();
   const viewCartPressed = () => {
-    // alert("hello")
     navigation.navigate('ServiceList');
   };
-
 
   return (
     <>
@@ -59,5 +57,6 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     position: 'relative',
     width: 300,
+    flexDirection: 'column',
   },
 });
