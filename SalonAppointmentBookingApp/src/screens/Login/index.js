@@ -15,6 +15,9 @@ import {
   Icon,
 } from 'native-base';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import auth from '@react-native-firebase/auth';
+import AlertBox from '../../components/AlertBox';
+import AnimatedLoader from 'react-native-animated-loader';
 
 const LoginForm = () => {
   const navigation = useNavigation();
@@ -25,27 +28,51 @@ const LoginForm = () => {
   const [showPasswordError, setShowPasswordError] = useState(false);
   const [detail, setDetail] = useState({email: 'hello', password: '123'});
   const [errorMsg, setErrorMsg] = useState({message: 'Require'});
+  const [showAlert, setShowAlert] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const validateDetails = () => {
-    if (emailId === detail.email && password === detail.password) {
-      console.log('success opening home...');
-    } else if (emailId !== detail.email && password === detail.password) {
-      let newMsg = {messge: 'Email Incorrect!!!'};
-      setErrorMsg({
-        ...errorMsg,
-        ...newMsg,
+    // if (emailId === detail.email && password === detail.password) {
+    //   console.log('success opening home...');
+    // } else if (emailId !== detail.email && password === detail.password) {
+    //   let newMsg = {messge: 'Email Incorrect!!!'};
+    //   setErrorMsg({
+    //     ...errorMsg,
+    //     ...newMsg,
+    //   });
+    //   console.log('Email incorrect!');
+    // } else if (emailId === detail.email && password !== detail.password) {
+    //   let newMsg = {messge: 'Password Incorrect!!!'};
+    //   setErrorMsg({
+    //     ...errorMsg,
+    //     ...newMsg,
+    //   });
+    //   console.log('password incorrect!');
+    // } else {
+    //   console.log('Both incorrect');
+    // }
+
+    auth()
+      .signInWithEmailAndPassword(emailId, password)
+      .then(() => {
+        setLoading(false);
+        console.log('signin success');
+      })
+      .catch(function (error) {
+        let errorCode = error.code;
+        let errorMessage = error.message;
+        if (errorCode === 'auth/wrong-password') {
+          alert('Wrong password.');
+        } else if (errorCode === 'auth/user-not-found') {
+          alert('User with the given email doesnot exist');
+        } else if (errorCode === 'auth/invalid-email') {
+          alert('Invalid email address');
+        } else {
+          alert(errorMessage);
+        }
+        setLoading(false);
+        console.log(error);
       });
-      console.log('Email incorrect!');
-    } else if (emailId === detail.email && password !== detail.password) {
-      let newMsg = {messge: 'Password Incorrect!!!'};
-      setErrorMsg({
-        ...errorMsg,
-        ...newMsg,
-      });
-      console.log('password incorrect!');
-    } else {
-      console.log('Both incorrect');
-    }
   };
 
   // check if the email and password inputs are empty
@@ -64,13 +91,23 @@ const LoginForm = () => {
       setShowPasswordError(false);
     }
 
+    // if the email and password input are not empty
     if (emailId !== '' && password !== '') {
+      setLoading(true)
       validateDetails();
     }
   };
 
   return (
     <Center w="100%">
+      <AnimatedLoader
+        visible={loading}
+        overlayColor="rgba(255,255,255,0.75)"
+        source={require('../../assets/50124-user-profile.json')}
+        animationStyle={{width: 120, height: 120}}
+        speed={1}>
+        <Text color="black">Signing In...</Text>
+      </AnimatedLoader>
       <Box safeArea p="2" py="8" w="90%" maxW="290">
         <Heading
           size="xl"
@@ -91,7 +128,6 @@ const LoginForm = () => {
           size="xs">
           Sign in to continue!
         </Heading>
-
         <VStack space={3} mt="5">
           {showEmailError === true ? (
             <FormControl isInvalid>

@@ -1,60 +1,110 @@
-import React, { useState, useEffect } from "react";
-import auth from "@react-native-firebase/auth";
-import  AuthStack  from "./AuthStack";
-import CustomerStack from "./CustomerStack";
-import SalonStack from "./SalonStack";
+import React, {useState, useEffect} from 'react';
+import auth from '@react-native-firebase/auth';
+import AuthStack from './AuthStack';
+import CustomerStack from './CustomerStack';
+import SalonStack from './SalonStack';
+import firestore from '@react-native-firebase/firestore';
 
+const GetStack = ({user}) => {
+  console.log('user : ' + user);
 
-const GetStack = ({ stackName }) => {
-    console.log("stack name: "+stackName);
-    if (stackName === null) { // render login screen
-        return <AuthStack/>
+  if (user === null) {
+    return <AuthStack />;
+  } else if (user === 'customer') {
+    return <CustomerStack />;
+  } else if (user === 'salon') {
+    return <SalonStack />;
+  }
 
-    }else if (stackName === "Customer") { // render customer home screen
-        return <CustomerStack/>
+  // async function f1() {
+  //   const result = await firestore()
+  //     .collection('customers')
+  //     .doc(user.uid)
+  //     .get();
+  //   return result;
+  // }
 
-    } else if (stackName === "Salon") { // render salon homescreen
-        return <SalonStack/>
-    }else {
-       return <CustomerStack/> 
-    }
-}
+  // const doesCustomerExist = f1().then(snapShot => {
+  //   const doesCustomerExist = snapShot.exists;
+  //   console.log("the val: "+doesCustomerExist)
+  //   return doesCustomerExist;
+  // });
+
+  // console.log('does Customer Exists: ' + doesCustomerExist);
+};
 
 const Router = () => {
+  const [isSignedIn, setIsSignedIn] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-    const [isSignedIn, setIsSignedIn] = useState(null);
-    const [loading, setLoading] = useState(false);
+  // callback function that handles the user state changed
+  const ouAuthStateChanged = user => {
+    console.log('onauthstate changed');
 
-    // callback function that handles the user state changed
-    const ouAuthStateChanged = (user) => {
-        console.log("onauthstate changed")
-        setIsSignedIn(user);
+    async function f1() {
+      let doesCustomerExist;
+      let doesSalonExist;
+
+      await firestore()
+        .collection('customers')
+        .doc(user.uid)
+        .get()
+        .then(docSnapshot => {
+          doesCustomerExist = docSnapshot.exists;
+        });
+
+      await firestore()
+        .collection('salons')
+        .doc(user.uid)
+        .get()
+        .then(docSnapshot => {
+          doesSalonExist = docSnapshot.exists;
+        });
+
+      if (doesCustomerExist) {
+        console.log('cusoer exist');
+        setIsSignedIn('customer');
         if (loading) {
-              setLoading(false);
+          setLoading(false);
         }
-      
+      } else if (doesSalonExist) {
+        console.log('salon exist');
+        setIsSignedIn('salon');
+        if (loading) {
+          setLoading(false);
+        }
+      } else {
+        console.log('doesnot exist');
+        setIsSignedIn(null);
+        if (loading) {
+          setLoading(false);
+        }
+      }
     }
-
-    useEffect(() => {
-        console.log("use effect called")
-        const subscriber = auth().onAuthStateChanged(ouAuthStateChanged);
-
-        // cleanup code
-        return subscriber;
-    }, [])
-
-    if (loading) {
-        console.log("loading checked")
-        console.log("signed in val "+isSignedIn)
-        return null;
+    if (user !== null) {
+      f1();
+    } else {
+      setIsSignedIn(user);
+      if (loading) {
+        setLoading(false);
+      }
     }
+  };
 
-    return (
-        <>
-         {<GetStack stackName={"Customer"}/>}
-        </>
-       
-    );
-}
+  useEffect(() => {
+    console.log('use effect called');
+    const subscriber = auth().onAuthStateChanged(ouAuthStateChanged);
 
+    // cleanup code
+    return subscriber;
+  }, []);
+
+  if (loading) {
+    console.log('loading checked');
+    console.log('signed in val ' + isSignedIn);
+    return null;
+  }
+
+  return <>{<GetStack user={isSignedIn} />}</>;
+};
 export default Router;

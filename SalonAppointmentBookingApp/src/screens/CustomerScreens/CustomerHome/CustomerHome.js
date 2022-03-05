@@ -35,6 +35,7 @@ const HomeUi = () => {
             <Heading size={'md'}>Hi Kismat</Heading>
           </Center>
           <Center>
+            <Pressable onPress={() => navigation.navigate("CustomerProfile")}>
             <Avatar
               bg="indigo.500"
               source={{
@@ -42,6 +43,7 @@ const HomeUi = () => {
               }}>
               KG
             </Avatar>
+            </Pressable>
           </Center>
         </HStack>
         <Center>

@@ -270,43 +270,52 @@ const SalonRegister = () => {
       });
     }
 
-    if (error == 0) {
+    if (error === 0) {
       console.log('all good');
       console.log('error val: ' + error);
       toggleLoading(true);
+      return true;
     } else {
       console.log('all wrong');
+      toggleLoading(false);
+      return false;
     }
   }
 
   // add new customer
   const registerCustomer = () => {
     let success = validateForm();
-    // if (success !== true) {
-    //   console.log("registeration failed")
-    //   return null;
-    // }
-    // return auth()
-    //   .createUserWithEmailAndPassword(email, password)
-    //   .then(userCredentials => {
-    //     console.log('User account created & signed in!');
-    //     firestore().collection('customers').doc(auth().currentUser.uid).set({
-    //       name: userName,
-    //       email,
-    //       password,
-    //     });
-    //   })
-    //   .catch(error => {
-    //     if (error.code === 'auth/email-already-in-use') {
-    //       console.log('That email address is already in use!');
-    //     }
+    if (success !== true) {
+      console.log("registeration failed")
+      toggleLoading(false);
+      return null;
+    }
+    return auth()
+      .createUserWithEmailAndPassword(email, password)
+      .then(userCredentials => {
+        console.log('User account created & signed in!');
+        firestore().collection('salons').doc(auth().currentUser.uid).set({
+          salonName: salonName,
+          address: address,
+          mobileNo: mobileNo,
+          email,
+          password,
+        });
+        toggleLoading(false);
+        alert("account created")
+      })
+      .catch(error => {
+        if (error.code === 'auth/email-already-in-use') {
+          console.log('That email address is already in use!');
+        }
 
-    //     if (error.code === 'auth/invalid-email') {
-    //       console.log('That email address is invalid!');
-    //     }
-
-    //     console.error(error);
-    //   });
+        if (error.code === 'auth/invalid-email') {
+          console.log('That email address is invalid!');
+        }
+        toggleLoading(false);
+        console.error(error);
+        
+      });
   };
 
   return (

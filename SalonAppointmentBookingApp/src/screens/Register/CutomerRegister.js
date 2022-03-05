@@ -247,7 +247,7 @@ const CustomerRegister = () => {
       });
     }
 
-    if (error == 0) {
+    if (error === 0) {
       // alert('Signup Successful');
       toggleLoading(true);
       console.log('all good');
@@ -265,31 +265,37 @@ const CustomerRegister = () => {
   const registerCustomer = () => {
     let success = validateForm();
 
-    // if (success !== true) {
-    //   console.log("registeration failed")
-    //   return null;
-    // }
-    // return auth()
-    //   .createUserWithEmailAndPassword(email, password)
-    //   .then(userCredentials => {
-    //     console.log('User account created & signed in!');
-    //     firestore().collection('customers').doc(auth().currentUser.uid).set({
-    //       name: userName,
-    //       email,
-    //       password,
-    //     });
-    //   })
-    //   .catch(error => {
-    //     if (error.code === 'auth/email-already-in-use') {
-    //       console.log('That email address is already in use!');
-    //     }
+    if (success !== true) {
+      console.log("registeration failed")
+      toggleLoading(false);
+      return null;
+    }
+ 
+    return auth()
+      .createUserWithEmailAndPassword(email, password)
+      .then(userCredentials => {
+        console.log('User account created & signed in!');
+        firestore().collection('customers').doc(auth().currentUser.uid).set({
+          userId: auth().currentUser.uid,
+          name: userName,
+          email,
+          password,
+          mobileNo: mobileNo
+        });
+        toggleLoading(false);
+        alert('account created')
+      })
+      .catch(error => {
+        if (error.code === 'auth/email-already-in-use') {
+          console.log('That email address is already in use!');
+        }
 
-    //     if (error.code === 'auth/invalid-email') {
-    //       console.log('That email address is invalid!');
-    //     }
-
-    //     console.error(error);
-    //   });
+        if (error.code === 'auth/invalid-email') {
+          console.log('That email address is invalid!');
+        }
+        toggleLoading(false);
+        console.error(error);
+      });
   };
 
   return (
@@ -341,7 +347,7 @@ const CustomerRegister = () => {
               <FormControl>
                 <FormControl.Label>User Name</FormControl.Label>
                 <Input
-                  value={String(userNameError)}
+                  value={String(userName)}
                   onChangeText={setName}
                   placeholder="User Name"
                 />
@@ -544,3 +550,4 @@ const CustomerRegister = () => {
 };
 
 export default CustomerRegister;
+
