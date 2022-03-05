@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import {Heading, Icon, Divider} from 'native-base';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import AddNewServiceModal from '../../../components/AddNewServiceModal';
 
 const DATA = [
   {
@@ -61,16 +62,18 @@ const Item = ({service, headers, index}) => {
           />
         </View>
         <Text style={styles.servicePrice}>Price: Rs {service.price}</Text>
-        <Text style={styles.serviceDuration}>duration: {service.duration}</Text>
+        <Text style={styles.serviceDuration}>Duration: {service.duration}</Text>
       </View>
     </View>
   );
 };
 
 const SalonServices = () => {
+    const [showModal, setShowModal] = useState(false);
   return (
-    <View style={styles.container}>
+    <View style={styles.mainContainer}>
       <StatusBar backgroundColor={'#6200ee'} />
+      <AddNewServiceModal showModal={showModal} setShowModal={() => setShowModal(!showModal)}/>
       <View style={styles.addServiceRow}>
         <Heading size="md">Add New Services</Heading>
         <Icon
@@ -78,7 +81,7 @@ const SalonServices = () => {
           size={10}
           mr="2"
           color="muted.400"
-          onPress={() => alert('hello')}
+          onPress={() => setShowModal(!showModal)}
         />
       </View>
       <Divider bg="black" thickness="2" my="2" />
@@ -108,7 +111,7 @@ const SalonServices = () => {
 export default SalonServices;
 
 const styles = StyleSheet.create({
-  container: {
+  mainContainer: {
     flex: 1,
     padding: 15,
   },
