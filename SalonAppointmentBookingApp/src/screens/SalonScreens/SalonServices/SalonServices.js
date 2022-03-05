@@ -14,7 +14,6 @@ import AddNewServiceModal from '../../../components/AddNewServiceModal';
 const DATA = [
   {
     categoryTitle: 'HairCut',
-    // data: ['SkinFade', 'Buzzcut', 'HighFade'],
     data: [
       {serviceName: 'SkinFade', price: '200', duration: '30 min'},
       {serviceName: 'Buzzcut', price: '240', duration: '24 min'},
@@ -24,7 +23,6 @@ const DATA = [
 
   {
     categoryTitle: 'Massage',
-    // data: ['Feet', 'Message - Neck & Shoulders', 'Massage - Relaxation'],
     data: [
       {serviceName: 'Feet', price: '300', duration: '30 min'},
       {
@@ -38,7 +36,6 @@ const DATA = [
 
   {
     categoryTitle: 'Skin Care',
-    // data: ['Feet', 'Message - Neck & Shoulders', 'Massage - Relaxation'],
     data: [
       {serviceName: 'Facial Anti Acne', price: '500', duration: '30 min'},
       {serviceName: 'Facial Alovera', price: '450', duration: '24 min'},

@@ -30,7 +30,6 @@ const CustomerRegister = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [userType, setUserType] = useState('customer');
   const [userNameError, setUserNameError] = useState({
     error: '',
     isError: false,
@@ -266,11 +265,11 @@ const CustomerRegister = () => {
     let success = validateForm();
 
     if (success !== true) {
-      console.log("registeration failed")
+      console.log('registeration failed');
       toggleLoading(false);
       return null;
     }
- 
+
     return auth()
       .createUserWithEmailAndPassword(email, password)
       .then(userCredentials => {
@@ -280,10 +279,10 @@ const CustomerRegister = () => {
           name: userName,
           email,
           password,
-          mobileNo: mobileNo
+          mobileNo: mobileNo,
         });
         toggleLoading(false);
-        alert('account created')
+        alert('account created');
       })
       .catch(error => {
         if (error.code === 'auth/email-already-in-use') {
@@ -494,7 +493,6 @@ const CustomerRegister = () => {
             ) : (
               <FormControl>
                 <FormControl.Label>Confirm Password</FormControl.Label>
-           
 
                 <Input
                   type={showConfirmPassword ? 'text' : 'password'}
@@ -550,4 +548,3 @@ const CustomerRegister = () => {
 };
 
 export default CustomerRegister;
-
