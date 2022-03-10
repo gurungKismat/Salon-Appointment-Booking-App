@@ -15,10 +15,10 @@ const CategoryList = props => {
         }}
         mt={1}
         onValueChange={props.setCategory}>
-        <Select.Item label="HairCut" value="haircut" />
-        <Select.Item label="Massage" value="massage" />
-        <Select.Item label="SkinCare" value="skincare" />
-        <Select.Item label="Nails" value="nails" />
+        <Select.Item label="HairCut" value="Haircut" />
+        <Select.Item label="Massage" value="Massage" />
+        <Select.Item label="SkinCare" value="Skincare" />
+        <Select.Item label="Nails" value="Nails" />
       </Select>
     </Box>
   );

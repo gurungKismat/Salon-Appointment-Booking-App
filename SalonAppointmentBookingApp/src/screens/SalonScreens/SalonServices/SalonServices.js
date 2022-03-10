@@ -12,41 +12,49 @@ import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIc
 import AddNewServiceModal from '../../../components/AddNewServiceModal';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import EmptyList from '../../../components/EmptyList';
 
-const DATA = [
-  {
-    categoryTitle: 'HairCut',
-    data: [
-      {serviceName: 'SkinFade', price: '200', duration: '30 min'},
-      {serviceName: 'Buzzcut', price: '240', duration: '24 min'},
-      {serviceName: 'HighFade', price: '250', duration: '35 min'},
-    ],
-  },
+// const DATA = [
+//   {
+//     categoryTitle: 'HairCut',
+//     data: [
+//       {serviceName: 'SkinFade', price: '200', duration: '30 min'},
+//       {serviceName: 'Buzzcut', price: '240', duration: '24 min'},
+//       {serviceName: 'HighFade', price: '250', duration: '35 min'},
+//     ],
+//   },
 
-  {
-    categoryTitle: 'Massage',
-    data: [
-      {serviceName: 'Feet', price: '300', duration: '30 min'},
-      {
-        serviceName: 'Message - Neck & Shoulders',
-        price: '440',
-        duration: '24 min',
-      },
-      {serviceName: 'Massage - Relaxation', price: '250', duration: '1 hr'},
-    ],
-  },
+//   {
+//     categoryTitle: 'Massage',
+//     data: [
+//       {serviceName: 'Feet', price: '300', duration: '30 min'},
+//       {
+//         serviceName: 'Message - Neck & Shoulders',
+//         price: '440',
+//         duration: '24 min',
+//       },
+//       {serviceName: 'Massage - Relaxation', price: '250', duration: '1 hr'},
+//     ],
+//   },
 
-  {
-    categoryTitle: 'Skin Care',
-    data: [
-      {serviceName: 'Facial Anti Acne', price: '500', duration: '30 min'},
-      {serviceName: 'Facial Alovera', price: '450', duration: '24 min'},
-      {serviceName: 'Fried Cleanup', price: '240', duration: '1 hr'},
-    ],
-  },
-];
+//   {
+//     categoryTitle: 'Skin Care',
+//     data: [
+//       {serviceName: 'Facial Anti Acne', price: '500', duration: '30 min'},
+//       {serviceName: 'Facial Alovera', price: '450', duration: '24 min'},
+//       {serviceName: 'Fried Cleanup', price: '240', duration: '1 hr'},
+//     ],
+//   },
+// ];
+
+const editService = (header, service, index) => {
+    alert("service: "+service.serviceName + " "+index)
+}
 
 const Item = ({service, headers, index}) => {
+  console.log("header: "+headers)
+  console.log("service: "+JSON.stringify(service))
+ 
   return (
     <View style={styles.serviceContainer}>
       <View style={styles.availableServices}>
@@ -57,7 +65,7 @@ const Item = ({service, headers, index}) => {
             size={7}
             mr="2"
             color="white"
-            onPress={() => alert('hello')}
+            onPress={() => editService(headers,service, index)}
           />
         </View>
         <Text style={styles.servicePrice}>Price: Rs {service.price}</Text>
@@ -123,32 +131,27 @@ const SalonServices = () => {
         Available Services
       </Heading>
       <View style={styles.sectionListContainer}>
-        {availableServices.length !== 0 ? (
-          <SectionList
-            sections={availableServices}
-            keyExtractor={(item, index) => item + index}
-            renderItem={({item, section, index}) => (
-              <Item
-                service={item}
-                headers={section.categoryTitle}
-                index={index}
-              />
-            )}
-            renderSectionHeader={({section: {categoryTitle}}) => (
-              <Text style={styles.sectionHeader}>{categoryTitle}</Text>
-            )}
-          />
-        ) : (
-          <View style={{justifyContent: 'center', alignItems: 'center'}}>
-            <Text
-              style={{
-                color: 'black',
-                fontSize: 30,
-              }}>
-              empty
-            </Text>
-          </View>
-        )}
+        {
+          availableServices.length !== 0 ? (
+            <SectionList
+              sections={availableServices}
+              keyExtractor={(item, index) => item + index}
+              renderItem={({item, section, index}) => (
+                <Item
+                  service={item}
+                  headers={section.categoryTitle}
+                  index={index}
+                />
+              )}
+              renderSectionHeader={({section: {categoryTitle}}) => (
+                <Text style={styles.sectionHeader}>{categoryTitle}</Text>
+              )}
+            />
+          ) : (
+            <EmptyList message="No Services Added" />
+          )
+         
+        }
       </View>
     </View>
   );
