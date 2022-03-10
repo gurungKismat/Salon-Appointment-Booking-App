@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Button,
   Modal,
@@ -9,10 +9,17 @@ import {
   Radio,
   WarningOutlineIcon,
   Stack,
+  Select,
+  CheckIcon,
+  useToast,
 } from 'native-base';
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
+import CategoryList from '../components/CategoryList';
 
 const AddNewServiceModal = props => {
-  const [servicesData, setServicesData] = useState([]);
+  const toast = useToast();
+  const id = 'test-toast';
   const [categoryTitle, setCategoryTitle] = useState('');
   const [serviceName, setServiceName] = useState('');
   const [price, setPrice] = useState('');
@@ -44,6 +51,104 @@ const AddNewServiceModal = props => {
     setServiceName('');
     setPrice('');
     setDuration('');
+    setCategoryError({isError: false});
+    setServiceNameError({isError: false});
+    setPriceError({isError: false});
+    setDurationError({isError: false});
+  };
+  const saveData = async data => {
+    const docRef = firestore()
+      .collection('salonServices')
+      .doc(auth().currentUser.uid);
+
+    var countCategoryExist = 0;
+
+    // checks whether the category is already in the data and adds the service in the specific category if exist
+    function updateCategory(value, index, initialData) {
+      if (categoryTitle.toLowerCase() === value.categoryTitle.toLowerCase()) {
+        countCategoryExist++;
+        initialData[index].data.push({
+          serviceName: serviceName,
+          price: price,
+          duration: duration + ' ' + time,
+        });
+      }
+    }
+
+    await docRef.get().then(documentSnapshot => {
+      if (!documentSnapshot.exists) {
+        // if the salon service is added for the first time
+        docRef
+          .set(
+            {
+              data: firestore.FieldValue.arrayUnion(data),
+            },
+            // {merge: true},
+          )
+          .then(() => {
+            displayToast();
+          });
+      } else {
+        // if the salon services is already added then update the service
+        const servicesList = documentSnapshot.data();
+        const services = servicesList.data;
+        services.forEach(updateCategory);
+
+        // if category already exist add the service name in that category or else add the whole category and service
+        if (countCategoryExist === 0) {
+          services.push({
+            categoryTitle: categoryTitle,
+            data: [
+              {
+                serviceName: serviceName,
+                price: price,
+                duration: duration + ' ' + time,
+              },
+            ],
+          });
+        }
+        docRef
+          .set({
+            data: firestore.FieldValue.arrayUnion(...services),
+          })
+          .then(() => {
+            displayToast();
+          });
+      }
+    });
+  };
+
+  // display toast after adding new service
+  const displayToast = () => {
+    if (!toast.isActive(id)) {
+      toast.show({
+        id,
+        title: 'Service Added',
+        status: 'success',
+        placement: 'bottom',
+      });
+    }
+  };
+
+  // add new service to the firestore database
+  const addService = () => {
+    const result = isEmpty();
+    if (!result) {
+      const data = {
+        categoryTitle: categoryTitle,
+        data: [
+          {
+            serviceName: serviceName,
+            price: price,
+            duration: duration + ' ' + time,
+          },
+        ],
+      };
+      saveData(data);
+      //
+      //  setServicesData(data);
+      // console.log(`Services data: ${JSON.stringify(servicesData)}`);
+    }
   };
 
   // check if the textinput values are empty or not
@@ -149,21 +254,28 @@ const AddNewServiceModal = props => {
 
     if (countError === 0) {
       console.log('all good');
-        const data = {
-            categoryTitle: categoryTitle,
-            data: [{
-                serviceName: serviceName, price: price, duration: duration
-            }]
-        }
-        setServicesData(data);
-        console.log(`Services data: ${JSON.stringify(servicesData)}`)
-    //   setServicesData({});
-    } else {
-      console.log('something wrong ' + countError);
-    }
+      return false;
 
-    console.log("after")
+      //   setServicesData({});
+    } else {
+      return true;
+    }
   };
+
+  // useEffect(() => {
+  //   saveData();
+  // }, [servicesData]);
+
+  // useEffect(() => {
+  //   console.log('use effect called');
+  //   console.log('services data: ' + JSON.stringify(servicesData));
+  //   // userDetail();
+  //   saveData();
+  // }, [servicesData]);
+
+  // if (loading) {
+  //   return null;
+  // }
 
   return (
     <Center>
@@ -175,19 +287,17 @@ const AddNewServiceModal = props => {
             {!categoryError.isError ? (
               <FormControl>
                 <FormControl.Label>Category</FormControl.Label>
-                <Input
-                  onChangeText={setCategoryTitle}
-                  value={categoryTitle}
-                  placeholder="Category"
+                <CategoryList
+                  category={categoryTitle}
+                  setCategory={setCategoryTitle}
                 />
               </FormControl>
             ) : (
               <FormControl isInvalid>
                 <FormControl.Label>Category</FormControl.Label>
-                <Input
-                  onChangeText={setCategoryTitle}
-                  value={categoryTitle}
-                  placeholder="Category"
+                <CategoryList
+                  category={categoryTitle}
+                  setCategory={setCategoryTitle}
                 />
                 <FormControl.ErrorMessage
                   leftIcon={<WarningOutlineIcon size="xs" />}>
@@ -323,7 +433,7 @@ const AddNewServiceModal = props => {
                 // onPress={() => {
                 //   props.setShowModal(false);
                 // }}>
-                onPress={isEmpty}>
+                onPress={addService}>
                 Add
               </Button>
             </Button.Group>

@@ -274,7 +274,8 @@ const CustomerRegister = () => {
       .createUserWithEmailAndPassword(email, password)
       .then(userCredentials => {
         console.log('User account created & signed in!');
-        firestore().collection('customers').doc(auth().currentUser.uid).set({
+        firestore().coll
+        ection('customers').doc(auth().currentUser.uid).set({
           userId: auth().currentUser.uid,
           name: userName,
           email,
