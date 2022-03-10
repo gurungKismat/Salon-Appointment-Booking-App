@@ -156,7 +156,7 @@ const AddNewServiceModal = props => {
     let countError = 0;
 
     if (categoryTitle.length === 0) {
-      console.log('category empty');
+      // console.log('category empty');
       countError++;
       const newError = {
         error: 'Category title can not be empty',
@@ -180,7 +180,7 @@ const AddNewServiceModal = props => {
     }
 
     if (serviceName.length === 0) {
-      console.log('servicename empty');
+      // console.log('servicename empty');
       countError++;
       const newError = {
         error: 'Service name can not be empty',
@@ -204,7 +204,7 @@ const AddNewServiceModal = props => {
     }
 
     if (price.length === 0) {
-      console.log('price empty');
+      // console.log('price empty');
       countError++;
       const newError = {
         error: 'Price can not be empty',
@@ -228,7 +228,7 @@ const AddNewServiceModal = props => {
     }
 
     if (duration.length === 0) {
-      console.log('duration empty');
+      // console.log('duration empty');
       countError++;
 
       const newError = {
@@ -253,7 +253,7 @@ const AddNewServiceModal = props => {
     }
 
     if (countError === 0) {
-      console.log('all good');
+      // console.log('all good');
       return false;
 
       //   setServicesData({});

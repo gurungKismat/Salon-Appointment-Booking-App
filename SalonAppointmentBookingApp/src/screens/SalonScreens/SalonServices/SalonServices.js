@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,8 @@ import {
 import {Heading, Icon, Divider} from 'native-base';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AddNewServiceModal from '../../../components/AddNewServiceModal';
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 
 const DATA = [
   {
@@ -66,11 +68,46 @@ const Item = ({service, headers, index}) => {
 };
 
 const SalonServices = () => {
-    const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [availableServices, setAvailableServices] = useState([]);
+
+  const docRef = firestore()
+    .collection('salonServices')
+    .doc(auth().currentUser.uid);
+
+  useEffect(() => {
+    console.log('use effect called');
+
+    const fetchServices = docRef.onSnapshot(documentSnapshot => {
+      // console.log('result: ' + JSON.stringify(documentSnapshot.data()));
+      if (documentSnapshot.exists) {
+        const result = documentSnapshot.data().data;
+        console.log('result ' + JSON.stringify(result));
+        setAvailableServices(result);
+        if (loading) {
+          setLoading(false);
+        }
+      } else {
+        if (loading) {
+          setLoading(false);
+        }
+      }
+    });
+
+    return () => fetchServices();
+  }, []);
+
+  if (loading) {
+    null;
+  }
   return (
     <View style={styles.mainContainer}>
       <StatusBar backgroundColor={'#6200ee'} />
-      <AddNewServiceModal showModal={showModal} setShowModal={() => setShowModal(!showModal)}/>
+      <AddNewServiceModal
+        showModal={showModal}
+        setShowModal={() => setShowModal(!showModal)}
+      />
       <View style={styles.addServiceRow}>
         <Heading size="md">Add New Services</Heading>
         <Icon
@@ -86,20 +123,32 @@ const SalonServices = () => {
         Available Services
       </Heading>
       <View style={styles.sectionListContainer}>
-        <SectionList
-          sections={DATA}
-          keyExtractor={(item, index) => item + index}
-          renderItem={({item, section, index}) => (
-            <Item
-              service={item}
-              headers={section.categoryTitle}
-              index={index}
-            />
-          )}
-          renderSectionHeader={({section: {categoryTitle}}) => (
-            <Text style={styles.sectionHeader}>{categoryTitle}</Text>
-          )}
-        />
+        {availableServices.length !== 0 ? (
+          <SectionList
+            sections={availableServices}
+            keyExtractor={(item, index) => item + index}
+            renderItem={({item, section, index}) => (
+              <Item
+                service={item}
+                headers={section.categoryTitle}
+                index={index}
+              />
+            )}
+            renderSectionHeader={({section: {categoryTitle}}) => (
+              <Text style={styles.sectionHeader}>{categoryTitle}</Text>
+            )}
+          />
+        ) : (
+          <View style={{justifyContent: 'center', alignItems: 'center'}}>
+            <Text
+              style={{
+                color: 'black',
+                fontSize: 30,
+              }}>
+              empty
+            </Text>
+          </View>
+        )}
       </View>
     </View>
   );
