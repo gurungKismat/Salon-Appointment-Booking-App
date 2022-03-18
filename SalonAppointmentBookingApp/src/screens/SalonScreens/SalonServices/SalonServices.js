@@ -13,6 +13,10 @@ import AddNewServiceModal from '../../../components/AddNewServiceModal';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import EmptyList from '../../../components/EmptyList';
+import UpdateSalonService from '../../../components/UpdateSalonService';
+import {useDispatch} from 'react-redux';
+import {useSelector} from 'react-redux';
+import {updateService} from '../../../redux/store/features/updateService/updateserviceSlice';
 
 // const DATA = [
 //   {
@@ -47,51 +51,82 @@ import EmptyList from '../../../components/EmptyList';
 //   },
 // ];
 
-const editService = (header, service, index) => {
-    alert("service: "+service.serviceName + " "+index)
-}
-
-const Item = ({service, headers, index}) => {
-  console.log("header: "+headers)
-  console.log("service: "+JSON.stringify(service))
- 
-  return (
-    <View style={styles.serviceContainer}>
-      <View style={styles.availableServices}>
-        <View style={styles.itemRow}>
-          <Text style={styles.availableItmText}>{service.serviceName}</Text>
-          <Icon
-            as={<MaterialCommunityIcon name={'pencil'} />}
-            size={7}
-            mr="2"
-            color="white"
-            onPress={() => editService(headers,service, index)}
-          />
-        </View>
-        <Text style={styles.servicePrice}>Price: Rs {service.price}</Text>
-        <Text style={styles.serviceDuration}>Duration: {service.duration}</Text>
-      </View>
-    </View>
-  );
-};
-
 const SalonServices = () => {
   const [showModal, setShowModal] = useState(false);
+  const [showUpdateModal, setUpdateModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [availableServices, setAvailableServices] = useState([]);
+  const dispatch = useDispatch();
+  const selector = useSelector(state => state.updateService);
+  // const selector = useSelector(state => state.updateService);
+
+  const editService = (header, service, index) => {
+
+    console.log("service: "+JSON.stringify(service))
+    // sectionUpdated = header;
+    // serviceUpdated = service;
+    // indexUpdated = index;
+    // console.log('header: ' + header);
+    // console.log('serviceupdated: ' + service.serviceName);
+
+    // dispatch(editService(service));
+
+    // setModal();
+    // console.log("header: "+header);
+    // console.log(JSON.stringify(service))
+    // alert(JSON.stringify(service));
+
+    dispatch(
+      updateService({
+        category: header,
+        service: service.serviceName,
+        price: service.price,
+        duration: service.duration
+      }),
+    );
+    setUpdateModal(true);
+
+    console.log('selector: ' + JSON.stringify(selector));
+  };
+
+  const Item = ({service, headers, index}) => {
+    // console.log('header: ' + headers);
+    // console.log('service: ' + JSON.stringify(service));
+
+    return (
+      <View style={styles.serviceContainer}>
+        <View style={styles.availableServices}>
+          <View style={styles.itemRow}>
+            <Text style={styles.availableItmText}>{service.serviceName}</Text>
+            <Icon
+              as={<MaterialCommunityIcon name={'pencil'} />}
+              size={7}
+              mr="2"
+              color="white"
+              onPress={() => editService(headers, service, index)}
+            />
+          </View>
+          <Text style={styles.servicePrice}>Price: Rs {service.price}</Text>
+          <Text style={styles.serviceDuration}>
+            Duration: {service.duration}
+          </Text>
+        </View>
+      </View>
+    );
+  };
 
   const docRef = firestore()
     .collection('salonServices')
     .doc(auth().currentUser.uid);
 
   useEffect(() => {
-    console.log('use effect called');
+    // console.log('use effect called');
 
     const fetchServices = docRef.onSnapshot(documentSnapshot => {
       // console.log('result: ' + JSON.stringify(documentSnapshot.data()));
       if (documentSnapshot.exists) {
         const result = documentSnapshot.data().data;
-        console.log('result ' + JSON.stringify(result));
+        // console.log('result ' + JSON.stringify(result));
         setAvailableServices(result);
         if (loading) {
           setLoading(false);
@@ -116,6 +151,13 @@ const SalonServices = () => {
         showModal={showModal}
         setShowModal={() => setShowModal(!showModal)}
       />
+      <UpdateSalonService
+        showModal={showUpdateModal}
+        setShowModal={() => setUpdateModal(!showUpdateModal)}
+        // sectionUpdated={sectionUpdated}
+        // serviceUpdated={serviceUpdated}
+        // indexUpdated={indexUpdated}
+      />
       <View style={styles.addServiceRow}>
         <Heading size="md">Add New Services</Heading>
         <Icon
@@ -131,27 +173,24 @@ const SalonServices = () => {
         Available Services
       </Heading>
       <View style={styles.sectionListContainer}>
-        {
-          availableServices.length !== 0 ? (
-            <SectionList
-              sections={availableServices}
-              keyExtractor={(item, index) => item + index}
-              renderItem={({item, section, index}) => (
-                <Item
-                  service={item}
-                  headers={section.categoryTitle}
-                  index={index}
-                />
-              )}
-              renderSectionHeader={({section: {categoryTitle}}) => (
-                <Text style={styles.sectionHeader}>{categoryTitle}</Text>
-              )}
-            />
-          ) : (
-            <EmptyList message="No Services Added" />
-          )
-         
-        }
+        {availableServices.length !== 0 ? (
+          <SectionList
+            sections={availableServices}
+            keyExtractor={(item, index) => item + index}
+            renderItem={({item, section, index}) => (
+              <Item
+                service={item}
+                headers={section.categoryTitle}
+                index={index}
+              />
+            )}
+            renderSectionHeader={({section: {categoryTitle}}) => (
+              <Text style={styles.sectionHeader}>{categoryTitle}</Text>
+            )}
+          />
+        ) : (
+          <EmptyList message="No Services Added" />
+        )}
       </View>
     </View>
   );

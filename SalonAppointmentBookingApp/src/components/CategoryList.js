@@ -1,10 +1,12 @@
 import React from 'react';
 import {Select, CheckIcon, Box} from 'native-base';
+import {updateService} from '../redux/store/features/updateService/updateserviceSlice';
 
 const CategoryList = props => {
   return (
     <Box>
       <Select
+        // defaultValue={props.defaultCategory}
         selectedValue={props.category}
         minWidth="200"
         accessibilityLabel="Choose Category"
@@ -14,6 +16,7 @@ const CategoryList = props => {
           endIcon: <CheckIcon size="5" />,
         }}
         mt={1}
+        // onValueChange={itemValue => valueChanged(itemValue)}>
         onValueChange={props.setCategory}>
         <Select.Item label="HairCut" value="Haircut" />
         <Select.Item label="Massage" value="Massage" />

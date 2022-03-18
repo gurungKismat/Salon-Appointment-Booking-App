@@ -16,10 +16,22 @@ import {
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import CategoryList from '../components/CategoryList';
+import {useSelector} from 'react-redux';
+import {useDispatch} from 'react-redux';
 
-const AddNewServiceModal = props => {
+const UpdateSalonService = props => {
+  // console.log("service name update: "+props.serviceUpdated.serviceName)
+
+  const service = useSelector(state => state.updateService);
+
+  if (service !== undefined) {
+    console.log('service: ' + JSON.stringify(service));
+  }
+
+  const dispatch = useDispatch();
   const toast = useToast();
   const id = 'test-toast';
+  const [loading, setLoading] = useState(true);
   const [categoryTitle, setCategoryTitle] = useState('');
   const [serviceName, setServiceName] = useState('');
   const [price, setPrice] = useState('');
@@ -51,11 +63,17 @@ const AddNewServiceModal = props => {
     setServiceName('');
     setPrice('');
     setDuration('');
+    clearErrorMessage();
+  };
+
+  // clear the error message displayed below the text input
+  const clearErrorMessage = () => {
     setCategoryError({isError: false});
     setServiceNameError({isError: false});
     setPriceError({isError: false});
     setDurationError({isError: false});
   };
+
   const saveData = async data => {
     const docRef = firestore()
       .collection('salonServices')
@@ -66,12 +84,28 @@ const AddNewServiceModal = props => {
     // checks whether the category is already in the data and adds the service in the specific category if exist
     function updateCategory(value, index, initialData) {
       if (categoryTitle.toLowerCase() === value.categoryTitle.toLowerCase()) {
+        const serviceIndex = value.data.findIndex(
+          element =>
+            element.serviceName.toLowerCase() === serviceName.toLowerCase(),
+        );
+        console.log('skinfade index: ' + serviceIndex);
+        console.log('CURRENT SERVICE: ' + serviceName);
+
+        if (serviceIndex !== -1) {
+          console.log('service index exist');
+          initialData[index].data[serviceIndex] = {
+            serviceName: serviceName,
+            price: price,
+            duration: duration + ' ' + time,
+          };
+        }
+
+        //  const arr = value.data;
+        //  console.log("TEST: "+ JSON.stringify(arr));
+        //  const val = arr.findIndex(element => element.serviceName === serviceName);
+        //  console.log("index of : "+val)
+
         countCategoryExist++;
-        initialData[index].data.push({
-          serviceName: serviceName,
-          price: price,
-          duration: duration + ' ' + time,
-        });
       }
     }
 
@@ -106,15 +140,14 @@ const AddNewServiceModal = props => {
               },
             ],
           });
-        } else {
-          docRef
-            .set({
-              data: firestore.FieldValue.arrayUnion(...services),
-            })
-            .then(() => {
-              displayToast();
-            });
         }
+        docRef
+          .set({
+            data: firestore.FieldValue.arrayUnion(...services),
+          })
+          .then(() => {
+            displayToast();
+          });
       }
     });
   };
@@ -124,7 +157,7 @@ const AddNewServiceModal = props => {
     if (!toast.isActive(id)) {
       toast.show({
         id,
-        title: 'Service Added',
+        title: 'Service Updated',
         status: 'success',
         placement: 'bottom',
       });
@@ -132,7 +165,7 @@ const AddNewServiceModal = props => {
   };
 
   // add new service to the firestore database
-  const addService = () => {
+  const updateService = () => {
     const result = isEmpty();
     if (!result) {
       const data = {
@@ -263,19 +296,54 @@ const AddNewServiceModal = props => {
     }
   };
 
+  // set the category in update service modal
+  const setCategory = itemValue => {
+    setCategoryTitle(itemValue);
+    // alert(itemValue);
+  };
+
+  // close the update modal
+  const modalClose = () => {
+    clearErrorMessage();
+    props.setShowModal(false);
+  };
+
+  useEffect(() => {
+    console.log('update useeffect:');
+    if (service.length > 0) {
+      const timeLength = service[0].duration;
+      const timeArray = timeLength.split(' ');
+      setCategoryTitle(service[0].category);
+      setServiceName(service[0].service);
+      setPrice(service[0].price);
+      setDuration(timeArray[0]);
+      setTime(timeArray[1]);
+    } else {
+      console.log('undefined');
+    }
+
+    if (loading) {
+      setLoading(false);
+    }
+  }, [service]);
+
+  if (loading) {
+    return null;
+  }
+
   return (
     <Center>
-      <Modal isOpen={props.showModal} onClose={props.setShowModal} size="lg">
+      <Modal isOpen={props.showModal} onClose={modalClose} size="lg">
         <Modal.Content>
           <Modal.CloseButton />
-          <Modal.Header>Add New Services</Modal.Header>
+          <Modal.Header>Update Services</Modal.Header>
           <Modal.Body>
             {!categoryError.isError ? (
               <FormControl>
                 <FormControl.Label>Category</FormControl.Label>
                 <CategoryList
                   category={categoryTitle}
-                  setCategory={setCategoryTitle}
+                  setCategory={itemValue => setCategory(itemValue)}
                 />
               </FormControl>
             ) : (
@@ -283,7 +351,7 @@ const AddNewServiceModal = props => {
                 <FormControl.Label>Category</FormControl.Label>
                 <CategoryList
                   category={categoryTitle}
-                  setCategory={setCategoryTitle}
+                  setCategory={setCategory}
                 />
                 <FormControl.ErrorMessage
                   leftIcon={<WarningOutlineIcon size="xs" />}>
@@ -411,6 +479,7 @@ const AddNewServiceModal = props => {
                 variant="solid"
                 colorScheme="secondary"
                 onPress={() => {
+                  clearErrorMessage();
                   props.setShowModal(false);
                 }}>
                 Cancel
@@ -419,8 +488,8 @@ const AddNewServiceModal = props => {
                 // onPress={() => {
                 //   props.setShowModal(false);
                 // }}>
-                onPress={addService}>
-                Add
+                onPress={updateService}>
+                Update
               </Button>
             </Button.Group>
           </Modal.Footer>
@@ -430,4 +499,4 @@ const AddNewServiceModal = props => {
   );
 };
 
-export default AddNewServiceModal;
+export default UpdateSalonService;

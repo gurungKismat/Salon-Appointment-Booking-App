@@ -17,6 +17,7 @@ const serviceSlice = createSlice({
         state.splice(0, state.length, ...result);
       }
     },
+
   },
 });
 
