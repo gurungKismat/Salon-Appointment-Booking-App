@@ -275,6 +275,7 @@ const AddNewServiceModal = props => {
                 <CategoryList
                   category={categoryTitle}
                   setCategory={setCategoryTitle}
+                  categoryDisable={false}
                 />
               </FormControl>
             ) : (
@@ -283,6 +284,7 @@ const AddNewServiceModal = props => {
                 <CategoryList
                   category={categoryTitle}
                   setCategory={setCategoryTitle}
+                  categoryDisable={false}
                 />
                 <FormControl.ErrorMessage
                   leftIcon={<WarningOutlineIcon size="xs" />}>

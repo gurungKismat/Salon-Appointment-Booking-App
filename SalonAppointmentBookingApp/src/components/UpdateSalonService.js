@@ -79,6 +79,8 @@ const UpdateSalonService = props => {
 
   
 
+  
+
   const saveData = async data => {
     const docRef = firestore()
       .collection('salonServices')
@@ -89,47 +91,33 @@ const UpdateSalonService = props => {
     var countCategoryExist = 0;
     var categoryIndex = -1;
 
-    // checks whether the category is already in the data and adds the service in the specific category if exist
-    function updateCategory(value, index, initialData) {
-      // console.log('VAlue: ' + JSON.stringify(value));
+   
+        
+ // checks whether the category is already in the data and adds the service in the specific category if exist
+ function updateCategory(value, index, initialData) {
+  // console.log('VAlue: ' + JSON.stringify(value));
 
-      if (categoryTitle.toLowerCase() === value.categoryTitle.toLowerCase()) {
-        const serviceIndex = value.data.findIndex(
-          element => element.id === serviceId,
-        );
-        console.log('skinfade index: ' + serviceIndex);
-        console.log('CURRENT SERVICE: ' + serviceName);
+  if (categoryTitle.toLowerCase() === value.categoryTitle.toLowerCase()) {
+    const serviceIndex = value.data.findIndex(
+      element => element.id === serviceId,
+    );
+    console.log('skinfade index: ' + serviceIndex);
+    console.log('CURRENT SERVICE: ' + serviceName);
 
-        if (serviceIndex !== -1) {
-          console.log('service index exist');
-          initialData[index].data[serviceIndex] = {
-            id: serviceId,
-            serviceName: serviceName,
-            price: price,
-            duration: duration + ' ' + time,
-          };
-        // } else {
-        //   console.log('didnot found the id');
-        //   if (categoryIndex !== -1) {
-        //     console.log("categoryduplicate val: "+categoryIndex)
-        //     initialData.splice(categoryIndex, 1);
-        //   }
-        //   initialData[index].data.push({
-        //     id: serviceId,
-        //     serviceName: serviceName,
-        //     price: price,
-        //     duration: duration + ' ' + time,
-        //   });
-        // }
-
-        //  const arr = value.data;
-        //  console.log("TEST: "+ JSON.stringify(arr));
-        //  const val = arr.findIndex(element => element.serviceName === serviceName);
-        //  console.log("index of : "+val)
-
-        countCategoryExist++;
-      }
+    if (serviceIndex !== -1) {
+      console.log('service index exist');
+      initialData[index].data[serviceIndex] = {
+        id: serviceId,
+        serviceName: serviceName,
+        price: price,
+        duration: duration + ' ' + time,
+      };
+      countCategoryExist++;
     }
+  }
+}
+        
+  
 
     await docRef.get().then(documentSnapshot => {
       if (!documentSnapshot.exists) {
@@ -371,6 +359,7 @@ const UpdateSalonService = props => {
                 <CategoryList
                   category={categoryTitle}
                   setCategory={itemValue => setCategory(itemValue)}
+                  categoryDisable={true}
                 />
               </FormControl>
             ) : (
@@ -379,6 +368,7 @@ const UpdateSalonService = props => {
                 <CategoryList
                   category={categoryTitle}
                   setCategory={setCategory}
+                  categoryDisable={true}
                 />
                 <FormControl.ErrorMessage
                   leftIcon={<WarningOutlineIcon size="xs" />}>
