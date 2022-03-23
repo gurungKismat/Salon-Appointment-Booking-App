@@ -18,21 +18,24 @@ import auth from '@react-native-firebase/auth';
 import CategoryList from '../components/CategoryList';
 import {useSelector} from 'react-redux';
 import {useDispatch} from 'react-redux';
+import uuid from 'react-native-uuid';
 
 const UpdateSalonService = props => {
   // console.log("service name update: "+props.serviceUpdated.serviceName)
 
   const service = useSelector(state => state.updateService);
 
-  if (service !== undefined) {
-    console.log('service: ' + JSON.stringify(service));
-  }
+  // if (service !== undefined) {
+  //   console.log('service: ' + JSON.stringify(service));
+  // }
 
   const dispatch = useDispatch();
   const toast = useToast();
   const id = 'test-toast';
   const [loading, setLoading] = useState(true);
+  const [serviceId, setServiceId] = useState('');
   const [categoryTitle, setCategoryTitle] = useState('');
+  const [categoryDuplicate, setCategoryDuplicate] = useState('');
   const [serviceName, setServiceName] = useState('');
   const [price, setPrice] = useState('');
   const [duration, setDuration] = useState('');
@@ -74,19 +77,25 @@ const UpdateSalonService = props => {
     setDurationError({isError: false});
   };
 
+  
+
   const saveData = async data => {
     const docRef = firestore()
       .collection('salonServices')
       .doc(auth().currentUser.uid);
 
+    // console.log('categoryDuplicate: ' + categoryDuplicate);
+
     var countCategoryExist = 0;
+    var categoryIndex = -1;
 
     // checks whether the category is already in the data and adds the service in the specific category if exist
     function updateCategory(value, index, initialData) {
+      // console.log('VAlue: ' + JSON.stringify(value));
+
       if (categoryTitle.toLowerCase() === value.categoryTitle.toLowerCase()) {
         const serviceIndex = value.data.findIndex(
-          element =>
-            element.serviceName.toLowerCase() === serviceName.toLowerCase(),
+          element => element.id === serviceId,
         );
         console.log('skinfade index: ' + serviceIndex);
         console.log('CURRENT SERVICE: ' + serviceName);
@@ -94,11 +103,24 @@ const UpdateSalonService = props => {
         if (serviceIndex !== -1) {
           console.log('service index exist');
           initialData[index].data[serviceIndex] = {
+            id: serviceId,
             serviceName: serviceName,
             price: price,
             duration: duration + ' ' + time,
           };
-        }
+        // } else {
+        //   console.log('didnot found the id');
+        //   if (categoryIndex !== -1) {
+        //     console.log("categoryduplicate val: "+categoryIndex)
+        //     initialData.splice(categoryIndex, 1);
+        //   }
+        //   initialData[index].data.push({
+        //     id: serviceId,
+        //     serviceName: serviceName,
+        //     price: price,
+        //     duration: duration + ' ' + time,
+        //   });
+        // }
 
         //  const arr = value.data;
         //  console.log("TEST: "+ JSON.stringify(arr));
@@ -130,16 +152,19 @@ const UpdateSalonService = props => {
 
         // if category already exist add the service name in that category or else add the whole category and service
         if (countCategoryExist === 0) {
+          console.log('UPDATE COUNT CATEGORY ' + countCategoryExist);
           services.push({
             categoryTitle: categoryTitle,
             data: [
               {
+                id: uuid.v4(),
                 serviceName: serviceName,
                 price: price,
                 duration: duration + ' ' + time,
               },
             ],
           });
+          services.splice(categoryIndex,1);
         }
         docRef
           .set({
@@ -172,6 +197,7 @@ const UpdateSalonService = props => {
         categoryTitle: categoryTitle,
         data: [
           {
+            id: uuid.v4(),
             serviceName: serviceName,
             price: price,
             duration: duration + ' ' + time,
@@ -313,6 +339,7 @@ const UpdateSalonService = props => {
     if (service.length > 0) {
       const timeLength = service[0].duration;
       const timeArray = timeLength.split(' ');
+      setServiceId(service[0].serviceId);
       setCategoryTitle(service[0].category);
       setServiceName(service[0].service);
       setPrice(service[0].price);

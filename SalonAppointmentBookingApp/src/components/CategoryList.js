@@ -7,6 +7,7 @@ const CategoryList = props => {
     <Box>
       <Select
         // defaultValue={props.defaultCategory}
+        isDisabled={true}
         selectedValue={props.category}
         minWidth="200"
         accessibilityLabel="Choose Category"

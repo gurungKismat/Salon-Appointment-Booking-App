@@ -61,8 +61,7 @@ const SalonServices = () => {
   // const selector = useSelector(state => state.updateService);
 
   const editService = (header, service, index) => {
-
-    console.log("service: "+JSON.stringify(service))
+    console.log('service: ' + JSON.stringify(service));
     // sectionUpdated = header;
     // serviceUpdated = service;
     // indexUpdated = index;
@@ -79,9 +78,10 @@ const SalonServices = () => {
     dispatch(
       updateService({
         category: header,
+        serviceId: service.id,
         service: service.serviceName,
         price: service.price,
-        duration: service.duration
+        duration: service.duration,
       }),
     );
     setUpdateModal(true);

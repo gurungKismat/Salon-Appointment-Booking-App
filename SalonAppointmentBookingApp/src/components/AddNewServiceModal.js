@@ -16,6 +16,7 @@ import {
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import CategoryList from '../components/CategoryList';
+import uuid from 'react-native-uuid';
 
 const AddNewServiceModal = props => {
   const toast = useToast();
@@ -57,17 +58,13 @@ const AddNewServiceModal = props => {
     setDurationError({isError: false});
   };
   const saveData = async data => {
-    const docRef = firestore()
-      .collection('salonServices')
-      .doc(auth().currentUser.uid);
-
     var countCategoryExist = 0;
-
     // checks whether the category is already in the data and adds the service in the specific category if exist
     function updateCategory(value, index, initialData) {
       if (categoryTitle.toLowerCase() === value.categoryTitle.toLowerCase()) {
         countCategoryExist++;
         initialData[index].data.push({
+          id: uuid.v4(),
           serviceName: serviceName,
           price: price,
           duration: duration + ' ' + time,
@@ -75,46 +72,50 @@ const AddNewServiceModal = props => {
       }
     }
 
+    const docRef = firestore()
+      .collection('salonServices')
+      .doc(auth().currentUser.uid);
+
     await docRef.get().then(documentSnapshot => {
       if (!documentSnapshot.exists) {
         // if the salon service is added for the first time
+        console.log('first time putting data');
         docRef
-          .set(
-            {
-              data: firestore.FieldValue.arrayUnion(data),
-            },
-            // {merge: true},
-          )
+          .set({
+            data: firestore.FieldValue.arrayUnion(data),
+          })
           .then(() => {
             displayToast();
           });
       } else {
         // if the salon services is already added then update the service
+        // console.log('DATA ALREADY EXISTS');
         const servicesList = documentSnapshot.data();
         const services = servicesList.data;
         services.forEach(updateCategory);
 
         // if category already exist add the service name in that category or else add the whole category and service
         if (countCategoryExist === 0) {
+          // console.log('COUNTCATEGORYEXIST VALUE: ' + countCategoryExist);
           services.push({
             categoryTitle: categoryTitle,
             data: [
               {
+                id: uuid.v4(),
                 serviceName: serviceName,
                 price: price,
                 duration: duration + ' ' + time,
               },
             ],
           });
-        } else {
-          docRef
-            .set({
-              data: firestore.FieldValue.arrayUnion(...services),
-            })
-            .then(() => {
-              displayToast();
-            });
         }
+        docRef
+          .set({
+            data: firestore.FieldValue.arrayUnion(...services),
+          })
+          .then(() => {
+            displayToast();
+          });
       }
     });
   };
@@ -139,6 +140,7 @@ const AddNewServiceModal = props => {
         categoryTitle: categoryTitle,
         data: [
           {
+            id: uuid.v4(),
             serviceName: serviceName,
             price: price,
             duration: duration + ' ' + time,
@@ -146,9 +148,6 @@ const AddNewServiceModal = props => {
         ],
       };
       saveData(data);
-      //
-      //  setServicesData(data);
-      // console.log(`Services data: ${JSON.stringify(servicesData)}`);
     }
   };
 
