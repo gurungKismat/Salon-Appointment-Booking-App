@@ -7,7 +7,7 @@ import {
   SectionList,
   TouchableOpacity,
 } from 'react-native';
-import {Heading, Icon, Divider} from 'native-base';
+import {Heading, Icon, Divider, useToast} from 'native-base';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AddNewServiceModal from '../../../components/AddNewServiceModal';
 import firestore from '@react-native-firebase/firestore';
@@ -52,12 +52,16 @@ import {updateService} from '../../../redux/store/features/updateService/updates
 // ];
 
 const SalonServices = () => {
+  const toast = useToast();
+  const id = 'test-toast';
   const [showModal, setShowModal] = useState(false);
   const [showUpdateModal, setUpdateModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [availableServices, setAvailableServices] = useState([]);
   const dispatch = useDispatch();
   const selector = useSelector(state => state.updateService);
+  var currentHeader;
+  var currServiceId;
   // const selector = useSelector(state => state.updateService);
 
   const editService = (header, service, index) => {
@@ -89,6 +93,61 @@ const SalonServices = () => {
     console.log('selector: ' + JSON.stringify(selector));
   };
 
+  // display toast after adding new service
+  const displayToast = () => {
+    if (!toast.isActive(id)) {
+      toast.show({
+        id,
+        title: 'Service Deleted',
+        status: 'success',
+        placement: 'bottom',
+      });
+    }
+  };
+
+  function filterService(value, index, initialService) {
+    console.log('current header: ' + currentHeader);
+    if (currentHeader.toLowerCase() === value.categoryTitle.toLowerCase()) {
+      const serviceIndex = value.data.findIndex(
+        element => element.id === currServiceId,
+      );
+
+      if (serviceIndex !== -1) {
+        initialService[index].data.splice(serviceIndex, 1);
+      }
+    }
+  }
+
+  async function getData(docRef) {
+    await docRef.get().then(documentSnapshot => {
+      if (documentSnapshot.exists) {
+        const servicesList = documentSnapshot.data();
+        const services = servicesList.data;
+        services.forEach(filterService);
+
+        docRef
+          .set({
+            data: firestore.FieldValue.arrayUnion(...services),
+          })
+          .then(() => {
+            displayToast();
+          });
+      }
+    });
+  }
+
+  // deletes the avilable salon services
+  const deleteService = (header, services) => {
+    currentHeader = header;
+    currServiceId = services.id;
+
+    const docRef = firestore()
+      .collection('salonServices')
+      .doc(auth().currentUser.uid);
+
+    getData(docRef);
+  };
+
   const Item = ({service, headers, index}) => {
     // console.log('header: ' + headers);
     // console.log('service: ' + JSON.stringify(service));
@@ -106,10 +165,22 @@ const SalonServices = () => {
               onPress={() => editService(headers, service, index)}
             />
           </View>
-          <Text style={styles.servicePrice}>Price: Rs {service.price}</Text>
-          <Text style={styles.serviceDuration}>
-            Duration: {service.duration}
-          </Text>
+          <View style={styles.deleteServiceRow}>
+            <View>
+              <Text style={styles.servicePrice}>Price: Rs {service.price}</Text>
+              <Text style={styles.serviceDuration}>
+                Duration: {service.duration}
+              </Text>
+            </View>
+            <Icon
+              as={<MaterialCommunityIcon name={'delete'} />}
+              size={7}
+              mr="2"
+              my="5"
+              color="white"
+              onPress={() => deleteService(headers, service)}
+            />
+          </View>
         </View>
       </View>
     );
@@ -120,8 +191,6 @@ const SalonServices = () => {
     .doc(auth().currentUser.uid);
 
   useEffect(() => {
-    // console.log('use effect called');
-
     const fetchServices = docRef.onSnapshot(documentSnapshot => {
       // console.log('result: ' + JSON.stringify(documentSnapshot.data()));
       if (documentSnapshot.exists) {
@@ -258,5 +327,11 @@ const styles = StyleSheet.create({
     marginTop: 4,
     color: 'white',
     fontSize: 15,
+  },
+
+  deleteServiceRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
 });
