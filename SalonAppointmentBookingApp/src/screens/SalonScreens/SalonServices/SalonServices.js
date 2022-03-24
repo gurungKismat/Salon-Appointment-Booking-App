@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,14 @@ import {
   SectionList,
   TouchableOpacity,
 } from 'react-native';
-import {Heading, Icon, Divider, useToast} from 'native-base';
+import {
+  Heading,
+  Icon,
+  Divider,
+  useToast,
+  AlertDialog,
+  Button,
+} from 'native-base';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AddNewServiceModal from '../../../components/AddNewServiceModal';
 import firestore from '@react-native-firebase/firestore';
@@ -52,6 +59,9 @@ import {updateService} from '../../../redux/store/features/updateService/updates
 // ];
 
 const SalonServices = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const onClose = () => setIsOpen(false);
+  const cancelRef = useRef(null);
   const toast = useToast();
   const id = 'test-toast';
   const [showModal, setShowModal] = useState(false);
@@ -114,10 +124,16 @@ const SalonServices = () => {
 
       if (serviceIndex !== -1) {
         initialService[index].data.splice(serviceIndex, 1);
+
+        if (initialService[index].data.length === 0) {
+          console.log('service empty');
+          initialService.splice(index, 1);
+        }
       }
     }
   }
 
+  // gets the data from the document
   async function getData(docRef) {
     await docRef.get().then(documentSnapshot => {
       if (documentSnapshot.exists) {
@@ -134,6 +150,7 @@ const SalonServices = () => {
           });
       }
     });
+    onClose();
   }
 
   // deletes the avilable salon services
@@ -178,9 +195,38 @@ const SalonServices = () => {
               mr="2"
               my="5"
               color="white"
-              onPress={() => deleteService(headers, service)}
+              onPress={() => setIsOpen(!isOpen)}
             />
           </View>
+          <AlertDialog
+            leastDestructiveRef={cancelRef}
+            isOpen={isOpen}
+            onClose={onClose}>
+            <AlertDialog.Content>
+              <AlertDialog.CloseButton />
+              <AlertDialog.Header>Delete Service</AlertDialog.Header>
+              <AlertDialog.Body>
+                This will remove the service. This action cannot be reversed.
+                Deleted data can not be recovered.
+              </AlertDialog.Body>
+              <AlertDialog.Footer>
+                <Button.Group space={2}>
+                  <Button
+                    variant="unstyled"
+                    colorScheme="coolGray"
+                    onPress={onClose}
+                    ref={cancelRef}>
+                    Cancel
+                  </Button>
+                  <Button
+                    colorScheme="danger"
+                    onPress={() => deleteService(headers, service)}>
+                    Delete
+                  </Button>
+                </Button.Group>
+              </AlertDialog.Footer>
+            </AlertDialog.Content>
+          </AlertDialog>
         </View>
       </View>
     );
