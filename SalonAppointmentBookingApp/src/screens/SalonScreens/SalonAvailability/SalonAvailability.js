@@ -101,9 +101,6 @@ const SalonAvailability = () => {
 
   // handles the time selected from the time picker
   const onChangeTime = (event, selectedDate) => {
-    console.log('on change called');
-    console.log('count timer: ' + countTimePickerDisplayed);
-
     if (selectedDate !== undefined) {
       // if (initialTime.length != 0) {
       //   countTimePickerDisplayed = 0;
@@ -111,13 +108,11 @@ const SalonAvailability = () => {
       countTimePickerDisplayed++;
       console.log('time not null');
       if (countTimePickerDisplayed === 1) {
-        console.log('1');
         const currTime = getCurrentTime(selectedDate);
         setInitialTime(currTime);
         // setShowTime(false);
         // setShowTime(true);
       } else if (countTimePickerDisplayed === 2) {
-        console.log('2');
         const currTime = getCurrentTime(selectedDate);
         setEndTime(currTime);
         setShowTime(false);
@@ -126,12 +121,16 @@ const SalonAvailability = () => {
         setShowTime(false);
       }
     } else {
-      console.log('time undefined');
       setShowTime(!showTime);
     }
   };
 
   const footer = () => {
+    // reset the datas in the salon availability screen
+    const resetTime = () => {
+      setInitialTime('');
+      setEndTime('');
+    };
     return (
       <>
         <View>
@@ -166,13 +165,44 @@ const SalonAvailability = () => {
               }}
             </Pressable>
           </View>
-          {initialTime.length > 0 ? (
-            <Text fontSize="lg" color={'indigo.500'}>
-              {`${initialTime} to ${endTime}`}
-            </Text>
-          ) : (
-            <Text />
-          )}
+          <View style={{flexDirection: "row", justifyContent:"space-between", alignItems: "center", marginTop: 5}}>
+            {initialTime.length > 0 ? (
+              <>
+              <Text fontSize="lg" color={'indigo.500'}>
+                {`${initialTime} to ${endTime}`}
+              </Text>
+              <Pressable onPress={() => resetTime()}>
+              {({isPressed}) => {
+                return (
+                  <Box
+                    w="32"
+                    borderWidth="1"
+                    borderColor="coolGray.300"
+                    shadow="3"
+                    bg={isPressed ? 'indigo.300' : 'indigo.500'}
+                    px="3"
+                    py="3"
+                    rounded="24"
+                    style={{
+                      transform: [
+                        {
+                          scale: isPressed ? 0.96 : 1,
+                        },
+                      ],
+                    }}>
+                    <Center>
+                      <Text color={'white'}>Clear Time</Text>
+                    </Center>
+                  </Box>
+                );
+              }}
+            </Pressable>
+              </>
+            ) : (
+              <Text />
+            )}
+            
+          </View>
         </View>
         <View style={{marginTop: 10}}>
           <Divider bg="indigo.100" thickness="3" />
@@ -199,32 +229,6 @@ const SalonAvailability = () => {
                   }}>
                   <Center>
                     <Text color={'white'}>Add</Text>
-                  </Center>
-                </Box>
-              );
-            }}
-          </Pressable>
-          <Pressable>
-            {({isPressed}) => {
-              return (
-                <Box
-                  w="32"
-                  borderWidth="1"
-                  borderColor="coolGray.300"
-                  shadow="3"
-                  bg={isPressed ? 'secondary.400' : 'secondary.500'}
-                  px="3"
-                  py="3"
-                  rounded="8"
-                  style={{
-                    transform: [
-                      {
-                        scale: isPressed ? 0.96 : 1,
-                      },
-                    ],
-                  }}>
-                  <Center>
-                    <Text color={'white'}>Reset</Text>
                   </Center>
                 </Box>
               );
