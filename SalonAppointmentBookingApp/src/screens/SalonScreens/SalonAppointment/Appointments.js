@@ -1,15 +1,19 @@
 import React from 'react';
 import {View, Text, useWindowDimensions, StatusBar} from 'react-native';
 import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
+import EmptyList from '../../../components/EmptyList';
 
 const FirstRoute = () => (
   <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-    <Text style={{color: 'black'}}>First</Text>
+    {/* <Text style={{color: 'black'}}>First</Text> */}
+    <EmptyList message="No Upcoming Appointments" />
   </View>
 );
 
 const SecondRoute = () => (
-  <View style={{flex: 1, backgroundColor: '#673ab7'}} />
+  <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+    <EmptyList message="No Past Appointments" />
+  </View>
 );
 
 const renderScene = SceneMap({

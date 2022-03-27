@@ -5,7 +5,7 @@ import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIc
 import {Icon} from 'native-base';
 import {useNavigation} from '@react-navigation/native';
 import ServiceList from './ServicesList';
-
+import {Rating} from 'react-native-ratings';
 
 const {event, ValueXY} = Animated;
 const scrollY = new ValueXY();
@@ -24,7 +24,33 @@ const CutomHeaderScreen = () => {
   // display the content in the tab views
   const renderContent = x => (
     <View style={styles.contentContiner}>
-      <Text style={styles.contentText}>{x}</Text>
+      <View style={styles.basicInfo}>
+        <Text style={{fontSize: 22, color: 'black', fontWeight: '500'}}>
+          Reaver Salon
+        </Text>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <Rating
+            type="custom"
+            ratingBackgroundColor="silver"
+            tintColor="white"
+            ratingColor="blue"
+            readonly
+            imageSize={24}
+            style={{paddingVertical: 5}}
+          />
+          <Text style={{fontWeight: 'bold', color: 'black', marginStart: 5}}>
+            4.5
+          </Text>
+        </View>
+        <Text style={styles.basicInfoTxt}>Naxal, Kathmandu</Text>
+        <Text style={styles.basicInfoTxt}>Available Time: 9:00 to 5:00</Text>
+      </View>
+      <View style={styles.description}>
+        <Text style={{fontSize: 22, fontWeight: 'bold', color: 'black'}}>
+          About
+        </Text>
+        <Text style={styles.descriptionText}>{x}</Text>
+      </View>
     </View>
   );
 
@@ -50,7 +76,7 @@ const CutomHeaderScreen = () => {
         <View style={styles.headerWrapper}>
           <Icon
             ml="1"
-            size="8"
+            size="7"
             color="white"
             onPress={() => navigation.goBack()}
             as={<MaterialCommunityIcon name="arrow-left" />}
@@ -161,13 +187,36 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   contentContiner: {
-    // height: windowHeight,
+    marginTop: 15,
+    padding: 3,
+    marginBottom: 10,
+  },
+
+  basicInfo: {
+    backgroundColor: 'white',
+    padding: 10,
+    flexDirection: 'column',
+    elevation: 4,
+    borderRadius: 10,
+  },
+
+  basicInfoTxt: {
+    color: 'black',
+    fontSize: 17,
+  },
+
+  descriptionText: {
+    color: 'black',
+    fontSize: 16,
+    marginTop: 5,
+  },
+
+  description: {
     marginTop: 10,
     padding: 10,
-    marginBottom: 70,
-  },
-  contentText: {
-    fontSize: 16,
-    color: 'black',
+    backgroundColor: 'white',
+    borderTopStartRadius: 10,
+    borderTopStartRadius: 10,
+    elevation: 10,
   },
 });

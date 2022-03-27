@@ -7,6 +7,7 @@ import SearchScreen from '../screens/CustomerScreens/Search/Search';
 import AppointmentScreen from '../screens/CustomerScreens/Appointments/Appointment';
 import NotificationScreen from '../screens/CustomerScreens/Notifications/Notification';
 import SalonInfo from '../screens/CustomerScreens/ViewSalonInfo/SalonInfo';
+import CustomerProfile from '../screens/CustomerScreens/CustomerProfile/CustomerProfile';
 import {View, Text} from 'react-native';
 import SelectedServices from "../redux/store/features/service/SelectedService";
 
@@ -70,6 +71,21 @@ const HomeNavigator = () => {
         component={HomeScreen}
         options={{
           title: 'Home',
+          headerStyle: {
+            backgroundColor: '#6200ee',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 20,
+          },
+        }}
+      />
+       <HomeStack.Screen
+        name="CustomerProfile"
+        component={CustomerProfile}
+        options={{
+          title: 'Profile',
           headerStyle: {
             backgroundColor: '#6200ee',
           },
