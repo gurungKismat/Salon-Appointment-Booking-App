@@ -1,31 +1,27 @@
-import React, {useState} from 'react';
-import {useNavigation} from '@react-navigation/native';
+import React, {useState, useEffect} from 'react';
+
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import {
   StatusBar,
   Box,
-  Heading,
   VStack,
   FormControl,
   Input,
   Button,
   Center,
   ScrollView,
-  Link,
   HStack,
   Text,
   WarningOutlineIcon,
-  Icon,
+
 } from 'native-base';
 import AnimatedLoader from 'react-native-animated-loader';
-import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const ProfileSettings = () => {
-  const navigation = useNavigation();
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+
+const ProfileSettings = ({route}) => {
+  const [loading, setLoading] = useState(true);
+  const [loadAnimation, setLoadAnimation] = useState(false);
   const [salonName, setSalonName] = useState('');
   const [address, setAddress] = useState('');
   const [mobileNo, setMobileNo] = useState('');
@@ -51,7 +47,7 @@ const ProfileSettings = () => {
   // display loading animation
   function toggleLoading(value) {
     // console.log('animation visible');
-    setLoading(value);
+    setLoadAnimation(value);
   }
 
   // validate data
@@ -205,7 +201,6 @@ const ProfileSettings = () => {
       return true;
     } else {
       console.log('all wrong');
-      toggleLoading(false);
       return false;
     }
   }
@@ -213,36 +208,25 @@ const ProfileSettings = () => {
   // add new customer
   const updateSalonProfile = () => {
     let success = validateForm();
-    if (success !== true) {
-      console.log('registeration failed');
-      toggleLoading(false);
-      return null;
-    }
-    return auth()
-      .createUserWithEmailAndPassword(about, password)
-      .then(userCredentials => {
-        console.log('User account created & signed in!');
-        firestore().collection('salons').doc(auth().currentUser.uid).set({
-          salonName: salonName,
+    if (success) {
+      firestore()
+        .collection('salons')
+        .doc(auth().currentUser.uid)
+        .update({
           address: address,
           mobileNo: mobileNo,
-          email: about,
-          password,
+          salonName: salonName,
+          about: about,
+        })
+        .then(() => {
+          console.log('User updated!');
+          toggleLoading(false);
+        })
+        .catch(error => {
+          console.error(error);
+          toggleLoading(false);
         });
-        toggleLoading(false);
-        alert('account created');
-      })
-      .catch(error => {
-        if (error.code === 'auth/email-already-in-use') {
-          console.log('That email address is already in use!');
-        }
-
-        if (error.code === 'auth/invalid-email') {
-          console.log('That email address is invalid!');
-        }
-        toggleLoading(false);
-        console.error(error);
-      });
+    }
   };
 
   // clears the text from the input field
@@ -257,12 +241,32 @@ const ProfileSettings = () => {
     setAboutError({isError: false});
   };
 
+  useEffect(() => {
+    console.log('params: ' + JSON.stringify(route.params));
+
+    const paramsDatas = route.params;
+    setSalonName(paramsDatas.salonName);
+    setAddress(paramsDatas.address);
+    setMobileNo(paramsDatas.mobileNo);
+    if (paramsDatas.about !== undefined) {
+      setAbout(paramsDatas.about);
+    }
+
+    if (loading) {
+      setLoading(false);
+    }
+  }, []);
+
+  if (loading) {
+    return null;
+  }
+
   return (
     <ScrollView>
       <StatusBar backgroundColor={'#6200ee'} />
       <Center w="100%">
         <AnimatedLoader
-          visible={loading}
+          visible={loadAnimation}
           overlayColor="rgba(255,255,255,0.75)"
           //   source={require('../../assets/50124-user-profile.json')}
           source={require('../../../assets/50124-user-profile.json')}

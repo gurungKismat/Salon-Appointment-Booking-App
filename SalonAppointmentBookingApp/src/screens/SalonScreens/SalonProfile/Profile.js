@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState,useEffect} from 'react';
 import {
   View,
   Text,
@@ -9,12 +9,14 @@ import {
   ScrollView,
 } from 'react-native';
 import {Image, Divider, Heading, Icon} from 'native-base';
+import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 
 const Profile = () => {
-
+  const [salonInfo, setSalonInfo] = useState();
+  const [loading, setLoading]  = useState(true);
   const navigation = useNavigation();
 
   const signOut = () => {
@@ -23,7 +25,25 @@ const Profile = () => {
       .then(() => console.log('User signed out!'));
   };
 
+  useEffect(() => {
+    console.log('use effect of profile settings');
+    firestore()
+      .collection('salons')
+      .doc(auth().currentUser.uid)
+      .onSnapshot(document => {
+        if (document.exists) {
+          console.log('exist');
+          const salonDatas = document.data();
+          // console.log("salon document data: "+JSON.stringify(salonDatas))
+          setSalonInfo(salonDatas);
+          setLoading(false);
+        }
+      });
+  }, []);
 
+  if (loading) {
+    return null;
+  }
 
   return (
     <View style={styles.mainContainer}>
@@ -42,7 +62,7 @@ const Profile = () => {
               as={<MaterialCommunityIcon name={'camera-plus'} />}
               size={8}
               right={3}
-              color="white"
+              color="muted.200"
               onPress={() => alert('picture upload')}
             />
           </View>
@@ -53,7 +73,9 @@ const Profile = () => {
             <Text style={{color: 'white', fontSize: 18}}>Kapan, Kathmandu</Text>
           </View>
           <View style={styles.topContainerButtons}>
-            <TouchableOpacity style={styles.editProfileBtn} onPress={() => navigation.navigate("ProfileSettings")}>
+            <TouchableOpacity
+              style={styles.editProfileBtn}
+              onPress={() => navigation.navigate('ProfileSettings', salonInfo)}>
               <Text style={{color: 'white'}}>Edit Profile</Text>
             </TouchableOpacity>
             <Divider orientation="vertical" mx="1" />
@@ -75,7 +97,8 @@ const Profile = () => {
             <View style={{flexDirection: 'column'}}>
               <Text style={{color: 'black', fontSize: 17}}>Email</Text>
               <Text style={{color: 'black', fontSize: 17}}>
-                grgkismat78@gmail.com
+                {/* grgkismat78@gmail.com */}
+                {salonInfo.email}
               </Text>
             </View>
           </View>
@@ -89,7 +112,7 @@ const Profile = () => {
             />
             <View style={{flexDirection: 'column'}}>
               <Text style={{color: 'black', fontSize: 17}}>Mobile</Text>
-              <Text style={{color: 'black', fontSize: 17}}>934523234</Text>
+              <Text style={{color: 'black', fontSize: 17}}>{salonInfo.mobileNo}</Text>
             </View>
           </View>
           <Divider bg="light.300" my="3" />
@@ -102,13 +125,15 @@ const Profile = () => {
             />
             <View style={{flexDirection: 'column', paddingHorizontal: 5}}>
               <Text style={{color: 'black', fontSize: 17}}>About</Text>
-              <Text style={{color: 'black', fontSize: 17, textAlign: 'justify'}}>
-                Lorem Ipsum is simply dummy text of the printing and typesetting
+              <Text
+                style={{color: 'black', fontSize: 17, textAlign: 'justify'}}>
+                {/* Lorem Ipsum is simply dummy text of the printing and typesetting
                 industry. Lorem Ipsum has been the industry's standard dummy
                 text ever since the 1500s, when an unknown printer took a galley
                 of type and scrambled it to make a type specimen book. It has
                 survived not only five centuries, but also the leap into
-                electronic typesetting, remaining essentially unchanged.
+                electronic typesetting, remaining essentially unchanged. */}
+                {salonInfo.about}
               </Text>
             </View>
           </View>
