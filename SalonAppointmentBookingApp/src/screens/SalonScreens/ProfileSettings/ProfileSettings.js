@@ -380,7 +380,12 @@ const ProfileSettings = () => {
                   Update Profile
                 </Button>
 
-                <Button w="50%" mt="2" colorScheme="indigo" onPress={clearText}>
+                <Button
+                  w="50%"
+                  mt="2"
+                  variant="solid"
+                  colorScheme="secondary"
+                  onPress={clearText}>
                   Clear text
                 </Button>
               </HStack>
