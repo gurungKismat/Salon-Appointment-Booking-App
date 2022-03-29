@@ -25,11 +25,6 @@ const Item = ({item, index, value, onValueChange}) => {
           onValueChange={onValueChange}
           trackColor={{false: '#e0e7ff', true: '#a5b4fc'}}
           thumbColor={value ? '#6366f1' : '#a5b4fc'}
-
-          // offTrackColor="indigo.100"
-          // onTrackColor="indigo.300"
-          // onThumbColor="indigo.500"
-          // offThumbColor="indigo.300"
         />
       </View>
       <View style={{marginTop: 10}}>

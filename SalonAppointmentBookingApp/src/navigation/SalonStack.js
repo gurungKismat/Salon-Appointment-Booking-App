@@ -9,9 +9,11 @@ import Profile from '../screens/SalonScreens/SalonProfile/Profile';
 import SalonAvailability from '../screens/SalonScreens/SalonAvailability/SalonAvailability';
 import SalonServices from '../screens/SalonScreens/SalonServices/SalonServices';
 import SalonTransactionScreen from '../screens/SalonScreens/SalonTransactionHistory/SalonTransactionHistory';
+import ProfileSettings from '../screens/SalonScreens/ProfileSettings/ProfileSettings';
 
 const Stack = createNativeStackNavigator();
 const HomeStack = createNativeStackNavigator();
+const ProfileStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const HomeNavigator = () => {
@@ -47,7 +49,7 @@ const HomeNavigator = () => {
           },
         }}
       />
-       <HomeStack.Screen
+      <HomeStack.Screen
         name="SalonServices"
         component={SalonServices}
         options={{
@@ -62,7 +64,7 @@ const HomeNavigator = () => {
           },
         }}
       />
-       <HomeStack.Screen
+      <HomeStack.Screen
         name="SalonTransaction"
         component={SalonTransactionScreen}
         options={{
@@ -78,6 +80,44 @@ const HomeNavigator = () => {
         }}
       />
     </HomeStack.Navigator>
+  );
+};
+
+const ProfileNavigator = () => {
+  return (
+    <ProfileStack.Navigator initialRouteName="SalonProfile">
+      <ProfileStack.Screen
+        name="SalonProfile"
+        component={Profile}
+        options={{
+          title: 'Profile',
+          headerStyle: {
+            backgroundColor: '#6200ee',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 20,
+          },
+        }}
+      />
+
+      <ProfileStack.Screen
+        name="ProfileSettings"
+        component={ProfileSettings}
+        options={{
+          title: 'Profile Settings',
+          headerStyle: {
+            backgroundColor: '#6200ee',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 20,
+          },
+        }}
+      />
+    </ProfileStack.Navigator>
   );
 };
 
@@ -144,17 +184,9 @@ const SalonTabScreen = () => {
 
       <Tab.Screen
         name="Profile"
-        component={Profile}
+        component={ProfileNavigator}
         options={{
-          title: 'Profile',
-          headerStyle: {
-            backgroundColor: '#6200ee',
-          },
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-            fontSize: 20,
-          },
+          headerShown: false,
           tabBarLabel: 'Profile',
           tabBarIcon: ({color, size}) => (
             <Icon name="account" color={color} size={size} />
