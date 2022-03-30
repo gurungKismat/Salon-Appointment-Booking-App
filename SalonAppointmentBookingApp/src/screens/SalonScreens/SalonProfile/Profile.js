@@ -1,4 +1,4 @@
-import React, {useState,useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {
   View,
   Text,
@@ -13,17 +13,90 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useNavigation} from '@react-navigation/native';
+import * as ImagePicker from 'react-native-image-picker';
 
 const Profile = () => {
   const [salonInfo, setSalonInfo] = useState();
-  const [loading, setLoading]  = useState(true);
+  const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
+  const [pickerResponse, setPickerResponse] = useState(null);
 
   const signOut = () => {
     auth()
       .signOut()
       .then(() => console.log('User signed out!'));
   };
+
+  // const launchImageLibrary = () => {
+  //   let options = {
+  //     storageOptions: {
+  //       skipBackup: true,
+  //       path: 'images',
+  //     },
+  //   };
+  //   ImagePicker.launchImageLibrary(options, response => {
+  //     console.log('Response = ', response);
+
+  //     if (response.didCancel) {
+  //       console.log('User cancelled image picker');
+  //     } else if (response.error) {
+  //       console.log('ImagePicker Error: ', response.error);
+  //     } else if (response.customButton) {
+  //       console.log('User tapped custom button: ', response.customButton);
+  //       alert(response.customButton);
+  //     } else {
+  //       const source = {uri: response.uri};
+  //       console.log('response', JSON.stringify(response));
+
+  //       const newState = {
+  //         filePath: response,
+  //         fileData: response.data,
+  //         fileUri: response.uri,
+  //       };
+
+  //       setInitialState({
+  //         ...initialState,
+  //         ...newState,
+  //       });
+  //     }
+  //   });
+  // };
+
+  // const onImageLibraryPress = useCallback(() => {
+  //   const options = {
+  //     selectionLimit: 1,
+  //     mediaType: 'photo',
+  //     includeBase64: false,
+  //   };
+  //   ImagePicker.launchImageLibrary(options, setPickerResponse);
+  // }, []);
+
+  const onImageLibraryPress = useCallback(() => {
+    const options = {
+      selectionLimit: 1,
+      mediaType: 'photo',
+      includeBase64: false,
+    };
+    ImagePicker.launchImageLibrary(options, response => {
+      // console.log('response: ' + JSON.stringify(response));
+
+      if (!response.didCancel) {
+        firestore()
+          .collection('salons')
+          .doc(auth().currentUser.uid)
+          .update({
+            salonImage:  response.assets[0].uri
+          })
+          .then(() => {
+            // console.log('Image uploaded!');
+            setPickerResponse(response);
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      }
+    });
+  }, []);
 
   useEffect(() => {
     console.log('use effect of profile settings');
@@ -34,7 +107,7 @@ const Profile = () => {
         if (document.exists) {
           console.log('exist');
           const salonDatas = document.data();
-          // console.log("salon document data: "+JSON.stringify(salonDatas))
+          console.log("salon document data: "+JSON.stringify(salonDatas))
           setSalonInfo(salonDatas);
           setLoading(false);
         }
@@ -51,26 +124,37 @@ const Profile = () => {
       <View style={styles.topContainer}>
         <View style={styles.topItems}>
           <View style={styles.imageStyle}>
-            <Image
-              size={40}
-              borderRadius={100}
-              resizeMode="cover"
-              source={require('../../../assets/icons/gallerydefault.png')}
-              alt={'Salon Profile Picture'}
-            />
+            {salonInfo.salonImage === null || salonInfo.salonImage === undefined? (
+              <Image
+                size={40}
+                borderRadius={100}
+                resizeMode="cover"
+                source={require('../../../assets/icons/gallerydefault.png')}
+                alt={'Salon Profile Picture'}
+              />
+            ) : (
+              <Image
+                size={40}
+                borderRadius={100}
+                resizeMode="cover"
+                source={{uri: salonInfo.salonImage}}
+                alt={'Salon Profile Picture'}
+              />
+            )}
             <Icon
               as={<MaterialCommunityIcon name={'camera-plus'} />}
               size={8}
-              right={3}
+              right={5}
+              top={10}
               color="muted.200"
-              onPress={() => alert('picture upload')}
+              onPress={onImageLibraryPress}
             />
           </View>
           <View style={styles.basicInfo}>
             <Text style={{color: 'white', fontSize: 20, alignSelf: 'center'}}>
-              Black Paradise
+              {salonInfo.salonName}
             </Text>
-            <Text style={{color: 'white', fontSize: 18}}>Kapan, Kathmandu</Text>
+            <Text style={{color: 'white', fontSize: 18}}>{salonInfo.address}</Text>
           </View>
           <View style={styles.topContainerButtons}>
             <TouchableOpacity
@@ -112,7 +196,9 @@ const Profile = () => {
             />
             <View style={{flexDirection: 'column'}}>
               <Text style={{color: 'black', fontSize: 17}}>Mobile</Text>
-              <Text style={{color: 'black', fontSize: 17}}>{salonInfo.mobileNo}</Text>
+              <Text style={{color: 'black', fontSize: 17}}>
+                {salonInfo.mobileNo}
+              </Text>
             </View>
           </View>
           <Divider bg="light.300" my="3" />
@@ -162,6 +248,7 @@ const styles = StyleSheet.create({
   topItems: {
     flexDirection: 'column',
     alignItems: 'center',
+    justifyContent: 'center',
   },
 
   imageStyle: {
@@ -255,3 +342,66 @@ const profileStyle = StyleSheet.create({
     flexDirection: 'column',
   },
 });
+
+// import React, {useState, useCallback} from 'react';
+// import {StyleSheet, View, TouchableOpacity, Text, Image} from 'react-native';
+// import * as ImagePicker from 'react-native-image-picker';
+
+// const Test = () => {
+//   const [pickerResponse, setPickerResponse] = useState(null);
+//   const [visible, setVisible] = useState(false);
+
+//   const onImageLibraryPress = useCallback(() => {
+//     const options = {
+//       selectionLimit: 1,
+//       mediaType: 'photo',
+//       includeBase64: false,
+//     };
+//     ImagePicker.launchImageLibrary(options, setPickerResponse);
+//   }, []);
+
+//   const onCameraPress = React.useCallback(() => {
+//     const options = {
+//       saveToPhotos: true,
+//       mediaType: 'photo',
+//       includeBase64: false,
+//     };
+//     ImagePicker.launchCamera(options, setPickerResponse);
+//   }, []);
+
+//   if (pickerResponse !== null) {
+//     var uri = pickerResponse.assets[0].uri;
+//     console.log("uri: "+uri)
+//   }
+//   return (
+//     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+//       <TouchableOpacity onPress={onImageLibraryPress}>
+//         <Text style={{color: 'black'}}>Select Image</Text>
+//       </TouchableOpacity>
+
+//       <Text style={{color: 'black', marginTop: 20}}>
+//         {JSON.stringify(pickerResponse)}
+//       </Text>
+//       {pickerResponse !== null ? (
+//         <Text style={{color: 'red', marginTop: 20}}>
+//           {JSON.stringify(pickerResponse.assets[0].width)}
+//         </Text>
+//       ) : (
+//         <Text />
+//       )}
+
+//       {pickerResponse !== null ? (
+//         <Image
+//           style={{marginTop: 10, width: 200, height: 200}}
+//           source={{
+//             uri: uri,
+//           }}
+//         />
+//       ) : (
+//         <Text />
+//       )}
+//     </View>
+//   );
+// };
+
+// export default Test;

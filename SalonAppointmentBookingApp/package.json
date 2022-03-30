@@ -23,6 +23,7 @@
     "react": "17.0.2",
     "react-native": "0.67.2",
     "react-native-animated-loader": "^0.0.9",
+    "react-native-image-picker": "^4.7.3",
     "react-native-pager-view": "^5.4.11",
     "react-native-ratings": "^8.1.0",
     "react-native-safe-area-context": "^3.3.2",

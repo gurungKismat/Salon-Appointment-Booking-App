@@ -72,22 +72,9 @@ const SalonServices = () => {
   const selector = useSelector(state => state.updateService);
   var currentHeader;
   var currServiceId;
-  // const selector = useSelector(state => state.updateService);
 
   const editService = (header, service, index) => {
     console.log('service: ' + JSON.stringify(service));
-    // sectionUpdated = header;
-    // serviceUpdated = service;
-    // indexUpdated = index;
-    // console.log('header: ' + header);
-    // console.log('serviceupdated: ' + service.serviceName);
-
-    // dispatch(editService(service));
-
-    // setModal();
-    // console.log("header: "+header);
-    // console.log(JSON.stringify(service))
-    // alert(JSON.stringify(service));
 
     dispatch(
       updateService({

@@ -14,10 +14,8 @@ import {
   HStack,
   Text,
   WarningOutlineIcon,
-
 } from 'native-base';
 import AnimatedLoader from 'react-native-animated-loader';
-
 
 const ProfileSettings = ({route}) => {
   const [loading, setLoading] = useState(true);
@@ -44,6 +42,11 @@ const ProfileSettings = ({route}) => {
     isError: false,
   });
 
+  var newAddress;
+  var newMobileNo;
+  var newSalonName;
+  var newAbout;
+
   // display loading animation
   function toggleLoading(value) {
     // console.log('animation visible');
@@ -54,7 +57,7 @@ const ProfileSettings = ({route}) => {
   function validateForm() {
     let error = 0;
 
-    if (salonName.length === 0) {
+    if (newSalonName.length === 0) {
       // console.log('null');
       error += 1;
       const updated = {
@@ -66,7 +69,7 @@ const ProfileSettings = ({route}) => {
         ...updated,
       });
       // console.log('username error' + JSON.stringify(userNameError));
-    } else if (salonName.length < 3 || salonName.length > 20) {
+    } else if (newSalonName.length < 3 || newSalonName.length > 20) {
       // console.log('short');
       error += 1;
 
@@ -89,7 +92,7 @@ const ProfileSettings = ({route}) => {
       });
     }
 
-    if (address.length == 0) {
+    if (newAddress.length === 0) {
       console.log('null address');
       error += 1;
 
@@ -102,7 +105,7 @@ const ProfileSettings = ({route}) => {
         ...addressError,
         ...updatedValue,
       });
-    } else if (address.length < 3) {
+    } else if (newAddress.length < 3) {
       console.log('length incorrect');
       error += 1;
 
@@ -129,7 +132,7 @@ const ProfileSettings = ({route}) => {
       });
     }
 
-    if (mobileNo.length == 0) {
+    if (newMobileNo.length === 0) {
       console.log('null mobile');
       error += 1;
 
@@ -142,7 +145,7 @@ const ProfileSettings = ({route}) => {
         ...mobileNoError,
         ...updatedValue,
       });
-    } else if (mobileNo.length !== 10 || isNaN(mobileNo)) {
+    } else if (newMobileNo.length !== 10 || isNaN(newMobileNo)) {
       console.log('length incorrect');
       error += 1;
 
@@ -169,7 +172,7 @@ const ProfileSettings = ({route}) => {
       });
     }
 
-    if (about.length === 0) {
+    if (newAbout.length === 0) {
       console.log('about null');
 
       error += 1;
@@ -205,18 +208,28 @@ const ProfileSettings = ({route}) => {
     }
   }
 
+  function removeWhiteSpace() {
+    newAddress = address.trim();
+    newMobileNo = mobileNo.trim();
+    newSalonName = salonName.trim();
+    newAbout = about.trim();
+  }
+
   // add new customer
   const updateSalonProfile = () => {
+    removeWhiteSpace();
     let success = validateForm();
     if (success) {
+      removeWhiteSpace();
+      console.log('newAddress: ' + address);
       firestore()
         .collection('salons')
         .doc(auth().currentUser.uid)
         .update({
-          address: address,
-          mobileNo: mobileNo,
-          salonName: salonName,
-          about: about,
+          address: newAddress,
+          mobileNo: newMobileNo,
+          salonName: newSalonName,
+          about: newAbout,
         })
         .then(() => {
           console.log('User updated!');
@@ -331,6 +344,7 @@ const ProfileSettings = ({route}) => {
                   value={mobileNo}
                   onChangeText={setMobileNo}
                   placeholder="Mobile Number"
+                  keyboardType="numeric"
                 />
                 <FormControl.ErrorMessage
                   leftIcon={<WarningOutlineIcon size="xs" />}>
@@ -344,6 +358,7 @@ const ProfileSettings = ({route}) => {
                   value={mobileNo}
                   onChangeText={setMobileNo}
                   placeholder="Mobile Number"
+                  keyboardType="numeric"
                 />
               </FormControl>
             )}

@@ -46,6 +46,10 @@ const AddNewServiceModal = props => {
     isError: false,
   });
 
+  var newServiceName;
+  var newPrice;
+  var newDuration;
+
   // clears the text from the input field
   const clearText = () => {
     setCategoryTitle('');
@@ -65,9 +69,9 @@ const AddNewServiceModal = props => {
         countCategoryExist++;
         initialData[index].data.push({
           id: uuid.v4(),
-          serviceName: serviceName,
-          price: price,
-          duration: duration + ' ' + time,
+          serviceName: newServiceName,
+          price: newPrice,
+          duration: newDuration + ' ' + time,
         });
       }
     }
@@ -102,9 +106,9 @@ const AddNewServiceModal = props => {
             data: [
               {
                 id: uuid.v4(),
-                serviceName: serviceName,
-                price: price,
-                duration: duration + ' ' + time,
+                serviceName: newServiceName,
+                price: newPrice,
+                duration: newDuration + ' ' + time,
               },
             ],
           });
@@ -132,8 +136,11 @@ const AddNewServiceModal = props => {
     }
   };
 
+  
+
   // add new service to the firestore database
   const addService = () => {
+    removeWhiteSpace();
     const result = isEmpty();
     if (!result) {
       const data = {
@@ -141,15 +148,25 @@ const AddNewServiceModal = props => {
         data: [
           {
             id: uuid.v4(),
-            serviceName: serviceName,
-            price: price,
-            duration: duration + ' ' + time,
+            serviceName: newServiceName,
+            price: newPrice,
+            duration: newDuration + ' ' + time,
           },
         ],
       };
       saveData(data);
     }
   };
+
+
+
+  // removes the whitespace from the textinput 
+  function removeWhiteSpace() {
+    newServiceName = serviceName.trim();
+    newPrice = price.trim();
+    newDuration = duration.trim();
+
+  }
 
   // check if the textinput values are empty or not
   const isEmpty = () => {
@@ -179,7 +196,7 @@ const AddNewServiceModal = props => {
       });
     }
 
-    if (serviceName.length === 0) {
+    if (newServiceName.length === 0) {
       // console.log('servicename empty');
       countError++;
       const newError = {
@@ -203,7 +220,7 @@ const AddNewServiceModal = props => {
       });
     }
 
-    if (price.length === 0) {
+    if (newPrice.length === 0) {
       // console.log('price empty');
       countError++;
       const newError = {
@@ -227,7 +244,7 @@ const AddNewServiceModal = props => {
       });
     }
 
-    if (duration.length === 0) {
+    if (newDuration.length === 0) {
       // console.log('duration empty');
       countError++;
 
