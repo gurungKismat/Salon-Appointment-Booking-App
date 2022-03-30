@@ -10,6 +10,7 @@ import SalonInfo from '../screens/CustomerScreens/ViewSalonInfo/SalonInfo';
 import CustomerProfile from '../screens/CustomerScreens/CustomerProfile/CustomerProfile';
 import {View, Text} from 'react-native';
 import SelectedServices from "../redux/store/features/service/SelectedService";
+import CustomerProfileSettings from "../screens/CustomerScreens/ProfileSettings/ProfileSettings";
 
 const Stack = createNativeStackNavigator();
 const HomeStack = createNativeStackNavigator();
@@ -86,6 +87,21 @@ const HomeNavigator = () => {
         component={CustomerProfile}
         options={{
           title: 'Profile',
+          headerStyle: {
+            backgroundColor: '#6200ee',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 20,
+          },
+        }}
+      />
+      <HomeStack.Screen
+        name="CustomerProfileSettings"
+        component={CustomerProfileSettings}
+        options={{
+          title: 'Profile Settings',
           headerStyle: {
             backgroundColor: '#6200ee',
           },
