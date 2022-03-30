@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {
   VStack,
@@ -21,9 +21,26 @@ import {
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import popularServices from '../../../components/PopularServices';
 import PopularSalons from '../../../components/PopularSalons';
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 
 const HomeUi = () => {
   const navigation = useNavigation();
+
+  useEffect(() => {
+    console.log("use effect of customer home");
+    const fetchSalons = firestore().collection('salons').onSnapshot(querySnapshot => {
+      // console.log("total salons: "+documentSnapshot.size);  
+      querySnapshot.forEach(documentSnapshot => {
+        // console.log("salonid: "+documentSnapshot.id, documentSnapshot.data())
+        
+      })
+    })
+
+    return () => fetchSalons();
+
+  }, [])
+
   return (
     <ScrollView>
       <StatusBar

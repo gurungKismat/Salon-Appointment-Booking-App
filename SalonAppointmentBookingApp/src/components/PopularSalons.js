@@ -14,7 +14,8 @@ import {
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
-const PopularSalons = () => {
+const 
+PopularSalons = () => {
   const navigation = useNavigation();
   return (
     <Pressable onPress={() => navigation.navigate("SalonInfo")}>

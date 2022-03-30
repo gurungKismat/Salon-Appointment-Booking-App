@@ -293,7 +293,7 @@ const SalonRegister = () => {
     return auth()
       .createUserWithEmailAndPassword(email, password)
       .then(userCredentials => {
-        console.log('User account created & signed in!');
+        // console.log('User account created & signed in!');
         firestore().collection('salons').doc(auth().currentUser.uid).set({
           salonName: salonName,
           address: address,
