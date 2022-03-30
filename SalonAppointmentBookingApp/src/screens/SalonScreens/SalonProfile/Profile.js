@@ -14,62 +14,22 @@ import auth from '@react-native-firebase/auth';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useNavigation} from '@react-navigation/native';
 import * as ImagePicker from 'react-native-image-picker';
+import AnimatedLoader from 'react-native-animated-loader';
 
 const Profile = () => {
   const [salonInfo, setSalonInfo] = useState();
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
   const [pickerResponse, setPickerResponse] = useState(null);
+  const [loadAnimation, setLoadAnimation] = useState(false);
 
   const signOut = () => {
+    setLoadAnimation(true);
     auth()
       .signOut()
       .then(() => console.log('User signed out!'));
   };
 
-  // const launchImageLibrary = () => {
-  //   let options = {
-  //     storageOptions: {
-  //       skipBackup: true,
-  //       path: 'images',
-  //     },
-  //   };
-  //   ImagePicker.launchImageLibrary(options, response => {
-  //     console.log('Response = ', response);
-
-  //     if (response.didCancel) {
-  //       console.log('User cancelled image picker');
-  //     } else if (response.error) {
-  //       console.log('ImagePicker Error: ', response.error);
-  //     } else if (response.customButton) {
-  //       console.log('User tapped custom button: ', response.customButton);
-  //       alert(response.customButton);
-  //     } else {
-  //       const source = {uri: response.uri};
-  //       console.log('response', JSON.stringify(response));
-
-  //       const newState = {
-  //         filePath: response,
-  //         fileData: response.data,
-  //         fileUri: response.uri,
-  //       };
-
-  //       setInitialState({
-  //         ...initialState,
-  //         ...newState,
-  //       });
-  //     }
-  //   });
-  // };
-
-  // const onImageLibraryPress = useCallback(() => {
-  //   const options = {
-  //     selectionLimit: 1,
-  //     mediaType: 'photo',
-  //     includeBase64: false,
-  //   };
-  //   ImagePicker.launchImageLibrary(options, setPickerResponse);
-  // }, []);
 
   const onImageLibraryPress = useCallback(() => {
     const options = {
@@ -121,6 +81,14 @@ const Profile = () => {
   return (
     <View style={styles.mainContainer}>
       <StatusBar backgroundColor={'#6200ee'} />
+      <AnimatedLoader
+          visible={loadAnimation}
+          overlayColor="rgba(255,255,255,0.75)"
+            source={require('../../../assets/50124-user-profile.json')}
+          animationStyle={{width: 120, height: 120}}
+          speed={1}>
+          <Text color="black">Updating Salon Profile...</Text>
+        </AnimatedLoader>
       <View style={styles.topContainer}>
         <View style={styles.topItems}>
           <View style={styles.imageStyle}>

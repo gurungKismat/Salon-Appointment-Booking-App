@@ -31,29 +31,11 @@ const LoginForm = () => {
   const [showAlert, setShowAlert] = useState(true);
   const [loading, setLoading] = useState(false);
 
-  const validateDetails = () => {
-    // if (emailId === detail.email && password === detail.password) {
-    //   console.log('success opening home...');
-    // } else if (emailId !== detail.email && password === detail.password) {
-    //   let newMsg = {messge: 'Email Incorrect!!!'};
-    //   setErrorMsg({
-    //     ...errorMsg,
-    //     ...newMsg,
-    //   });
-    //   console.log('Email incorrect!');
-    // } else if (emailId === detail.email && password !== detail.password) {
-    //   let newMsg = {messge: 'Password Incorrect!!!'};
-    //   setErrorMsg({
-    //     ...errorMsg,
-    //     ...newMsg,
-    //   });
-    //   console.log('password incorrect!');
-    // } else {
-    //   console.log('Both incorrect');
-    // }
+  var newEmail;
 
+  const validateDetails = () => {
     auth()
-      .signInWithEmailAndPassword(emailId, password)
+      .signInWithEmailAndPassword(newEmail, password)
       .then(() => {
         setLoading(false);
         console.log('signin success');
@@ -75,11 +57,17 @@ const LoginForm = () => {
       });
   };
 
+  // removes the white space from the text input
+  function removeWhiteSpace() {
+    newEmail = emailId.trim();
+  }
+
   // check if the email and password inputs are empty
   const isEmpty = () => {
     console.log('email id: ' + emailId);
     console.log('password: ' + password);
-    if (emailId.length === 0) {
+    removeWhiteSpace();
+    if (newEmail.length === 0) {
       setShowEmailError(true);
     } else {
       setShowEmailError(false);
@@ -92,8 +80,8 @@ const LoginForm = () => {
     }
 
     // if the email and password input are not empty
-    if (emailId !== '' && password !== '') {
-      setLoading(true)
+    if (newEmail !== '' && password !== '') {
+      setLoading(true);
       validateDetails();
     }
   };
