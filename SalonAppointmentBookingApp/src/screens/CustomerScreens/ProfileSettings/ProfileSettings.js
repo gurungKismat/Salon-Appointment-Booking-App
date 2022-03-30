@@ -27,6 +27,7 @@ import {
   HStack,
   Text,
   WarningOutlineIcon,
+  useToast,
 } from 'native-base';
 import AnimatedLoader from 'react-native-animated-loader';
 
@@ -52,7 +53,9 @@ const ProfileSettings = ({route}) => {
     isError: false,
   });
 
-  var newAddress;
+  const toast = useToast();
+  const id = 'test-toast';
+
   var newMobileNo;
   var newCustomerName;
   var newAbout;
@@ -184,6 +187,18 @@ const ProfileSettings = ({route}) => {
     newAbout = about.trim();
   }
 
+  // display toast after updating customer info
+  const displayToast = () => {
+    if (!toast.isActive(id)) {
+      toast.show({
+        id,
+        title: 'Profile Updated',
+        status: 'success',
+        placement: 'bottom',
+      });
+    }
+  };
+
   // add new customer
   const updateSalonProfile = () => {
     removeWhiteSpace();
@@ -201,10 +216,13 @@ const ProfileSettings = ({route}) => {
         .then(() => {
           console.log('User updated!');
           toggleLoading(false);
+          // display toast after adding new service
+          displayToast();
         })
         .catch(error => {
           console.error(error);
           toggleLoading(false);
+          displayToast();
         });
     }
   };
@@ -220,24 +238,24 @@ const ProfileSettings = ({route}) => {
     setAboutError({isError: false});
   };
 
-    useEffect(() => {
-      // console.log('params: ' + JSON.stringify(route.params));
+  useEffect(() => {
+    // console.log('params: ' + JSON.stringify(route.params));
 
-      const paramsDatas = route.params;
-      setCustomerName(paramsDatas.name);
-      setMobileNo(paramsDatas.mobileNo);
-      if (paramsDatas.about !== undefined) {
-        setAbout(paramsDatas.about);
-      }
-
-      if (loading) {
-        setLoading(false);
-      }
-    }, []);
+    const paramsDatas = route.params;
+    setCustomerName(paramsDatas.name);
+    setMobileNo(paramsDatas.mobileNo);
+    if (paramsDatas.about !== undefined) {
+      setAbout(paramsDatas.about);
+    }
 
     if (loading) {
-      return null;
+      setLoading(false);
     }
+  }, []);
+
+  if (loading) {
+    return null;
+  }
 
   return (
     <ScrollView>
