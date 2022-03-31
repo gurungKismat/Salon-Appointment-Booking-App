@@ -26,15 +26,25 @@ import auth from '@react-native-firebase/auth';
 
 const HomeUi = () => {
   const navigation = useNavigation();
+  const [salonDatas, setSalonDatas] = useState([]);
 
   useEffect(() => {
     console.log("use effect of customer home");
+
+    const salonInfoArray = [];
+
     const fetchSalons = firestore().collection('salons').onSnapshot(querySnapshot => {
       // console.log("total salons: "+documentSnapshot.size);  
       querySnapshot.forEach(documentSnapshot => {
         // console.log("salonid: "+documentSnapshot.id, documentSnapshot.data())
-        
+        // salonInfoArray.push(documentSnapshot.data());
+        const salonId = {salonId: documentSnapshot.id};
+        const salonInfos = documentSnapshot.data();
+        const mergedData = {...salonId,...salonInfos};
+        salonInfoArray.push(mergedData);
       })
+
+      setSalonDatas(salonInfoArray);
     })
 
     return () => fetchSalons();
@@ -135,8 +145,8 @@ const HomeUi = () => {
         {/* card view with pic */}
         <FlatList
           horizontal
-          data={popularServices}
-          renderItem={({item}) => <PopularSalons />}
+          data={salonDatas}
+          renderItem={({item}) => <PopularSalons item={item}/>}
         />
       </VStack>
     </ScrollView>

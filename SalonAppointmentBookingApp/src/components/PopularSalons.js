@@ -13,12 +13,11 @@ import {
 } from 'native-base';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-
-const 
-PopularSalons = () => {
+const PopularSalons = ({item}) => {
+  console.log('flatlist salons data: ' + JSON.stringify(item));
   const navigation = useNavigation();
   return (
-    <Pressable onPress={() => navigation.navigate("SalonInfo")}>
+    <Pressable onPress={() => navigation.navigate('SalonInfo')}>
       <Box
         mx="2"
         maxW="80"
@@ -35,12 +34,21 @@ PopularSalons = () => {
         }}>
         <Box>
           <AspectRatio w="100%" ratio={16 / 9}>
-            <Image
-              source={{
-                uri: 'https://www.holidify.com/images/cmsuploads/compressed/Bangalore_citycover_20190613234056.jpg',
-              }}
-              alt="image"
-            />
+            {item.salonImage === null || item.salonImage === undefined ? (
+              <Image
+                source={{
+                  uri: 'https://www.holidify.com/images/cmsuploads/compressed/Bangalore_citycover_20190613234056.jpg',
+                }}
+                alt="image"
+              />
+            ) : (
+              <Image
+                source={{
+                  uri: item.salonImage,
+                }}
+                alt="image"
+              />
+            )}
           </AspectRatio>
           <Center
             bg="violet.500"
@@ -56,13 +64,14 @@ PopularSalons = () => {
             bottom="0"
             px="3"
             py="1.5">
-            PHOTO
+            SALON
           </Center>
         </Box>
-        <Stack p="4" space={2}>
+        <Stack p="4" space={1}>
           <Stack space={2} direction="row" justifyContent="space-between">
             <Heading size="sm" ml="-1">
-              Reaver
+              {/* Reaver */}
+              {item.salonName}
             </Heading>
 
             <Stack direction="row" space={2}>
@@ -77,10 +86,12 @@ PopularSalons = () => {
           </Stack>
           <Stack>
             <Text fontWeight="400" fontSize="xs">
-              Kapan, Kathmandu
+              {/* Kapan, Kathmandu */}
+              {item.address}
             </Text>
             <Text fontWeight="400" fontSize="xs">
-              98324234234
+              {/* 98324234234 */}
+              {item.mobileNo}
             </Text>
           </Stack>
         </Stack>

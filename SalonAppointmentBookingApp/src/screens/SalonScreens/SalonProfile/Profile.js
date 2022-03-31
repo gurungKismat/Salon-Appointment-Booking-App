@@ -15,6 +15,7 @@ import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIc
 import {useNavigation} from '@react-navigation/native';
 import * as ImagePicker from 'react-native-image-picker';
 import AnimatedLoader from 'react-native-animated-loader';
+import storage from '@react-native-firebase/storage';
 
 const Profile = () => {
   const [salonInfo, setSalonInfo] = useState();
@@ -22,6 +23,7 @@ const Profile = () => {
   const navigation = useNavigation();
   const [pickerResponse, setPickerResponse] = useState(null);
   const [loadAnimation, setLoadAnimation] = useState(false);
+  const [downloadUrl, setDownloadUrl] = useState(null);
 
   const signOut = () => {
     setLoadAnimation(true);
@@ -30,6 +32,84 @@ const Profile = () => {
       .then(() => console.log('User signed out!'));
   };
 
+  // uploads the image to firebase storage
+  async function uploadsalonImage(response) {
+    const imageUri = response.assets[0].uri;
+    // console.log('image Uri: ' + imageUri);
+    const filename = response.assets[0].fileName;
+    // console.log('file name: ' + filename);
+    // const reference = storage().ref(filename);
+    const reference = storage().ref().child("/salonImages").child(filename);
+
+    console.log('reference: ' + reference);
+    try {
+      // await firestore()
+      //   .collection('salons')
+      //   .doc(auth().currentUser.uid)
+      //   .get()
+      //   .then(document => {
+      //     const imgRef = document.data().salonImage;
+      //     console.log('imgref: ' + imgRef);
+
+      //     if (imgRef != undefined) {
+      //       console.log('img ref not null');
+      //       console.log(
+      //         'ref from store: ' +
+      //           ' gs://salon-appointment-booking-app.appspot.com/' +
+      //           imgRef,
+      //       );
+      //       storage()
+      //         .ref(' gs://salon-appointment-booking-app.appspot.com/' + imgRef)
+      //         .delete()
+      //         .then(() => {
+      //           console.log('reference deleted');
+      //         });
+      //     }else {
+      //       console.log("not undfined")
+      //     }
+      //   });
+
+      await firestore()
+        .collection('salons')
+        .doc(auth().currentUser.uid)
+        .get()
+        .then(documentSnapshot => {
+          if (documentSnapshot.exists) {
+            const salonData = documentSnapshot.data();
+            console.log('slaon data: ' + JSON.stringify(salonData));
+            if (salonData.salonImage != undefined) {
+              console.log('not udefined');
+              console.log('initial refernece: ' + reference);
+              console.log('ending refernece: ' + salonData.salonImage);
+              const ref = storage().refFromURL(salonData.salonImage);
+              
+              ref.delete().then(() => {
+                console.log('image deleted');
+              });
+            } else {
+              console.log('data udefined');
+            }
+          }
+        });
+
+      const task = reference.putFile(imageUri);
+      task.then(async () => {
+        await firestore()
+          .collection('salons')
+          .doc(auth().currentUser.uid)
+          .update({
+            salonImage: reference.toString(),
+          });
+        // getImageUrl(reference);
+        // console.log('image uploaded');
+        const downloadURL = await reference.getDownloadURL();
+        // console.log('donwload url : ' + downloadURL);
+        setDownloadUrl(downloadURL);
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  }
 
   const onImageLibraryPress = useCallback(() => {
     const options = {
@@ -38,22 +118,25 @@ const Profile = () => {
       includeBase64: false,
     };
     ImagePicker.launchImageLibrary(options, response => {
-      // console.log('response: ' + JSON.stringify(response));
+      console.log('response: ' + JSON.stringify(response));
 
       if (!response.didCancel) {
-        firestore()
-          .collection('salons')
-          .doc(auth().currentUser.uid)
-          .update({
-            salonImage:  response.assets[0].uri
-          })
-          .then(() => {
-            // console.log('Image uploaded!');
-            setPickerResponse(response);
-          })
-          .catch(error => {
-            console.error(error);
-          });
+        // firestore()
+        //   .collection('salons')
+        //   .doc(auth().currentUser.uid)
+        //   .update({
+        //     // salonImage:  response.assets[0].uri
+        //   })
+        //   .then(() => {
+        //     // console.log('Image uploaded!');
+        //     setPickerResponse(response);
+        //   })
+        //   .catch(error => {
+        //     console.error(error);
+        //   });
+
+        // const imageUri = response.assets[0].uri;
+        uploadsalonImage(response);
       }
     });
   }, []);
@@ -67,7 +150,7 @@ const Profile = () => {
         if (document.exists) {
           console.log('exist');
           const salonDatas = document.data();
-          console.log("salon document data: "+JSON.stringify(salonDatas))
+          console.log('salon document data: ' + JSON.stringify(salonDatas));
           setSalonInfo(salonDatas);
           setLoading(false);
         }
@@ -82,17 +165,17 @@ const Profile = () => {
     <View style={styles.mainContainer}>
       <StatusBar backgroundColor={'#6200ee'} />
       <AnimatedLoader
-          visible={loadAnimation}
-          overlayColor="rgba(255,255,255,0.75)"
-            source={require('../../../assets/50124-user-profile.json')}
-          animationStyle={{width: 120, height: 120}}
-          speed={1}>
-          <Text color="black">Updating Salon Profile...</Text>
-        </AnimatedLoader>
+        visible={loadAnimation}
+        overlayColor="rgba(255,255,255,0.75)"
+        source={require('../../../assets/50124-user-profile.json')}
+        animationStyle={{width: 120, height: 120}}
+        speed={1}>
+        <Text color="black">Updating Salon Profile...</Text>
+      </AnimatedLoader>
       <View style={styles.topContainer}>
         <View style={styles.topItems}>
           <View style={styles.imageStyle}>
-            {salonInfo.salonImage === null || salonInfo.salonImage === undefined? (
+            {downloadUrl === null ? (
               <Image
                 size={40}
                 borderRadius={100}
@@ -105,7 +188,7 @@ const Profile = () => {
                 size={40}
                 borderRadius={100}
                 resizeMode="cover"
-                source={{uri: salonInfo.salonImage}}
+                source={{uri: downloadUrl}}
                 alt={'Salon Profile Picture'}
               />
             )}
@@ -122,7 +205,9 @@ const Profile = () => {
             <Text style={{color: 'white', fontSize: 20, alignSelf: 'center'}}>
               {salonInfo.salonName}
             </Text>
-            <Text style={{color: 'white', fontSize: 18}}>{salonInfo.address}</Text>
+            <Text style={{color: 'white', fontSize: 18}}>
+              {salonInfo.address}
+            </Text>
           </View>
           <View style={styles.topContainerButtons}>
             <TouchableOpacity
