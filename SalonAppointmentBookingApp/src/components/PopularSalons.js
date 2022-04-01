@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {
   Box,
@@ -12,10 +12,38 @@ import {
   Icon,
 } from 'native-base';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import firestore from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage';
 
 const PopularSalons = ({item}) => {
   console.log('flatlist salons data: ' + JSON.stringify(item));
   const navigation = useNavigation();
+  const [imageUri, setImageUri] = useState(null);
+
+  const getImageUrl = () => {
+    firestore()
+      .collection('salons')
+      .doc(item.salonId)
+      .get()
+      .then(async documentSanpshot => {
+        if (documentSanpshot.exists) {
+          const url = documentSanpshot.data().salonImage;
+          console.log('image url : ' + url);
+
+          if (url !== undefined) {
+            console.log('image exist');
+            const reference = storage().ref().child('/salonImages').child(url);
+            const downloadUrl = await reference.getDownloadURL();
+            setImageUri(downloadUrl);
+          } else {
+            console.log('image undefined');
+          }
+        }
+      });
+  };
+
+  getImageUrl();
+
   return (
     <Pressable onPress={() => navigation.navigate('SalonInfo')}>
       <Box
@@ -34,7 +62,7 @@ const PopularSalons = ({item}) => {
         }}>
         <Box>
           <AspectRatio w="100%" ratio={16 / 9}>
-            {item.salonImage === null || item.salonImage === undefined ? (
+            {imageUri === null ? (
               <Image
                 source={{
                   uri: 'https://www.holidify.com/images/cmsuploads/compressed/Bangalore_citycover_20190613234056.jpg',
@@ -44,7 +72,8 @@ const PopularSalons = ({item}) => {
             ) : (
               <Image
                 source={{
-                  uri: item.salonImage,
+                  uri: imageUri,
+                  // uri: 'https://www.holidify.com/images/cmsuploads/compressed/Bangalore_citycover_20190613234056.jpg',
                 }}
                 alt="image"
               />

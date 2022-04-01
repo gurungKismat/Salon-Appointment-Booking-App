@@ -22,10 +22,11 @@ import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIc
 import popularServices from '../../../components/PopularServices';
 import PopularSalons from '../../../components/PopularSalons';
 import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
+
 
 const HomeUi = () => {
   const navigation = useNavigation();
+  const [loading, setLoading] = useState(true);
   const [salonDatas, setSalonDatas] = useState([]);
 
   useEffect(() => {
@@ -45,11 +46,18 @@ const HomeUi = () => {
       })
 
       setSalonDatas(salonInfoArray);
+      if (loading) {
+        setLoading(false);
+      }
     })
 
     return () => fetchSalons();
 
   }, [])
+
+  if (loading) {
+    return null;
+  }
 
   return (
     <ScrollView>

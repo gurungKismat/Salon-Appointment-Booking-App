@@ -25,11 +25,18 @@ const Profile = () => {
   const [loadAnimation, setLoadAnimation] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState(null);
 
+  // logout user from their account
   const signOut = () => {
     setLoadAnimation(true);
     auth()
       .signOut()
       .then(() => console.log('User signed out!'));
+  };
+
+  // get the image url
+  const getImageUrl = async reference => {
+    const iamgeDownloadUrl = await reference.getDownloadURL();
+    setDownloadUrl(iamgeDownloadUrl);
   };
 
   // uploads the image to firebase storage
@@ -39,36 +46,10 @@ const Profile = () => {
     const filename = response.assets[0].fileName;
     // console.log('file name: ' + filename);
     // const reference = storage().ref(filename);
-    const reference = storage().ref().child("/salonImages").child(filename);
+    const reference = storage().ref().child('/salonImages').child(filename);
 
-    console.log('reference: ' + reference);
+    // console.log('reference: ' + reference);
     try {
-      // await firestore()
-      //   .collection('salons')
-      //   .doc(auth().currentUser.uid)
-      //   .get()
-      //   .then(document => {
-      //     const imgRef = document.data().salonImage;
-      //     console.log('imgref: ' + imgRef);
-
-      //     if (imgRef != undefined) {
-      //       console.log('img ref not null');
-      //       console.log(
-      //         'ref from store: ' +
-      //           ' gs://salon-appointment-booking-app.appspot.com/' +
-      //           imgRef,
-      //       );
-      //       storage()
-      //         .ref(' gs://salon-appointment-booking-app.appspot.com/' + imgRef)
-      //         .delete()
-      //         .then(() => {
-      //           console.log('reference deleted');
-      //         });
-      //     }else {
-      //       console.log("not undfined")
-      //     }
-      //   });
-
       await firestore()
         .collection('salons')
         .doc(auth().currentUser.uid)
@@ -76,18 +57,19 @@ const Profile = () => {
         .then(documentSnapshot => {
           if (documentSnapshot.exists) {
             const salonData = documentSnapshot.data();
-            console.log('slaon data: ' + JSON.stringify(salonData));
+            // console.log('slaon data: ' + JSON.stringify(salonData));
             if (salonData.salonImage != undefined) {
-              console.log('not udefined');
-              console.log('initial refernece: ' + reference);
-              console.log('ending refernece: ' + salonData.salonImage);
-              const ref = storage().refFromURL(salonData.salonImage);
-              
+              // console.log('not udefined');
+              // console.log('initial refernece: ' + reference);
+              // console.log('ending refernece: ' + salonData.salonImage);
+              const ref = storage().refFromURL(
+                'gs://salon-appointment-booking-app.appspot.com/salonImages/' +
+                  salonData.salonImage,
+              );
+
               ref.delete().then(() => {
                 console.log('image deleted');
               });
-            } else {
-              console.log('data udefined');
             }
           }
         });
@@ -98,13 +80,12 @@ const Profile = () => {
           .collection('salons')
           .doc(auth().currentUser.uid)
           .update({
-            salonImage: reference.toString(),
+            salonImage: filename.toString(),
           });
         // getImageUrl(reference);
-        // console.log('image uploaded');
         const downloadURL = await reference.getDownloadURL();
-        // console.log('donwload url : ' + downloadURL);
         setDownloadUrl(downloadURL);
+        // console.log('donwload url : ' + downloadURL);
       });
     } catch (e) {
       console.error(e);
@@ -152,7 +133,19 @@ const Profile = () => {
           const salonDatas = document.data();
           console.log('salon document data: ' + JSON.stringify(salonDatas));
           setSalonInfo(salonDatas);
-          setLoading(false);
+          if (
+            salonDatas.salonImage !== null ||
+            salonDatas.salonImage !== undefined
+          ) {
+            const reference = storage()
+              .ref()
+              .child('/salonImages')
+              .child(salonDatas.salonImage);
+            getImageUrl(reference);
+          }
+          if (loading) {
+            setLoading(false);
+          }
         }
       });
   }, []);
@@ -175,7 +168,7 @@ const Profile = () => {
       <View style={styles.topContainer}>
         <View style={styles.topItems}>
           <View style={styles.imageStyle}>
-            {downloadUrl === null ? (
+            {downloadUrl === null || downloadUrl === undefined ? (
               <Image
                 size={40}
                 borderRadius={100}
