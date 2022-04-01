@@ -15,6 +15,7 @@ import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIc
 import {useNavigation} from '@react-navigation/native';
 import * as ImagePicker from 'react-native-image-picker';
 import AnimatedLoader from 'react-native-animated-loader';
+import storage from '@react-native-firebase/storage';
 
 const CustomerProfile = () => {
   const [customerInfo, setCustomerInfo] = useState(null);
@@ -22,12 +23,68 @@ const CustomerProfile = () => {
   const navigation = useNavigation();
   const [pickerResponse, setPickerResponse] = useState(null);
   const [loadAnimation, setLoadAnimation] = useState(false);
+  const [downloadURL, setDownloadUrl] = useState(undefined);
 
   const signOut = () => {
     setLoadAnimation(true);
     auth()
       .signOut()
       .then(() => console.log('User signed out!'));
+  };
+
+  const uploadCustomerImage = async response => {
+    const imageUri = response.assets[0].uri;
+    // console.log('image Uri: ' + imageUri);
+    const filename = response.assets[0].fileName;
+    // console.log('file name: ' + filename);
+    // const reference = storage().ref(filename);
+    const reference = storage()
+      .ref()
+      .child('/customerProfilePicture')
+      .child(filename);
+
+    // console.log('reference: ' + reference);
+    try {
+      await firestore()
+        .collection('customers')
+        .doc(auth().currentUser.uid)
+        .get()
+        .then(documentSnapshot => {
+          if (documentSnapshot.exists) {
+            const customerData = documentSnapshot.data();
+            // console.log('slaon data: ' + JSON.stringify(salonData));
+            if (customerData.customerImage != undefined) {
+              // console.log('not udefined');
+              // console.log('initial refernece: ' + reference);
+              // console.log('ending refernece: ' + salonData.salonImage);
+              const ref = storage().refFromURL(
+                'gs://salon-appointment-booking-app.appspot.com/customerProfilePicture/' +
+                  customerData.customerImage,
+              );
+
+              ref.delete().then(() => {
+                console.log('image deleted');
+              });
+            }
+          }
+        });
+
+      const task = reference.putFile(imageUri);
+      task.then(async () => {
+        await firestore()
+          .collection('customers')
+          .doc(auth().currentUser.uid)
+          .update({
+            customerImage: filename.toString(),
+          });
+        // getImageUrl(reference);
+        const downloadURL = await reference.getDownloadURL();
+        setDownloadUrl(downloadURL);
+        // console.log('donwload url : ' + downloadURL);
+      });
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const onImageLibraryPress = useCallback(() => {
@@ -40,22 +97,30 @@ const CustomerProfile = () => {
       // console.log('response: ' + JSON.stringify(response));
 
       if (!response.didCancel) {
-        firestore()
-          .collection('customers')
-          .doc(auth().currentUser.uid)
-          .update({
-            salonImage: response.assets[0].uri,
-          })
-          .then(() => {
-            console.log('Image uploaded!');
-            // setPickerResponse(response);
-          })
-          .catch(error => {
-            console.error(error);
-          });
+        //   firestore()
+        //     .collection('customers')
+        //     .doc(auth().currentUser.uid)
+        //     .update({
+        //       salonImage: response.assets[0].uri,
+        //     })
+        //     .then(() => {
+        //       console.log('Image uploaded!');
+        //       // setPickerResponse(response);
+        //     })
+        //     .catch(error => {
+        //       console.error(error);
+        //     });
+        // }
+
+        uploadCustomerImage(response);
       }
     });
   }, []);
+
+  const getImageUrl = async reference => {
+    const imgDownloadUrl = await reference.getDownloadURL();
+    setDownloadUrl(imgDownloadUrl);
+  };
 
   useEffect(() => {
     console.log('use effect of customer profile');
@@ -70,6 +135,13 @@ const CustomerProfile = () => {
             'customer document data: ' + JSON.stringify(customerDatas),
           );
           setCustomerInfo(customerDatas);
+          if (customerDatas.customerImage !== undefined) {
+            const reference = storage()
+              .ref()
+              .child('/customerProfilePicture')
+              .child(customerDatas.customerImage);
+              getImageUrl(reference);
+          }
           if (loading) {
             setLoading(false);
           }
@@ -87,8 +159,7 @@ const CustomerProfile = () => {
       <View style={styles.topContainer}>
         <View style={styles.topItems}>
           <View style={styles.imageStyle}>
-            {customerInfo.salonImage === null ||
-            customerInfo.salonImage === undefined ? (
+            {downloadURL === undefined ? (
               <Image
                 size={40}
                 borderRadius={100}
@@ -101,7 +172,7 @@ const CustomerProfile = () => {
                 size={40}
                 borderRadius={100}
                 resizeMode="cover"
-                source={{uri: customerInfo.salonImage}}
+                source={{uri: downloadURL}}
                 alt={'Salon Profile Picture'}
               />
             )}

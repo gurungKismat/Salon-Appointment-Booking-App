@@ -11,6 +11,7 @@ import {
   Stack,
   Icon,
 } from 'native-base';
+import {TouchableOpacity} from "react-native";
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
@@ -45,7 +46,7 @@ const PopularSalons = ({item}) => {
   getImageUrl();
 
   return (
-    <Pressable onPress={() => navigation.navigate('SalonInfo')}>
+    <TouchableOpacity onPress={() => navigation.navigate('SalonInfo')}>
       <Box
         mx="2"
         maxW="80"
@@ -125,7 +126,7 @@ const PopularSalons = ({item}) => {
           </Stack>
         </Stack>
       </Box>
-    </Pressable>
+    </TouchableOpacity>
   );
 };
 

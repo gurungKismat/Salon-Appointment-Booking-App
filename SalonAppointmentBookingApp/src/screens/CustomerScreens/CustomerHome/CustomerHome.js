@@ -18,42 +18,74 @@ import {
   Pressable,
   StatusBar,
 } from 'native-base';
+import {TouchableOpacity} from "react-native";
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import popularServices from '../../../components/PopularServices';
 import PopularSalons from '../../../components/PopularSalons';
 import firestore from '@react-native-firebase/firestore';
-
+import auth from '@react-native-firebase/auth';
+import storage from '@react-native-firebase/storage';
 
 const HomeUi = () => {
   const navigation = useNavigation();
   const [loading, setLoading] = useState(true);
   const [salonDatas, setSalonDatas] = useState([]);
+  const [customerDatas, setCustomerDatas] = useState(null);
+  const [customerAvatar, setCustomerAvatar] = useState(null);
+
+  const getAvatar = async customerImg => {
+    const reference = storage()
+      .ref()
+      .child('/customerProfilePicture')
+      .child(customerImg);
+    const downloadUrl = await reference.getDownloadURL();
+    setCustomerAvatar(downloadUrl);
+  };
 
   useEffect(() => {
-    console.log("use effect of customer home");
+    console.log('use effect customer data');
+    const fetchCustomerData = firestore()
+      .collection('customers')
+      .doc(auth().currentUser.uid)
+      .onSnapshot(documentSnapshot => {
+        if (documentSnapshot.exists) {
+          setCustomerDatas(documentSnapshot.data());
+          const customerImg = documentSnapshot.data().customerImage;
+          if (customerImg !== undefined) {
+            getAvatar(customerImg);
+          }
+        }
+      });
+
+    return () => fetchCustomerData();
+  }, []);
+
+  useEffect(() => {
+    console.log('use effect of customer home salon datas');
 
     const salonInfoArray = [];
 
-    const fetchSalons = firestore().collection('salons').onSnapshot(querySnapshot => {
-      // console.log("total salons: "+documentSnapshot.size);  
-      querySnapshot.forEach(documentSnapshot => {
-        // console.log("salonid: "+documentSnapshot.id, documentSnapshot.data())
-        // salonInfoArray.push(documentSnapshot.data());
-        const salonId = {salonId: documentSnapshot.id};
-        const salonInfos = documentSnapshot.data();
-        const mergedData = {...salonId,...salonInfos};
-        salonInfoArray.push(mergedData);
-      })
+    const fetchSalons = firestore()
+      .collection('salons')
+      .onSnapshot(querySnapshot => {
+        // console.log("total salons: "+documentSnapshot.size);
+        querySnapshot.forEach(documentSnapshot => {
+          // console.log("salonid: "+documentSnapshot.id, documentSnapshot.data())
+          // salonInfoArray.push(documentSnapshot.data());
+          const salonId = {salonId: documentSnapshot.id};
+          const salonInfos = documentSnapshot.data();
+          const mergedData = {...salonId, ...salonInfos};
+          salonInfoArray.push(mergedData);
+        });
 
-      setSalonDatas(salonInfoArray);
-      if (loading) {
-        setLoading(false);
-      }
-    })
+        setSalonDatas(salonInfoArray);
+        if (loading) {
+          setLoading(false);
+        }
+      });
 
     return () => fetchSalons();
-
-  }, [])
+  }, []);
 
   if (loading) {
     return null;
@@ -61,24 +93,32 @@ const HomeUi = () => {
 
   return (
     <ScrollView>
-      <StatusBar
-        backgroundColor={"#6200ee"}
-      />
+      <StatusBar backgroundColor={'#6200ee'} />
       <VStack space={5} mt={8} mb={5}>
         <HStack justifyContent={'space-between'}>
           <Center>
-            <Heading size={'md'}>Hi Kismat</Heading>
+            {customerDatas && (
+              <Heading size={'md'}>{`Hi ${customerDatas.name}`}</Heading>
+            )}
           </Center>
           <Center>
-            <Pressable onPress={() => navigation.navigate("CustomerProfile")}>
-            <Avatar
-              bg="indigo.500"
-              source={{
-                uri: 'https://images.unsplash.com/photo-1614289371518-722f2615943d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80',
-              }}>
-              KG
-            </Avatar>
-            </Pressable>
+            <TouchableOpacity onPress={() => navigation.navigate('CustomerProfile')}>
+              {customerDatas.customerImage === undefined ? (
+                <Avatar bg="#6200ee" mr="1" source={{
+                  uri: "https://bit.ly/broken-link"
+                }}>
+                  {customerDatas.name.charAt(0)}
+                </Avatar>
+              ) : (
+                <Avatar
+                  bg="indigo.500"
+                  source={{
+                    uri: customerAvatar,
+                  }}>
+                     {customerDatas.name.charAt(0)}
+                </Avatar>
+              )}
+            </TouchableOpacity>
           </Center>
         </HStack>
         <Center>
@@ -113,7 +153,7 @@ const HomeUi = () => {
           horizontal
           data={popularServices}
           renderItem={({item}) => (
-            <Pressable onPress={() => alert('clicked')}>
+            <TouchableOpacity onPress={() => alert('clicked')}>
               <Box
                 mx="2"
                 size={40}
@@ -141,7 +181,7 @@ const HomeUi = () => {
                   </Heading>
                 </Center>
               </Box>
-            </Pressable>
+            </TouchableOpacity>
           )}
         />
 
@@ -154,7 +194,7 @@ const HomeUi = () => {
         <FlatList
           horizontal
           data={salonDatas}
-          renderItem={({item}) => <PopularSalons item={item}/>}
+          renderItem={({item}) => <PopularSalons item={item} />}
         />
       </VStack>
     </ScrollView>
