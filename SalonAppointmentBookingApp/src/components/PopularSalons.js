@@ -17,7 +17,7 @@ import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 
 const PopularSalons = ({item}) => {
-  console.log('flatlist salons data: ' + JSON.stringify(item));
+  // console.log('flatlist salons data: ' + JSON.stringify(item));
   const navigation = useNavigation();
   const [imageUri, setImageUri] = useState(null);
 
@@ -46,7 +46,10 @@ const PopularSalons = ({item}) => {
   getImageUrl();
 
   return (
-    <TouchableOpacity onPress={() => navigation.navigate('SalonInfo')}>
+    <TouchableOpacity onPress={() => navigation.navigate('SalonInfo', {
+      salonInfo: item,
+      salonImage: imageUri
+    })}>
       <Box
         mx="2"
         maxW="80"

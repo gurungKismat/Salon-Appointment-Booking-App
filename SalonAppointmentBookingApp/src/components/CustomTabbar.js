@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useEffect, useState} from 'react';
 import {View, Dimensions, Animated, StyleSheet, Text} from 'react-native';
 import StickyParallaxHeader from 'react-native-sticky-parallax-header';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -6,6 +6,8 @@ import {Icon} from 'native-base';
 import {useNavigation} from '@react-navigation/native';
 import ServiceList from './ServicesList';
 import {Rating} from 'react-native-ratings';
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 
 const {event, ValueXY} = Animated;
 const scrollY = new ValueXY();
@@ -18,7 +20,12 @@ const text = {
   appearances: 'Appearances',
 };
 
-const CutomHeaderScreen = () => {
+const CutomHeaderScreen = ({data}) => {
+  const {salonInfo, salonImage} = data.params;
+  const [loading, setLoading] = useState(true);
+  const [availableTime, setAvailableTime] = useState("");
+  console.log("custom header: "+JSON.stringify(salonInfo))
+
   const navigation = useNavigation();
 
   // display the content in the tab views
@@ -26,7 +33,8 @@ const CutomHeaderScreen = () => {
     <View style={styles.contentContiner}>
       <View style={styles.basicInfo}>
         <Text style={{fontSize: 22, color: 'black', fontWeight: '500'}}>
-          Reaver Salon
+          {/* Reaver Salon */}
+          {salonInfo.salonName}
         </Text>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <Rating
@@ -42,14 +50,14 @@ const CutomHeaderScreen = () => {
             4.5
           </Text>
         </View>
-        <Text style={styles.basicInfoTxt}>Naxal, Kathmandu</Text>
-        <Text style={styles.basicInfoTxt}>Available Time: 9:00 to 5:00</Text>
+        <Text style={styles.basicInfoTxt}>{salonInfo.address}</Text>
+        <Text style={styles.basicInfoTxt}>Available Time: {availableTime}</Text>
       </View>
       <View style={styles.description}>
         <Text style={{fontSize: 22, fontWeight: 'bold', color: 'black'}}>
           About
         </Text>
-        <Text style={styles.descriptionText}>{x}</Text>
+        <Text style={styles.descriptionText}>{salonInfo.about}</Text>
       </View>
     </View>
   );
@@ -87,15 +95,35 @@ const CutomHeaderScreen = () => {
     );
   };
 
+  useEffect(() => {
+    console.log("customer tabbar useeffect")
+    firestore().collection("salonProfile").doc(salonInfo.salonId).onSnapshot(documentSnapshot => {
+      if (documentSnapshot.exists) {
+        const salonAvailableTime = documentSnapshot.data().data.salonAvailability.availableTime;
+        console.log("result: "+JSON.stringify(salonAvailableTime))
+        setAvailableTime(salonAvailableTime)
+        if (loading) {
+          setLoading(false);
+        }
+      }
+    })
+  }, [])
+
+  if (loading) {
+    return null;
+  }
+
   return (
     <StickyParallaxHeader
       headerType="TabbedHeader"
       backgroundImage={{
-        uri: 'https://www.holidify.com/images/cmsuploads/compressed/Bangalore_citycover_20190613234056.jpg',
+        // uri:  'https://www.holidify.com/images/cmsuploads/compressed/Bangalore_citycover_20190613234056.jpg',
+        uri: salonImage,
       }}
+      
       backgroundColor={'#6200ee'}
       header={renderHeader}
-      title={'Salon Name'}
+      title={salonInfo.salonName}
       titleStyle={styles.titleStyle}
       foregroundImage={{
         uri: 'https://starwars.png',
@@ -153,7 +181,8 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     padding: 10,
-    fontSize: 40,
+    fontSize: 30,
+    borderRadius: 20,
     backgroundColor: 'rgba(0,0,0,0.6)',
   },
   tabTextContainerStyle: {
