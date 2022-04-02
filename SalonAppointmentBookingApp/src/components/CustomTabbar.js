@@ -7,7 +7,7 @@ import {useNavigation} from '@react-navigation/native';
 import ServiceList from './ServicesList';
 import {Rating} from 'react-native-ratings';
 import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
+
 
 const {event, ValueXY} = Animated;
 const scrollY = new ValueXY();
@@ -66,7 +66,7 @@ const CutomHeaderScreen = ({data}) => {
   const renderServices = serviceList => {
     return (
       <View style={styles.contentContiner}>
-        <ServiceList />
+        <ServiceList salonId={salonInfo.salonId}/>
       </View>
     );
   };

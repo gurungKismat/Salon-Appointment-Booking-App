@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   View,
@@ -11,6 +11,7 @@ import {Icon} from 'native-base';
 import {useDispatch} from 'react-redux';
 import {serviceAdded} from '../redux/store/features/service/serviceSlice';
 import {useSelector} from 'react-redux';
+import firestore from '@react-native-firebase/firestore';
 
 const DATA = [
   {
@@ -33,14 +34,17 @@ const DATA = [
   },
 ];
 
-const Item = ({title, headers, index}) => {
+const Item = ({serviceName, headers, index}) => {
+  console.log('serviceName ' + JSON.stringify(serviceName));
+  console.log('headers: ' + headers);
   const [select, setSelect] = useState();
+
   const dispatch = useDispatch();
   const service = useSelector(state => state.service);
 
-  const selectedService = () => {
+  const selectedService = pickedService => {
     const isServiceSelected = Boolean(
-      service.find(item => title === item.serviceName),
+      service.find(item => pickedService === item.serviceName),
     );
     // console.log("isServiceSelected: "+isServiceSelected)
     return isServiceSelected;
@@ -52,7 +56,7 @@ const Item = ({title, headers, index}) => {
       serviceAdded({
         id: index,
         serviceHeading: headers,
-        serviceName: title,
+        serviceName: serviceName.serviceName,
         isSelected: value,
       }),
     );
@@ -63,8 +67,12 @@ const Item = ({title, headers, index}) => {
       <TouchableOpacity
         style={styles.servicesItem}
         onPress={() => onValChange(!select)}>
-        <Text style={styles.title}>{title}</Text>
-        {!selectedService() ? (
+        <View style={{flexDirection: "column"}}>
+          <Text style={styles.title}>{serviceName.serviceName}</Text>
+          <Text>price</Text>
+          <Text>price</Text>
+        </View>
+        {!selectedService(serviceName.serviceName) ? (
           <Icon
             ml="1"
             size="8"
@@ -84,22 +92,52 @@ const Item = ({title, headers, index}) => {
   );
 };
 
-const ServiceList = () => {
+const ServiceList = ({salonId}) => {
+  // console.log("salonid: "+salonId)
+  const [salonServices, setSalonServices] = useState();
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    console.log('service list useeffect');
+    firestore()
+      .collection('salonServices')
+      .doc(salonId)
+      .onSnapshot(doucmentSnapshot => {
+        if (doucmentSnapshot.exists) {
+          const salonServices = doucmentSnapshot.data().data;
+          console.log('services list; ' + JSON.stringify(salonServices));
+          setSalonServices(salonServices);
+          if (loading) {
+            setLoading(false);
+          }
+        }
+      });
+  }, []);
+
+  if (loading) {
+    return null;
+  }
+
   return (
     <View style={styles.container}>
       <SectionList
-        sections={DATA}
+        sections={salonServices}
         keyExtractor={(item, index) => item + index}
         renderItem={({item, section, index}) => (
-          <Item title={item} headers={section.title} index={index} />
+          <Item
+            serviceName={item}
+            headers={section.categoryTitle}
+            index={index}
+          />
         )}
-        renderSectionHeader={({section: {title}}) => (
-          <Text style={styles.header}>{title}</Text>
+        renderSectionHeader={({section: {categoryTitle}}) => (
+          <Text style={styles.header}>{categoryTitle}</Text>
         )}
       />
     </View>
   );
 };
+
+export default ServiceList;
 
 const styles = StyleSheet.create({
   container: {
@@ -130,5 +168,3 @@ const styles = StyleSheet.create({
     color: 'blue',
   },
 });
-
-export default ServiceList;
