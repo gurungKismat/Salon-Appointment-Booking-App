@@ -12,35 +12,22 @@ import {useDispatch} from 'react-redux';
 import {serviceAdded} from '../redux/store/features/service/serviceSlice';
 import {useSelector} from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
+import uuid from 'react-native-uuid';
 
-const DATA = [
-  {
-    title: 'HairCut',
-    data: ['SkinFade', 'Buzzcut', 'HighFade'],
-  },
-
-  {
-    title: 'Massage',
-    data: ['Feet', 'Message - Neck & Shoulders', 'Massage - Relaxation'],
-  },
-
-  {
-    title: 'Skin Care',
-    data: ['Facial Anti Acne', 'Facial Alovera', 'Fried Cleanup'],
-  },
-  {
-    title: 'Nails',
-    data: ['Removal', 'Pedicure', 'Paraffin'],
-  },
-];
-
-const Item = ({salonId, serviceName, headers, index}) => {
-  console.log('serviceName ' + JSON.stringify(serviceName));
-  console.log('headers: ' + headers);
-  const [select, setSelect] = useState();
-
+const Item = ({salonId, serviceName, headers}) => {
+  // console.log('serviceName ' + JSON.stringify(serviceName));
+  // console.log('headers: ' + headers);
   const dispatch = useDispatch();
   const service = useSelector(state => state.service);
+
+
+  const [select, setSelect] = useState(false);
+
+  // useEffect(() => {
+  //   console.log("store value: "+JSON.stringify(service))
+  //   console.log("select value; "+select)
+  // },[service.length])
+
 
   const selectedService = pickedService => {
     const isServiceSelected = Boolean(
@@ -51,16 +38,23 @@ const Item = ({salonId, serviceName, headers, index}) => {
   };
 
   const onValChange = value => {
+    console.log("value; "+value)
     setSelect(value);
+
     dispatch(
       serviceAdded({
-        id: index,
+        id: uuid.v4(),
         salonId: salonId,
         serviceHeading: headers,
         serviceName: serviceName.serviceName,
         isSelected: value,
       }),
     );
+
+    // console.log('service length: ' + service.length);
+    // if (service.length > 0) {
+    //   console.log('service length greater than 0 ');
+    // }
   };
 
   return (
@@ -68,12 +62,12 @@ const Item = ({salonId, serviceName, headers, index}) => {
       <TouchableOpacity
         style={styles.servicesItem}
         onPress={() => onValChange(!select)}>
-        <View style={{flexDirection: "column"}}>
+        <View style={{flexDirection: 'column'}}>
           <Text style={styles.title}>{serviceName.serviceName}</Text>
           <Text style={styles.servicePrice}>Price: Rs {serviceName.price}</Text>
-              <Text style={styles.serviceDuration}>
-                Duration: {serviceName.duration}
-              </Text>
+          <Text style={styles.serviceDuration}>
+            Duration: {serviceName.duration}
+          </Text>
         </View>
         {!selectedService(serviceName.serviceName) ? (
           <Icon
@@ -99,6 +93,7 @@ const ServiceList = ({salonId}) => {
   // console.log("salonid: "+salonId)
   const [salonServices, setSalonServices] = useState();
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     console.log('service list useeffect');
     firestore()
@@ -107,7 +102,7 @@ const ServiceList = ({salonId}) => {
       .onSnapshot(doucmentSnapshot => {
         if (doucmentSnapshot.exists) {
           const salonServices = doucmentSnapshot.data().data;
-          console.log('services list; ' + JSON.stringify(salonServices));
+          // console.log('services list; ' + JSON.stringify(salonServices));
           setSalonServices(salonServices);
           if (loading) {
             setLoading(false);
@@ -127,6 +122,8 @@ const ServiceList = ({salonId}) => {
         keyExtractor={(item, index) => item + index}
         renderItem={({item, section, index}) => (
           <Item
+            // service={service}
+            // dispatch={dispatch}
             salonId={salonId}
             serviceName={item}
             headers={section.categoryTitle}

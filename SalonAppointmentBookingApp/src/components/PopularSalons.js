@@ -11,7 +11,7 @@ import {
   Stack,
   Icon,
 } from 'native-base';
-import {TouchableOpacity} from "react-native";
+import {TouchableOpacity} from 'react-native';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
@@ -20,6 +20,7 @@ const PopularSalons = ({item}) => {
   // console.log('flatlist salons data: ' + JSON.stringify(item));
   const navigation = useNavigation();
   const [imageUri, setImageUri] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const getImageUrl = () => {
     firestore()
@@ -29,27 +30,37 @@ const PopularSalons = ({item}) => {
       .then(async documentSanpshot => {
         if (documentSanpshot.exists) {
           const url = documentSanpshot.data().salonImage;
-          console.log('image url : ' + url);
+          // console.log('image url : ' + url);
 
           if (url !== undefined) {
-            console.log('image exist');
+            // console.log('image exist');
             const reference = storage().ref().child('/salonImages').child(url);
             const downloadUrl = await reference.getDownloadURL();
             setImageUri(downloadUrl);
-          } else {
-            console.log('image undefined');
+            if (loading) {
+              setLoading(false);
+            }
           }
         }
       });
   };
 
-  getImageUrl();
+  useEffect(() => {
+    getImageUrl();
+  }, []);
+
+  if (loading) {
+    return null;
+  }
 
   return (
-    <TouchableOpacity onPress={() => navigation.navigate('SalonInfo', {
-      salonInfo: item,
-      salonImage: imageUri
-    })}>
+    <TouchableOpacity
+      onPress={() =>
+        navigation.navigate('SalonInfo', {
+          salonInfo: item,
+          salonImage: imageUri,
+        })
+      }>
       <Box
         mx="2"
         maxW="80"

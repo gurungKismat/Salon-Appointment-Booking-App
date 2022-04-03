@@ -5,7 +5,7 @@ import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIc
 const SearchBar = props => {
   return (
     <Center>
-      <Box w={"90%"}>
+      <Box w={'90%'}>
         <Center>
           <Input
             placeholder="Search Salons"
@@ -13,14 +13,14 @@ const SearchBar = props => {
             borderRadius="10"
             py="2"
             px="2"
-            borderWidth="1"
+            // borderWidth="1"
             value={props.searchPhrase}
-            onChangeText={props.setSearchPhrase}  
+            onChangeText={props.setSearchPhrase}
             InputLeftElement={
               <Icon
                 ml="2"
                 size="6"
-                color="gray.400"
+                color="muted.500"
                 as={<MaterialCommunityIcon name="magnify" />}
               />
             }
@@ -29,7 +29,7 @@ const SearchBar = props => {
               <Icon
                 mr="2"
                 size="6"
-                color="gray.400"
+                color="muted.500"
                 as={
                   <MaterialCommunityIcon
                     name="close"

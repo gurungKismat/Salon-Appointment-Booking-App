@@ -133,10 +133,7 @@ const Profile = () => {
           const salonDatas = document.data();
           console.log('salon document data: ' + JSON.stringify(salonDatas));
           setSalonInfo(salonDatas);
-          if (
-            salonDatas.salonImage !== null ||
-            salonDatas.salonImage !== undefined
-          ) {
+          if (salonDatas.salonImage !== undefined) {
             const reference = storage()
               .ref()
               .child('/salonImages')
