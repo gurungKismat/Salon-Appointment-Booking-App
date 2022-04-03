@@ -18,9 +18,15 @@ const serviceSlice = createSlice({
       }
     },
 
+    serviceDeleted(state, action) {
+      const itemIdx = state.findIndex(item => item.id == action.payload.id);
+      if (itemIdx !== -1) {
+        state.splice(itemIdx, 1);
+      }
+    },
   },
 });
 
-export const {serviceAdded} = serviceSlice.actions;
+export const {serviceAdded, serviceDeleted} = serviceSlice.actions;
 
 export default serviceSlice.reducer;

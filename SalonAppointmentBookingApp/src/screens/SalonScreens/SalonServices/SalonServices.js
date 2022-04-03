@@ -25,38 +25,6 @@ import {useDispatch} from 'react-redux';
 import {useSelector} from 'react-redux';
 import {updateService} from '../../../redux/store/features/updateService/updateserviceSlice';
 
-// const DATA = [
-//   {
-//     categoryTitle: 'HairCut',
-//     data: [
-//       {serviceName: 'SkinFade', price: '200', duration: '30 min'},
-//       {serviceName: 'Buzzcut', price: '240', duration: '24 min'},
-//       {serviceName: 'HighFade', price: '250', duration: '35 min'},
-//     ],
-//   },
-
-//   {
-//     categoryTitle: 'Massage',
-//     data: [
-//       {serviceName: 'Feet', price: '300', duration: '30 min'},
-//       {
-//         serviceName: 'Message - Neck & Shoulders',
-//         price: '440',
-//         duration: '24 min',
-//       },
-//       {serviceName: 'Massage - Relaxation', price: '250', duration: '1 hr'},
-//     ],
-//   },
-
-//   {
-//     categoryTitle: 'Skin Care',
-//     data: [
-//       {serviceName: 'Facial Anti Acne', price: '500', duration: '30 min'},
-//       {serviceName: 'Facial Alovera', price: '450', duration: '24 min'},
-//       {serviceName: 'Fried Cleanup', price: '240', duration: '1 hr'},
-//     ],
-//   },
-// ];
 
 const SalonServices = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -72,22 +40,9 @@ const SalonServices = () => {
   const selector = useSelector(state => state.updateService);
   var currentHeader;
   var currServiceId;
-  // const selector = useSelector(state => state.updateService);
 
   const editService = (header, service, index) => {
     console.log('service: ' + JSON.stringify(service));
-    // sectionUpdated = header;
-    // serviceUpdated = service;
-    // indexUpdated = index;
-    // console.log('header: ' + header);
-    // console.log('serviceupdated: ' + service.serviceName);
-
-    // dispatch(editService(service));
-
-    // setModal();
-    // console.log("header: "+header);
-    // console.log(JSON.stringify(service))
-    // alert(JSON.stringify(service));
 
     dispatch(
       updateService({

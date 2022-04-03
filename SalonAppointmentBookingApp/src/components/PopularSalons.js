@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {
   Box,
@@ -11,13 +11,56 @@ import {
   Stack,
   Icon,
 } from 'native-base';
+import {TouchableOpacity} from 'react-native';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import firestore from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage';
 
-
-const PopularSalons = () => {
+const PopularSalons = ({item}) => {
+  // console.log('flatlist salons data: ' + JSON.stringify(item));
   const navigation = useNavigation();
+  const [imageUri, setImageUri] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const getImageUrl = () => {
+    firestore()
+      .collection('salons')
+      .doc(item.salonId)
+      .get()
+      .then(async documentSanpshot => {
+        if (documentSanpshot.exists) {
+          const url = documentSanpshot.data().salonImage;
+          // console.log('image url : ' + url);
+
+          if (url !== undefined) {
+            // console.log('image exist');
+            const reference = storage().ref().child('/salonImages').child(url);
+            const downloadUrl = await reference.getDownloadURL();
+            setImageUri(downloadUrl);
+            if (loading) {
+              setLoading(false);
+            }
+          }
+        }
+      });
+  };
+
+  useEffect(() => {
+    getImageUrl();
+  }, []);
+
+  if (loading) {
+    return null;
+  }
+
   return (
-    <Pressable onPress={() => navigation.navigate("SalonInfo")}>
+    <TouchableOpacity
+      onPress={() =>
+        navigation.navigate('SalonInfo', {
+          salonInfo: item,
+          salonImage: imageUri,
+        })
+      }>
       <Box
         mx="2"
         maxW="80"
@@ -34,12 +77,22 @@ const PopularSalons = () => {
         }}>
         <Box>
           <AspectRatio w="100%" ratio={16 / 9}>
-            <Image
-              source={{
-                uri: 'https://www.holidify.com/images/cmsuploads/compressed/Bangalore_citycover_20190613234056.jpg',
-              }}
-              alt="image"
-            />
+            {imageUri === null ? (
+              <Image
+                source={{
+                  uri: 'https://www.holidify.com/images/cmsuploads/compressed/Bangalore_citycover_20190613234056.jpg',
+                }}
+                alt="image"
+              />
+            ) : (
+              <Image
+                source={{
+                  uri: imageUri,
+                  // uri: 'https://www.holidify.com/images/cmsuploads/compressed/Bangalore_citycover_20190613234056.jpg',
+                }}
+                alt="image"
+              />
+            )}
           </AspectRatio>
           <Center
             bg="violet.500"
@@ -55,13 +108,14 @@ const PopularSalons = () => {
             bottom="0"
             px="3"
             py="1.5">
-            PHOTO
+            SALON
           </Center>
         </Box>
-        <Stack p="4" space={2}>
+        <Stack p="4" space={1}>
           <Stack space={2} direction="row" justifyContent="space-between">
             <Heading size="sm" ml="-1">
-              Reaver
+              {/* Reaver */}
+              {item.salonName}
             </Heading>
 
             <Stack direction="row" space={2}>
@@ -76,15 +130,17 @@ const PopularSalons = () => {
           </Stack>
           <Stack>
             <Text fontWeight="400" fontSize="xs">
-              Kapan, Kathmandu
+              {/* Kapan, Kathmandu */}
+              {item.address}
             </Text>
             <Text fontWeight="400" fontSize="xs">
-              98324234234
+              {/* 98324234234 */}
+              {item.mobileNo}
             </Text>
           </Stack>
         </Stack>
       </Box>
-    </Pressable>
+    </TouchableOpacity>
   );
 };
 

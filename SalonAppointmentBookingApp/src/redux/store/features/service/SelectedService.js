@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -7,15 +7,22 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {Rating} from 'react-native-ratings';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Image, Icon, Divider} from 'native-base';
 import DateTimePicker from '@react-native-community/datetimepicker';
-// import DateTimePickerUi from '../../../../components/DateTimePicker';
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
+import storage from '@react-native-firebase/storage';
+import {serviceDeleted} from './serviceSlice';
+
+const removeService = deleteItem => {
+  deleteItem();
+};
 
 // flat list services items
-const Item = ({title}) => (
+const Item = ({title, deleteItem}) => (
   <View style={{paddingHorizontal: 10}}>
     <View style={styles.item}>
       <Text style={styles.title}>{title}</Text>
@@ -23,7 +30,7 @@ const Item = ({title}) => (
         mr="2"
         size="7"
         color="white"
-        onPress={() => alert('clicked')}
+        onPress={() => removeService(deleteItem)}
         as={<MaterialCommunityIcon name="close" />}
       />
     </View>
@@ -31,15 +38,37 @@ const Item = ({title}) => (
 );
 
 const SelectedServices = () => {
+  const cartItems = useSelector(state => state.service);
+  console.log('cartitms: ' + JSON.stringify(cartItems));
+  const dispatch = useDispatch();
+
+  // const {id} = route.params;
+  // console.log('received id: ' + id);
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [showDate, setShowDate] = useState(false);
   const [showTime, setShowTime] = useState(false);
+  const [salonInfo, setSalonInfo] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [salonImage, setsalonImage] = useState();
+  const [salonAvailability, setSalonAvailability] = useState();
 
-  const service = useSelector(state => state.service);
+  // const service = useSelector(state => state.service);
   // console.log('service ' + JSON.stringify(service));
 
-  const renderItem = ({item}) => <Item title={item.serviceName} />;
+  const deleteItem = id => {
+    console.log('deletid: ' + id);
+    dispatch(
+      serviceDeleted({
+        id: id,
+      }),
+    );
+    alert('delet');
+  };
+
+  const renderItem = ({item}) => (
+    <Item title={item.serviceName} deleteItem={() => deleteItem(item.id)} />
+  );
 
   // handles the change after selecting date from the date picker
   const onChangeDate = (event, selectedDate) => {
@@ -105,8 +134,68 @@ const SelectedServices = () => {
     setShowTime(true);
   };
 
+  const getSalonImage = async reference => {
+    const downloadUrl = await reference.getDownloadURL();
+    setsalonImage(downloadUrl);
+  };
+
+  useEffect(() => {
+    var salonId;
+
+    if (cartItems.length > 0) {
+      salonId = cartItems[0].salonId;
+    }
+
+    firestore()
+      .collection('salonProfile')
+      .doc(salonId)
+      .get()
+      .then(document => {
+        if (document.exists) {
+          const salonAvailabilityData = document.data().data.salonAvailability;
+          // console.log(
+          //   'salonAvailabillity: ' + JSON.stringify(salonAvailabilityData),
+          // );
+          setSalonAvailability(salonAvailabilityData);
+        }
+      });
+
+    firestore()
+      .collection('salons')
+      .doc(salonId)
+      .get()
+      .then(document => {
+        if (document.exists) {
+          console.log('document exist');
+          const salonDatas = document.data();
+          setSalonInfo(salonDatas);
+          const imgUri = salonDatas.salonImage;
+
+          if (imgUri !== undefined) {
+            console.log('image exist');
+            const reference = storage()
+              .ref()
+              .child('/salonImages')
+              .child(imgUri);
+
+            getSalonImage(reference);
+          }
+
+          if (loading) {
+            setLoading(false);
+          }
+        } else {
+          console.log('doc does not exist');
+        }
+      });
+  }, []);
+
   // getting current date
   const currDate = new Date();
+
+  if (loading) {
+    return null;
+  }
 
   return (
     <FlatList
@@ -116,7 +205,7 @@ const SelectedServices = () => {
           <StatusBar backgroundColor={'#6200ee'} />
           <View style={styles.salonInfo}>
             <View style={styles.leftContent}>
-              <Text style={styles.salonName}>Reaver Salon</Text>
+              <Text style={styles.salonName}>{salonInfo.salonName}</Text>
               <View
                 style={{
                   flexDirection: 'row',
@@ -137,19 +226,34 @@ const SelectedServices = () => {
                   4.5
                 </Text>
               </View>
-              <Text style={styles.salonInfoText}>Naxal, Kathmandu</Text>
+              <Text style={styles.salonInfoText}>{salonInfo.address}</Text>
+              {salonAvailability && (
+                <Text style={{marginTop: 5, color: 'black'}}>
+                  Available Time: {salonAvailability.availableTime}
+                </Text>
+              )}
             </View>
             <View style={styles.rightContent}>
-              <Image
-                source={{
-                  uri: 'https://wallpaperaccess.com/full/317501.jpg',
-                }}
-                alt="Alternate Text"
-                size="lg"
-              />
+              {salonImage == undefined ? (
+                <Image
+                  source={{
+                    uri: 'https://wallpaperaccess.com/full/317501.jpg',
+                  }}
+                  alt="Default Salon Img"
+                  size="lg"
+                />
+              ) : (
+                <Image
+                  source={{
+                    uri: salonImage,
+                  }}
+                  alt="Salon Image"
+                  size="lg"
+                />
+              )}
             </View>
           </View>
-          <Divider my="4" thickness={"3"}  />
+          <Divider my="4" thickness={'3'} />
           <View style={{marginTop: 7}}>
             {/* <DateTimePickerUi /> */}
             <View
@@ -212,7 +316,7 @@ const SelectedServices = () => {
               />
             )}
           </View>
-          <Divider my="4" thickness={"3"}/>
+          <Divider my="4" thickness={'3'} />
 
           <View style={{marginTop: 7}}>
             <Text style={{color: 'black', fontSize: 18, fontWeight: 'bold'}}>
@@ -221,7 +325,7 @@ const SelectedServices = () => {
           </View>
         </View>
       }
-      data={service}
+      data={cartItems}
       renderItem={renderItem}
       keyExtractor={item => item.id}
       ListFooterComponent={
@@ -256,6 +360,7 @@ const styles = StyleSheet.create({
   salonInfo: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
 
   salonName: {
@@ -269,7 +374,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 
-  leftContent: {},
+  leftContent: {
+    flexDirection: 'column',
+  },
 
   rightContent: {},
 

@@ -6,9 +6,20 @@ import {useSelector, useDispatch} from 'react-redux';
 const ViewCart = () => {
   const cartItems = useSelector(state => state.service);
   const navigation = useNavigation();
+  const [salonId, setSalonId] = React.useState();
+ 
+
   const viewCartPressed = () => {
-    navigation.navigate('ServiceList');
+    navigation.navigate('ServiceList', {id: salonId});
   };
+
+  React.useEffect(() => {
+    if (cartItems.length > 0) {
+      const salonId = cartItems[0].salonId;
+      // console.log("store slaon Id:" +salonId);
+      setSalonId(salonId);
+    }
+  },[])
 
   return (
     <>

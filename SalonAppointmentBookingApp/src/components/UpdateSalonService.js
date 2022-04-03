@@ -60,6 +60,10 @@ const UpdateSalonService = props => {
     isError: false,
   });
 
+  var newServiceName;
+  var newPrice;
+  var newDuration;
+
   // clears the text from the input field
   const clearText = () => {
     setCategoryTitle('');
@@ -86,13 +90,10 @@ const UpdateSalonService = props => {
       .collection('salonServices')
       .doc(auth().currentUser.uid);
 
-    // console.log('categoryDuplicate: ' + categoryDuplicate);
-
     var countCategoryExist = 0;
     var categoryIndex = -1;
 
-   
-        
+         
  // checks whether the category is already in the data and adds the service in the specific category if exist
  function updateCategory(value, index, initialData) {
   // console.log('VAlue: ' + JSON.stringify(value));
@@ -101,16 +102,16 @@ const UpdateSalonService = props => {
     const serviceIndex = value.data.findIndex(
       element => element.id === serviceId,
     );
-    console.log('skinfade index: ' + serviceIndex);
-    console.log('CURRENT SERVICE: ' + serviceName);
+    // console.log('skinfade index: ' + serviceIndex);
+    // console.log('CURRENT SERVICE: ' + serviceName);
 
     if (serviceIndex !== -1) {
       console.log('service index exist');
       initialData[index].data[serviceIndex] = {
         id: serviceId,
-        serviceName: serviceName,
-        price: price,
-        duration: duration + ' ' + time,
+        serviceName: newServiceName,
+        price: newPrice,
+        duration: newDuration + ' ' + time,
       };
       countCategoryExist++;
     }
@@ -146,9 +147,9 @@ const UpdateSalonService = props => {
             data: [
               {
                 id: uuid.v4(),
-                serviceName: serviceName,
-                price: price,
-                duration: duration + ' ' + time,
+                serviceName: newServiceName,
+                price: newPrice,
+                duration: newDuration + ' ' + time,
               },
             ],
           });
@@ -179,6 +180,7 @@ const UpdateSalonService = props => {
 
   // add new service to the firestore database
   const updateService = () => {
+    removeWhiteSpace();
     const result = isEmpty();
     if (!result) {
       const data = {
@@ -186,9 +188,9 @@ const UpdateSalonService = props => {
         data: [
           {
             id: uuid.v4(),
-            serviceName: serviceName,
-            price: price,
-            duration: duration + ' ' + time,
+            serviceName: newServiceName,
+            price: newPrice,
+            duration: newDuration + ' ' + time,
           },
         ],
       };
@@ -198,6 +200,16 @@ const UpdateSalonService = props => {
       // console.log(`Services data: ${JSON.stringify(servicesData)}`);
     }
   };
+
+
+
+  // removes the whitespace from the textinput 
+  function removeWhiteSpace() {
+    newServiceName = serviceName.trim();
+    newPrice = price.trim();
+    newDuration = duration.trim();
+
+  }
 
   // check if the textinput values are empty or not
   const isEmpty = () => {

@@ -1,11 +1,12 @@
+import { TabRouter } from '@react-navigation/native';
 import React from 'react';
 import Tabbar from '../../../components/CustomTabbar';
 import ViewCart from '../../../components/ViewCart';
 
-const SalonInfo = () => {
+const SalonInfo = ({route}) => {
   return (
     <>
-      <Tabbar />
+      <Tabbar data={route}/>
       <ViewCart />
     </>
   );
