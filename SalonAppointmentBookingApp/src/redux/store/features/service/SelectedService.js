@@ -153,9 +153,9 @@ const SelectedServices = () => {
       .then(document => {
         if (document.exists) {
           const salonAvailabilityData = document.data().data.salonAvailability;
-          console.log(
-            'salonAvailabillity: ' + JSON.stringify(salonAvailabilityData),
-          );
+          // console.log(
+          //   'salonAvailabillity: ' + JSON.stringify(salonAvailabilityData),
+          // );
           setSalonAvailability(salonAvailabilityData);
         }
       });
@@ -227,9 +227,11 @@ const SelectedServices = () => {
                 </Text>
               </View>
               <Text style={styles.salonInfoText}>{salonInfo.address}</Text>
-              <Text style={{marginTop: 5, color: 'black'}}>
-                Available Time: {salonAvailability.availableTime}
-              </Text>
+              {salonAvailability && (
+                <Text style={{marginTop: 5, color: 'black'}}>
+                  Available Time: {salonAvailability.availableTime}
+                </Text>
+              )}
             </View>
             <View style={styles.rightContent}>
               {salonImage == undefined ? (

@@ -1,4 +1,4 @@
-import React,{useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Dimensions, Animated, StyleSheet, Text} from 'react-native';
 import StickyParallaxHeader from 'react-native-sticky-parallax-header';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -8,28 +8,20 @@ import ServiceList from './ServicesList';
 import {Rating} from 'react-native-ratings';
 import firestore from '@react-native-firebase/firestore';
 
-
 const {event, ValueXY} = Animated;
 const scrollY = new ValueXY();
 
-const text = {
-  biography: `The bounty hunter known as "the Mandalorian" was dispatched by "the Client" and Imperial Dr. Pershing to capture the Child alive, however the Client would allow the Mandalorian to return the Child dead for a lower price.
-  The assassin droid IG-11 was also dispatched to terminate him. After working together to storm the encampment the infant was being held in, the Mandalorian and IG-11 found the Child. IG-11 then attempted to terminate the Child. The Mandalorian shot the droid before the he was able to assassinate the Child.
-  Shortly after, the Mandalorian took the Child back to his ship. On the way they were attacked by a trio of Trandoshan bounty hunters, who attempted to kill the Child. After the Mandalorian defeated them, he and the Child camped out in the desert for the night. While the Mandalorian sat by the fire, the Child ate one of the creatures moving around nearby. He then approached the bounty hunter and attempted to use the Force to heal one of the Mandalorian's wounds. The Mandalorian stopped him and placed him back into his pod. The next day, the pair made it to the Razor Crest only to find it being scavenged by Jawas. The Mandalorian attacked their sandcrawler for the scavenged parts and attempted to climb it while the Child followed in his pod. However, the Mandalorian was knocked down to the ground`,
-  powers: 'Powers and Abilities',
-  appearances: 'Appearances',
-};
 
 const CutomHeaderScreen = ({data}) => {
   const {salonInfo, salonImage} = data.params;
   const [loading, setLoading] = useState(true);
-  const [availableTime, setAvailableTime] = useState("");
-  console.log("custom header: "+JSON.stringify(salonInfo))
+  const [availableTime, setAvailableTime] = useState('');
+  console.log('salon Name: ' + JSON.stringify(salonInfo.salonName) + "id: "+salonInfo.salonId);
 
   const navigation = useNavigation();
 
   // display the content in the tab views
-  const renderContent = x => (
+  const renderContent = () => (
     <View style={styles.contentContiner}>
       <View style={styles.basicInfo}>
         <Text style={{fontSize: 22, color: 'black', fontWeight: '500'}}>
@@ -63,10 +55,10 @@ const CutomHeaderScreen = ({data}) => {
   );
 
   // displays the salon services
-  const renderServices = serviceList => {
+  const renderServices = () => {
     return (
       <View style={styles.contentContiner}>
-        <ServiceList salonId={salonInfo.salonId}/>
+        <ServiceList salonId={salonInfo.salonId} />
       </View>
     );
   };
@@ -96,18 +88,25 @@ const CutomHeaderScreen = ({data}) => {
   };
 
   useEffect(() => {
-    console.log("customer tabbar useeffect")
-    firestore().collection("salonProfile").doc(salonInfo.salonId).onSnapshot(documentSnapshot => {
-      if (documentSnapshot.exists) {
-        const salonAvailableTime = documentSnapshot.data().data.salonAvailability.availableTime;
-        console.log("result: "+JSON.stringify(salonAvailableTime))
-        setAvailableTime(salonAvailableTime)
-        if (loading) {
+    console.log('customer tabbar useeffect');
+    firestore()
+      .collection('salonProfile')
+      .doc(salonInfo.salonId)
+      .onSnapshot(documentSnapshot => {
+        if (documentSnapshot.exists) {
+          const salonAvailableTime =
+            documentSnapshot.data().data.salonAvailability.availableTime;
+          console.log('result: ' + JSON.stringify(salonAvailableTime));
+          setAvailableTime(salonAvailableTime);
+          if (loading) {
+            setLoading(false);
+          }
+        }else {
+          console.log("salon doesnnot exist")
           setLoading(false);
         }
-      }
-    })
-  }, [])
+      });
+  }, []);
 
   if (loading) {
     return null;
@@ -120,7 +119,6 @@ const CutomHeaderScreen = ({data}) => {
         // uri:  'https://www.holidify.com/images/cmsuploads/compressed/Bangalore_citycover_20190613234056.jpg',
         uri: salonImage,
       }}
-      
       backgroundColor={'#6200ee'}
       header={renderHeader}
       title={salonInfo.salonName}
@@ -131,11 +129,11 @@ const CutomHeaderScreen = ({data}) => {
       tabs={[
         {
           title: 'About',
-          content: renderContent(text.biography),
+          content: renderContent(),
         },
         {
           title: 'Services',
-          content: renderServices(text.powers),
+          content: renderServices(),
         },
       ]}
       tabTextContainerStyle={styles.tabTextContainerStyle}

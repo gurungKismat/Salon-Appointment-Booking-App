@@ -47,7 +47,7 @@ const HomeScreen = () => {
   };
 
   useEffect(() => {
-    console.log('use effect customer data');
+    // console.log('use effect customer data');
     const fetchCustomerData = firestore()
       .collection('customers')
       .doc(auth().currentUser.uid)
@@ -65,7 +65,7 @@ const HomeScreen = () => {
   }, []);
 
   useEffect(() => {
-    console.log('use effect of customer home salon datas');
+    // console.log('use effect of customer home salon datas');
 
     const salonInfoArray = [];
 
@@ -74,10 +74,10 @@ const HomeScreen = () => {
       .onSnapshot(querySnapshot => {
         // console.log("total salons: "+documentSnapshot.size);
         querySnapshot.forEach(documentSnapshot => {
-          console.log(
-            'salonid: ' + documentSnapshot.id,
-            documentSnapshot.data(),
-          );
+          // console.log(
+          //   'salonid: ' + documentSnapshot.id,
+          //   documentSnapshot.data(),
+          // );
           // salonInfoArray.push(documentSnapshot.data());
           const salonId = {salonId: documentSnapshot.id};
           const salonInfos = documentSnapshot.data();

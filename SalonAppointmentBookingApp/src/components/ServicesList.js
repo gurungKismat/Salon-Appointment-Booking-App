@@ -20,6 +20,7 @@ const Item = ({salonId, serviceName, headers}) => {
   const dispatch = useDispatch();
   const service = useSelector(state => state.service);
 
+  // console.log('salon Id; ' + salonId);
 
   const [select, setSelect] = useState(false);
 
@@ -27,7 +28,6 @@ const Item = ({salonId, serviceName, headers}) => {
   //   console.log("store value: "+JSON.stringify(service))
   //   console.log("select value; "+select)
   // },[service.length])
-
 
   const selectedService = pickedService => {
     const isServiceSelected = Boolean(
@@ -38,18 +38,36 @@ const Item = ({salonId, serviceName, headers}) => {
   };
 
   const onValChange = value => {
-    console.log("value; "+value)
-    setSelect(value);
+    // console.log("value; "+value)
 
-    dispatch(
-      serviceAdded({
-        id: uuid.v4(),
-        salonId: salonId,
-        serviceHeading: headers,
-        serviceName: serviceName.serviceName,
-        isSelected: value,
-      }),
-    );
+    if (service.length > 0) {
+      if (service[0].salonId === salonId) {
+        setSelect(value);
+        dispatch(
+          serviceAdded({
+            id: uuid.v4(),
+            salonId: salonId,
+            serviceHeading: headers,
+            serviceName: serviceName.serviceName,
+            isSelected: value,
+          }),
+        );
+      } else {
+        alert('Please select only one salon at a time');
+        // console.log("CURRENT SERVICE: "+JSON.stringify(service))
+      }
+    } else {
+      setSelect(value);
+      dispatch(
+        serviceAdded({
+          id: uuid.v4(),
+          salonId: salonId,
+          serviceHeading: headers,
+          serviceName: serviceName.serviceName,
+          isSelected: value,
+        }),
+      );
+    }
 
     // console.log('service length: ' + service.length);
     // if (service.length > 0) {

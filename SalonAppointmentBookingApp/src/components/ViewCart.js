@@ -16,7 +16,7 @@ const ViewCart = () => {
   React.useEffect(() => {
     if (cartItems.length > 0) {
       const salonId = cartItems[0].salonId;
-      console.log("store slaon Id:" +salonId);
+      // console.log("store slaon Id:" +salonId);
       setSalonId(salonId);
     }
   },[])
