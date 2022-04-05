@@ -166,13 +166,13 @@ const SelectedServices = () => {
       .get()
       .then(document => {
         if (document.exists) {
-          console.log('document exist');
+          // console.log('document exist');
           const salonDatas = document.data();
           setSalonInfo(salonDatas);
           const imgUri = salonDatas.salonImage;
 
           if (imgUri !== undefined) {
-            console.log('image exist');
+            // console.log('image exist');
             const reference = storage()
               .ref()
               .child('/salonImages')
@@ -241,6 +241,7 @@ const SelectedServices = () => {
                   }}
                   alt="Default Salon Img"
                   size="lg"
+                  rounded="md"
                 />
               ) : (
                 <Image
@@ -249,6 +250,7 @@ const SelectedServices = () => {
                   }}
                   alt="Salon Image"
                   size="lg"
+                  rounded="md"
                 />
               )}
             </View>

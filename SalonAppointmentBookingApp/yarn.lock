@@ -1174,6 +1174,11 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
+"@notifee/react-native@^5.0.3":
+  version "5.0.3"
+  resolved "https://registry.yarnpkg.com/@notifee/react-native/-/react-native-5.0.3.tgz#a75ce53e1f78d11a54b5f13db77669ed1aa2053e"
+  integrity sha512-s8TgXFkaWAafRfCCaOoUPCEBSUufk7w4X98vzgRHFTUxQMaRTLp95I6TmShhlyYVK7de4no1h31Qu6UJOEFS9g==
+
 "@react-aria/checkbox@^3.2.1":
   version "3.2.3"
   resolved "https://registry.yarnpkg.com/@react-aria/checkbox/-/checkbox-3.2.3.tgz#be7f1f881e6d0fb554b5b20b9243e31e222207d5"
@@ -1741,6 +1746,11 @@
   version "14.5.0"
   resolved "https://registry.yarnpkg.com/@react-native-firebase/firestore/-/firestore-14.5.0.tgz#c4455614d15bb681197d560df912f860cd979ada"
   integrity sha512-cYHGYWXJaAOma3O6GC3P+mBt3E6v3tTbb4c1Q6dFZfci0DefnaGt/nWp5YaE+HFKrrGc25vVyER9RDZsTU6Jjg==
+
+"@react-native-firebase/messaging@^14.7.0":
+  version "14.7.0"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/messaging/-/messaging-14.7.0.tgz#9ab30860f140dec1dce49f012fd56526e5b3707a"
+  integrity sha512-G0GmmbmmAvhEltK7Rr1A3Mz6vH4qsX6OaqYNzbhgHvP2jvTIuchLcWozjTGcH/0OsXZz15fRe0WjQ3aMS2TTpg==
 
 "@react-native-firebase/storage@^14.7.0":
   version "14.7.0"

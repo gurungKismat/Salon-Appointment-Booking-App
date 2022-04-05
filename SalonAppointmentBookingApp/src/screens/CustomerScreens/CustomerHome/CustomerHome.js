@@ -25,7 +25,9 @@ import PopularSalons from '../../../components/PopularSalons';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import storage from '@react-native-firebase/storage';
-
+import notifee, {EventType} from '@notifee/react-native';
+import messaging from '@react-native-firebase/messaging';
+import { Alert } from 'react-native';
 import {LogBox} from 'react-native';
 
 LogBox.ignoreLogs(['NativeBase:']);
@@ -45,6 +47,84 @@ const HomeScreen = () => {
     const downloadUrl = await reference.getDownloadURL();
     setCustomerAvatar(downloadUrl);
   };
+
+  const onDisplayNotification = async (remoteMessage) => {
+    const channelId = await notifee.createChannel({
+      id: 'default',
+      name: 'Default Channel',
+    });
+
+    // Display a notification
+    await notifee.displayNotification({
+      title: remoteMessage.notification.title,
+      body: remoteMessage.notification.body,
+      android: {
+        channelId,
+        // smallIcon: 'name-of-a-small-icon', // optional, defaults to 'ic_launcher'.
+        // largeIcon: 'https://my-cdn.com/users/123456.png',
+        smallIcon: 'ic_launcher',
+        
+      },
+    });
+
+    // await notifee.displayNotification({
+    //   title: "Test 1",
+    //   body: "Hello world",
+    //   android: {
+    //     channelId,
+    //     // smallIcon: 'name-of-a-small-icon', // optional, defaults to 'ic_launcher'.
+    //     // largeIcon: 'https://my-cdn.com/users/123456.png',
+    //     smallIcon: 'ic_launcher',
+    //     pressAction: {
+    //       id: 'default',
+          
+    //     }
+    //   },
+    // });
+  };
+
+
+  // useEffect(() => {
+    
+  //   return notifee.onForegroundEvent(({ type, detail }) => {
+  //     switch (type) {
+  //       case EventType.DISMISSED:
+  //         console.log('User dismissed notification', detail.notification);
+  //         break;
+  //       case EventType.PRESS:
+  //         console.log('User pressed notification', detail.notification);
+  //         break;
+  //     }
+  //   });
+  // }, [])
+
+   // Bootstrap sequence function
+   async function bootstrap() {
+    const initialNotification = await notifee.getInitialNotification();
+
+    if (initialNotification) {
+      navigation.navigate("CustomerNotification");
+      console.log('Notification caused application to open', initialNotification.notification);
+      console.log('Press action used to open the app', initialNotification.pressAction);
+    }
+  }
+
+  useEffect(() => {
+    bootstrap();
+  }, [])
+
+
+  useEffect(() => {
+    // for notification
+    console.log("remote notificaiotn useefect")
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      console.log("notification data: "+JSON.stringify(remoteMessage))
+      alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+      onDisplayNotification(remoteMessage);
+    });
+
+    return unsubscribe;
+  }, []);
 
   useEffect(() => {
     // console.log('use effect customer data');
@@ -102,6 +182,11 @@ const HomeScreen = () => {
     <>
       <StatusBar backgroundColor={'#6200ee'} />
       <Stack bg="muted.10">
+        <TouchableOpacity
+          onPress={() => onDisplayNotification()}
+          style={{backgroundColor: 'red', marginVertical: 10, padding: 20}}>
+          <Text style={{color: 'white'}}>Show Notification</Text>
+        </TouchableOpacity>
         <ScrollView mx={5} mt={5} mb={5}>
           <VStack space={5}>
             <HStack justifyContent={'space-between'}>
