@@ -139,6 +139,20 @@ const SelectedServices = () => {
     setsalonImage(downloadUrl);
   };
 
+  // request for appointment
+  const requestAppointment = () => {
+    if (date !== '') {
+      if (time != '') {
+
+      }else {
+        alert('Please Select Time')
+      }
+    }else {
+      alert('Please Select Date')
+    }
+
+  }
+
   useEffect(() => {
     var salonId;
 
@@ -331,7 +345,9 @@ const SelectedServices = () => {
       renderItem={renderItem}
       keyExtractor={item => item.id}
       ListFooterComponent={
-        <TouchableOpacity style={styles.requestAppointment}>
+        <TouchableOpacity 
+        onPress={requestAppointment}
+        style={styles.requestAppointment}>
           <Text style={{color: 'white', fontSize: 17, alignSelf: 'center'}}>
             Request Appointment
           </Text>
@@ -393,7 +409,7 @@ const styles = StyleSheet.create({
     width: '60%',
     marginTop: 30,
     marginBottom: 30,
-    backgroundColor: 'red',
+    backgroundColor: '#6200ee',
     padding: 15,
     borderRadius: 30,
     alignSelf: 'center',
