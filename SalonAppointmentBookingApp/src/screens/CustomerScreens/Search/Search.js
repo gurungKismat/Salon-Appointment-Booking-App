@@ -11,6 +11,7 @@ import {
   StatusBar,
   Icon,
   Image,
+  useToast,
 } from 'native-base';
 import SearchBar from '../../../components/SearchBar';
 import firestore from '@react-native-firebase/firestore';
@@ -18,36 +19,37 @@ import auth from '@react-native-firebase/auth';
 import storage from '@react-native-firebase/storage';
 // import {Box, Center, Input, Icon} from 'native-base';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import EmptyList from '../../../components/EmptyList';
 
 const SearchScreen = ({navigation}) => {
   const [searchPhrase, setSearchPhrase] = useState('');
   const [searchedSalon, setSearchedSalon] = useState([]);
-  const [isEmpty, setIsEmpty] = useState(false);
+  const [searchResult, setSearchResult] = useState('No Items Searched');
 
-  const datas = [
-    {
-      name: 'hello',
-      age: 20,
-    },
-    {
-      name: 'hello',
-      age: 20,
-    },
-  ];
+  const toast = useToast();
+  const id = 'test-toast';
 
   const searchSalon = async () => {
+    searchedSalon.splice(0, searchedSalon.length);
     if (searchPhrase !== '') {
       const newSearchPhrase =
         searchPhrase.charAt(0).toUpperCase() + searchPhrase.substring(1);
       // alert(newSearchPhrase);
       const collectionRef = firestore().collection('salons');
       await collectionRef
-        .where('salonName', '>=', searchPhrase)
-        .where('salonName', '<=', searchPhrase + '\uf8ff')
+        .where('salonName', '>=', newSearchPhrase)
+        .where('salonName', '<=', newSearchPhrase + '\uf8ff')
         .get()
         .then(documents => {
           if (documents.empty) {
-            console.log('no matching documents');
+            setSearchResult('No Salon Found');
+            if (!toast.isActive(id)) {
+              toast.show({
+                id,
+                title: "No Salon Found!",
+              });
+            }
+            // console.log('no matching documents');
           } else {
             // console.log("docment data: "+document.data())
             const salonData = [];
@@ -77,11 +79,6 @@ const SearchScreen = ({navigation}) => {
   return (
     <Box w="100%" mt="5">
       <StatusBar backgroundColor={'#6200ee'} />
-      {/* <SearchBar
-        searchPhrase={searchPhrase}
-        setSearchPhrase={setSearchPhrase}
-      /> */}
-
       <Center>
         <Box w={'90%'}>
           <Center>
@@ -91,9 +88,6 @@ const SearchScreen = ({navigation}) => {
               borderRadius="10"
               py="2"
               px="2"
-              // borderWidth="1"
-              // value={props.searchPhrase}
-              // onChangeText={props.setSearchPhrase}
               value={searchPhrase}
               onChangeText={setSearchPhrase}
               InputLeftElement={
@@ -124,14 +118,19 @@ const SearchScreen = ({navigation}) => {
           </Center>
         </Box>
       </Center>
+
       <Stack px="5" mt="5">
-        {!isEmpty ? (
+        {searchedSalon.length > 0 ? (
           <FlatList
             data={searchedSalon}
             renderItem={({item}) => <Item item={item} />}
           />
         ) : (
-          <Text />
+          <Center>
+            <Box mb={32}>
+              <EmptyList message={searchResult} />
+            </Box>
+          </Center>
         )}
       </Stack>
     </Box>
