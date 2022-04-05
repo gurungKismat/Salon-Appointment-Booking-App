@@ -16,6 +16,7 @@ const CutomHeaderScreen = ({data}) => {
   const {salonInfo, salonImage} = data.params;
   const [loading, setLoading] = useState(true);
   const [availableTime, setAvailableTime] = useState('');
+  console.log("salonInfo: "+JSON.stringify(salonInfo))
   console.log('salon Name: ' + JSON.stringify(salonInfo.salonName) + "id: "+salonInfo.salonId);
 
   const navigation = useNavigation();

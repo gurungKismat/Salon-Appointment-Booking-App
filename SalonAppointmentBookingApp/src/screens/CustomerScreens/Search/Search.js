@@ -13,6 +13,7 @@ import {
   Image,
   useToast,
 } from 'native-base';
+import {TouchableOpacity} from 'react-native';
 import SearchBar from '../../../components/SearchBar';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
@@ -20,8 +21,9 @@ import storage from '@react-native-firebase/storage';
 // import {Box, Center, Input, Icon} from 'native-base';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import EmptyList from '../../../components/EmptyList';
+import {useNavigation} from '@react-navigation/native';
 
-const SearchScreen = ({navigation}) => {
+const SearchScreen = () => {
   const [searchPhrase, setSearchPhrase] = useState('');
   const [searchedSalon, setSearchedSalon] = useState([]);
   const [searchResult, setSearchResult] = useState('No Items Searched');
@@ -46,7 +48,7 @@ const SearchScreen = ({navigation}) => {
             if (!toast.isActive(id)) {
               toast.show({
                 id,
-                title: "No Salon Found!",
+                title: 'No Salon Found!',
               });
             }
             // console.log('no matching documents');
@@ -61,15 +63,17 @@ const SearchScreen = ({navigation}) => {
               //     'doc data: ' +
               //     JSON.stringify(document.data()),
               // );
+            
 
-              const singleSalon = {
-                salonId: document.id,
-                salonData: document.data(),
-              };
+              const salonId = {salonId: document.id};
+              const salonInfos = document.data();
+              const mergedData = {...salonId, ...salonInfos};
 
-              salonData.push(singleSalon);
+            
+
+              salonData.push(mergedData);
             });
-            // console.log('Salon Data: ' + JSON.stringify(salonData));
+            console.log('Salon Data: ' + JSON.stringify(salonData));
             setSearchedSalon(salonData);
           }
         });
@@ -138,6 +142,7 @@ const SearchScreen = ({navigation}) => {
 };
 
 const Item = ({item}) => {
+  const navigation = useNavigation();
   const [imageUri, setImageUri] = useState('');
   const [loading, setLoading] = useState(true);
 
@@ -152,7 +157,7 @@ const Item = ({item}) => {
   };
 
   useEffect(() => {
-    const imgUri = item.salonData.salonImage;
+    const imgUri = item.salonImage;
     if (imgUri !== undefined) {
       // console.log('image exist');
       const reference = storage().ref().child('/salonImages').child(imgUri);
@@ -166,60 +171,68 @@ const Item = ({item}) => {
   }
 
   return (
-    <Box
-      my={1}
-      w="100%"
-      py={3}
-      rounded="xl"
-      overflow="hidden"
-      borderColor="coolGray.200"
-      backgroundColor="gray.50"
-      shadow="3">
-      <Stack p="4" space={2}>
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center">
-          <Stack direction="column" space={1}>
-            <Heading size="sm" ml="-1">
-              {/* Reaver Salon */}
-              {item.salonData.salonName}
-            </Heading>
+    <TouchableOpacity
+      onPress={() =>
+        navigation.navigate('SalonInfo', {
+          salonInfo: item,
+          salonImage: imageUri,
+        })
+      }>
+      <Box
+        my={1}
+        w="100%"
+        py={3}
+        rounded="xl"
+        overflow="hidden"
+        borderColor="coolGray.200"
+        backgroundColor="gray.50"
+        shadow="3">
+        <Stack p="4" space={2}>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center">
+            <Stack direction="column" space={1}>
+              <Heading size="sm" ml="-1">
+                {/* Reaver Salon */}
+                {item.salonName}
+              </Heading>
+              <Stack>
+                <Text fontWeight="400" fontSize="md">
+                  {/* Kapan, Kathmandu */}
+                  {item.address}
+                </Text>
+                <Text fontWeight="400" fontSize="md">
+                  {item.mobileNo}
+                </Text>
+              </Stack>
+            </Stack>
+
             <Stack>
-              <Text fontWeight="400" fontSize="md">
-                {/* Kapan, Kathmandu */}
-                {item.salonData.address}
-              </Text>
-              <Text fontWeight="400" fontSize="md">
-                {item.salonData.mobileNo}
-              </Text>
+              {imageUri === '' ? (
+                <Image
+                  source={{
+                    uri: 'https://wallpaperaccess.com/full/317501.jpg',
+                  }}
+                  alt="Default Salon Img"
+                  size="md"
+                  rounded="md"
+                />
+              ) : (
+                <Image
+                  source={{
+                    uri: imageUri,
+                  }}
+                  alt="Default Salon Img"
+                  size="md"
+                  rounded="md"
+                />
+              )}
             </Stack>
           </Stack>
-
-          <Stack>
-            {imageUri === '' ? (
-              <Image
-                source={{
-                  uri: 'https://wallpaperaccess.com/full/317501.jpg',
-                }}
-                alt="Default Salon Img"
-                size="md"
-                rounded="md"
-              />
-            ) : (
-              <Image
-                source={{
-                  uri: imageUri,
-                }}
-                alt="Default Salon Img"
-                size="md"
-                rounded="md"
-              />
-            )}
-          </Stack>
         </Stack>
-      </Stack>
-    </Box>
+      </Box>
+    </TouchableOpacity>
   );
 };
 
