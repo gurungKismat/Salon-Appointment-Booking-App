@@ -178,10 +178,10 @@ const styles = StyleSheet.create({
 });
 
 const FirstRoute = () => {
-  const [data, setData] = useState();
+ 
   const [saloninfo, setSalonInfo] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [imageUri, setImageUri] = useState('');
+
 
   const fetchAppointmentData = async currentUserId => {
     await firestore()
@@ -237,7 +237,7 @@ const FirstRoute = () => {
 };
 
 const SecondRoute = () => {
-  const [salonInfo, setSalonInfo] = useState();
+  const [salonInfo, setSalonInfo] = useState([]);
   const [loading, setLoading] = useState();
 
   const fetchAppointmentData = async currentUserId => {
@@ -256,7 +256,9 @@ const SecondRoute = () => {
           );
           datas.push(document.data());
         });
-        setSalonInfo(datas);
+        salonInfo.splice(0, salonInfo.length);
+
+        setSalonInfo([...salonInfo,...datas]);
         if (loading) {
           setLoading(false);
         }

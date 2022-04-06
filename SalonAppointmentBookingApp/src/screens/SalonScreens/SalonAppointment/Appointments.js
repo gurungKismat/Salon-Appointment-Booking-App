@@ -15,7 +15,7 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 
 const UpcomingAppointment = ({item}) => {
-  console.log('item: ' + JSON.stringify(item));
+  // console.log('item: ' + JSON.stringify(item));
 
   const [customerImg, setCustomerImg] = useState(undefined);
   const [valDisable, setValDisable] = useState(false);
@@ -184,12 +184,17 @@ const UpcomingAppointment = ({item}) => {
 };
 
 const PastAppointment = ({item}) => {
+  let services = '';
+  item.services.forEach(service => {
+    services += service.serviceName + ', ';
+  });
+  services = services.replace(/,\s*$/, '');
   return (
     <TouchableOpacity>
       <View style={styles.itemContainer}>
         <View style={styles.topItem}>
           <Heading size="sm" px="3" mt={4}>
-            {item.salonName}
+            {item.customerData.name}
           </Heading>
           <View
             style={
@@ -204,13 +209,16 @@ const PastAppointment = ({item}) => {
           <View style={{flexDirection: 'column', padding: 12}}>
             <View>
               <Text fontWeight="400" fontSize="md">
-                {item.salonAddress}
+                {item.customerData.mobileNo}
               </Text>
               <Text fontWeight="400" fontSize="md">
                 Date: {item.date}
               </Text>
               <Text fontWeight="400" fontSize="md">
                 Time: {item.time}
+              </Text>
+              <Text fontWeight="400" fontSize="md" maxW="48">
+                Services: {services}
               </Text>
             </View>
           </View>
@@ -390,7 +398,7 @@ const FirstRoute = () => {
 };
 
 const SecondRoute = () => {
-  const [salonInfo, setSalonInfo] = useState();
+  const [salonInfo, setSalonInfo] = useState([]);
   const [loading, setLoading] = useState();
 
   const fetchAppointmentData = async currentUserId => {
@@ -409,7 +417,8 @@ const SecondRoute = () => {
           );
           datas.push(document.data());
         });
-        setSalonInfo(datas);
+        salonInfo.splice(0, salonInfo.length);
+        setSalonInfo([...salonInfo, ...datas]);
         if (loading) {
           setLoading(false);
         }

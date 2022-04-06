@@ -99,32 +99,32 @@ const HomeScreen = () => {
   // }, [])
 
    // Bootstrap sequence function
-   async function bootstrap() {
-    const initialNotification = await notifee.getInitialNotification();
+  //  async function bootstrap() {
+  //   const initialNotification = await notifee.getInitialNotification();
 
-    if (initialNotification) {
-      navigation.navigate("CustomerNotification");
-      console.log('Notification caused application to open', initialNotification.notification);
-      console.log('Press action used to open the app', initialNotification.pressAction);
-    }
-  }
+  //   if (initialNotification) {
+  //     navigation.navigate("CustomerNotification");
+  //     console.log('Notification caused application to open', initialNotification.notification);
+  //     console.log('Press action used to open the app', initialNotification.pressAction);
+  //   }
+  // }
 
-  useEffect(() => {
-    bootstrap();
-  }, [])
+  // useEffect(() => {
+  //   bootstrap();
+  // }, [])
 
 
-  useEffect(() => {
-    // for notification
-    console.log("remote notificaiotn useefect")
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
-      console.log("notification data: "+JSON.stringify(remoteMessage))
-      alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
-      onDisplayNotification(remoteMessage);
-    });
+  // useEffect(() => {
+  //   // for notification
+  //   console.log("remote notificaiotn useefect")
+  //   const unsubscribe = messaging().onMessage(async remoteMessage => {
+  //     console.log("notification data: "+JSON.stringify(remoteMessage))
+  //     alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+  //     onDisplayNotification(remoteMessage);
+  //   });
 
-    return unsubscribe;
-  }, []);
+  //   return unsubscribe;
+  // }, []);
 
   useEffect(() => {
     // console.log('use effect customer data');
@@ -205,7 +205,9 @@ const HomeScreen = () => {
                       bg="#6200ee"
                       mr="1"
                       source={{
-                        uri: 'https://bit.ly/broken-link',
+                        // uri: 'https://bit.ly/broken-link',
+                        uri: "https://wallpaperaccess.com/full/317501.jpg"
+
                       }}>
                       {customerDatas.name.charAt(0)}
                     </Avatar>
