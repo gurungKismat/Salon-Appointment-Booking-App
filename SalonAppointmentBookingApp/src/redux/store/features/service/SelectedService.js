@@ -16,6 +16,7 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import storage from '@react-native-firebase/storage';
 import {serviceDeleted} from './serviceSlice';
+import uuid from 'react-native-uuid';
 
 const removeService = deleteItem => {
   deleteItem();
@@ -52,6 +53,7 @@ const SelectedServices = () => {
   const [loading, setLoading] = useState(true);
   const [salonImage, setsalonImage] = useState();
   const [salonAvailability, setSalonAvailability] = useState();
+  const [currSalonId, setCurrSalonId] = useState('');
 
   // const service = useSelector(state => state.service);
   // console.log('service ' + JSON.stringify(service));
@@ -143,21 +145,38 @@ const SelectedServices = () => {
   const requestAppointment = () => {
     if (date !== '') {
       if (time != '') {
-
-      }else {
-        alert('Please Select Time')
+        const custId = auth().currentUser.uid;
+        firestore().collection('Appointments').doc(uuid.v4()).set({
+          salonid: currSalonId,
+          customerId: custId,
+          services: cartItems,
+          date: date,
+          time: time,
+          requestResult: 'Pending',
+          salonName: salonInfo.salonName,
+          salonAddress: salonInfo.address,
+          salonImage: salonImage,
+        })
+        .then(() => {
+          alert("Appointment Request Sent")
+        }).catch(error => {
+          console.error(error);
+        })
+        ;
+      } else {
+        alert('Please Select Time');
       }
-    }else {
-      alert('Please Select Date')
+    } else {
+      alert('Please Select Date');
     }
-
-  }
+  };
 
   useEffect(() => {
     var salonId;
 
     if (cartItems.length > 0) {
       salonId = cartItems[0].salonId;
+      setCurrSalonId(salonId);
     }
 
     firestore()
@@ -182,6 +201,7 @@ const SelectedServices = () => {
         if (document.exists) {
           // console.log('document exist');
           const salonDatas = document.data();
+          // console.log('salon info: ' + JSON.stringify(salonDatas));
           setSalonInfo(salonDatas);
           const imgUri = salonDatas.salonImage;
 
@@ -345,9 +365,9 @@ const SelectedServices = () => {
       renderItem={renderItem}
       keyExtractor={item => item.id}
       ListFooterComponent={
-        <TouchableOpacity 
-        onPress={requestAppointment}
-        style={styles.requestAppointment}>
+        <TouchableOpacity
+          onPress={requestAppointment}
+          style={styles.requestAppointment}>
           <Text style={{color: 'white', fontSize: 17, alignSelf: 'center'}}>
             Request Appointment
           </Text>
