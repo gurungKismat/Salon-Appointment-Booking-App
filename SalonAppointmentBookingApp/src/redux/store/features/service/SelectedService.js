@@ -142,13 +142,23 @@ const SelectedServices = () => {
   };
 
   // request for appointment
-  const requestAppointment = () => {
+  const requestAppointment = async () => {
     if (date !== '') {
       if (time != '') {
         const custId = auth().currentUser.uid;
+        let customerInfos = {};
+        await firestore().collection('customers').doc(custId).get().then(doc => {
+          if (doc.exists) {
+             customerInfos = doc.data();
+             
+          }
+        })
+        
+
         firestore().collection('Appointments').doc(uuid.v4()).set({
-          salonid: currSalonId,
           customerId: custId,
+          salonid: currSalonId,
+          customerData: customerInfos,
           services: cartItems,
           date: date,
           time: time,
