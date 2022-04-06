@@ -152,123 +152,127 @@ const Profile = () => {
   }
 
   return (
-    <View style={styles.mainContainer}>
+    <>
       <StatusBar backgroundColor={'#6200ee'} />
-      <AnimatedLoader
-        visible={loadAnimation}
-        overlayColor="rgba(255,255,255,0.75)"
-        source={require('../../../assets/50124-user-profile.json')}
-        animationStyle={{width: 120, height: 120}}
-        speed={1}>
-        <Text color="black">Updating Salon Profile...</Text>
-      </AnimatedLoader>
-      <View style={styles.topContainer}>
-        <View style={styles.topItems}>
-          <View style={styles.imageStyle}>
-            {downloadUrl === null || downloadUrl === undefined ? (
-              <Image
-                size={40}
-                borderRadius={100}
-                resizeMode="cover"
-                source={require('../../../assets/icons/gallerydefault.png')}
-                alt={'Salon Profile Picture'}
+      <View style={styles.mainContainer}>
+        <AnimatedLoader
+          visible={loadAnimation}
+          overlayColor="rgba(255,255,255,0.75)"
+          source={require('../../../assets/50124-user-profile.json')}
+          animationStyle={{width: 120, height: 120}}
+          speed={1}>
+          <Text color="black">Updating Salon Profile...</Text>
+        </AnimatedLoader>
+        <View style={styles.topContainer}>
+          <View style={styles.topItems}>
+            <View style={styles.imageStyle}>
+              {downloadUrl === null || downloadUrl === undefined ? (
+                <Image
+                  size={40}
+                  borderRadius={100}
+                  resizeMode="cover"
+                  source={require('../../../assets/icons/gallerydefault.png')}
+                  alt={'Salon Profile Picture'}
+                />
+              ) : (
+                <Image
+                  size={40}
+                  borderRadius={100}
+                  resizeMode="cover"
+                  source={{uri: downloadUrl}}
+                  alt={'Salon Profile Picture'}
+                />
+              )}
+              <Icon
+                as={<MaterialCommunityIcon name={'camera-plus'} />}
+                size={8}
+                right={5}
+                top={10}
+                color="muted.200"
+                onPress={onImageLibraryPress}
               />
-            ) : (
-              <Image
-                size={40}
-                borderRadius={100}
-                resizeMode="cover"
-                source={{uri: downloadUrl}}
-                alt={'Salon Profile Picture'}
-              />
-            )}
-            <Icon
-              as={<MaterialCommunityIcon name={'camera-plus'} />}
-              size={8}
-              right={5}
-              top={10}
-              color="muted.200"
-              onPress={onImageLibraryPress}
-            />
-          </View>
-          <View style={styles.basicInfo}>
-            <Text style={{color: 'white', fontSize: 20, alignSelf: 'center'}}>
-              {salonInfo.salonName}
-            </Text>
-            <Text style={{color: 'white', fontSize: 18}}>
-              {salonInfo.address}
-            </Text>
-          </View>
-          <View style={styles.topContainerButtons}>
-            <TouchableOpacity
-              style={styles.editProfileBtn}
-              onPress={() => navigation.navigate('ProfileSettings', salonInfo)}>
-              <Text style={{color: 'white'}}>Edit Profile</Text>
-            </TouchableOpacity>
-            <Divider orientation="vertical" mx="1" />
-            <TouchableOpacity style={styles.signOutBtn} onPress={signOut}>
-              <Text style={{color: 'white'}}>Sign Out</Text>
-            </TouchableOpacity>
+            </View>
+            <View style={styles.basicInfo}>
+              <Text style={{color: 'white', fontSize: 20, alignSelf: 'center'}}>
+                {salonInfo.salonName}
+              </Text>
+              <Text style={{color: 'white', fontSize: 18}}>
+                {salonInfo.address}
+              </Text>
+            </View>
+            <View style={styles.topContainerButtons}>
+              <TouchableOpacity
+                style={styles.editProfileBtn}
+                onPress={() =>
+                  navigation.navigate('ProfileSettings', salonInfo)
+                }>
+                <Text style={{color: 'white'}}>Edit Profile</Text>
+              </TouchableOpacity>
+              <Divider orientation="vertical" mx="1" />
+              <TouchableOpacity style={styles.signOutBtn} onPress={signOut}>
+                <Text style={{color: 'white'}}>Sign Out</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
-      <ScrollView style={styles.bottomContainer}>
-        <View style={styles.bottomItemColumn}>
-          <View style={styles.email}>
-            <Icon
-              as={<MaterialCommunityIcon name={'email'} />}
-              size={7}
-              right={3}
-              color="muted.500"
-            />
-            <View style={{flexDirection: 'column'}}>
-              <Text style={{color: 'black', fontSize: 17}}>Email</Text>
-              <Text style={{color: 'black', fontSize: 17}}>
-                {/* grgkismat78@gmail.com */}
-                {salonInfo.email}
-              </Text>
+        <ScrollView style={styles.bottomContainer}>
+          <View style={styles.bottomItemColumn}>
+            <View style={styles.email}>
+              <Icon
+                as={<MaterialCommunityIcon name={'email'} />}
+                size={7}
+                right={3}
+                color="muted.500"
+              />
+              <View style={{flexDirection: 'column'}}>
+                <Text style={{color: 'black', fontSize: 17}}>Email</Text>
+                <Text style={{color: 'black', fontSize: 17}}>
+                  {/* grgkismat78@gmail.com */}
+                  {salonInfo.email}
+                </Text>
+              </View>
             </View>
-          </View>
-          <Divider bg="light.300" my="3" />
-          <View style={styles.email}>
-            <Icon
-              as={<MaterialCommunityIcon name={'cellphone'} />}
-              size={7}
-              right={3}
-              color="muted.500"
-            />
-            <View style={{flexDirection: 'column'}}>
-              <Text style={{color: 'black', fontSize: 17}}>Mobile</Text>
-              <Text style={{color: 'black', fontSize: 17}}>
-                {salonInfo.mobileNo}
-              </Text>
+            <Divider bg="light.300" my="3" />
+            <View style={styles.email}>
+              <Icon
+                as={<MaterialCommunityIcon name={'cellphone'} />}
+                size={7}
+                right={3}
+                color="muted.500"
+              />
+              <View style={{flexDirection: 'column'}}>
+                <Text style={{color: 'black', fontSize: 17}}>Mobile</Text>
+                <Text style={{color: 'black', fontSize: 17}}>
+                  {salonInfo.mobileNo}
+                </Text>
+              </View>
             </View>
-          </View>
-          <Divider bg="light.300" my="3" />
-          <View style={styles.email}>
-            <Icon
-              as={<MaterialCommunityIcon name={'information'} />}
-              size={7}
-              right={3}
-              color="muted.500"
-            />
-            <View style={{flexDirection: 'column', paddingHorizontal: 5}}>
-              <Text style={{color: 'black', fontSize: 17}}>About</Text>
-              <Text
-                style={{color: 'black', fontSize: 17, textAlign: 'justify'}}>
-                {/* Lorem Ipsum is simply dummy text of the printing and typesetting
+            <Divider bg="light.300" my="3" />
+            <View style={styles.email}>
+              <Icon
+                as={<MaterialCommunityIcon name={'information'} />}
+                size={7}
+                right={3}
+                color="muted.500"
+              />
+              <View style={{flexDirection: 'column', paddingHorizontal: 5}}>
+                <Text style={{color: 'black', fontSize: 17}}>About</Text>
+                <Text
+                  style={{color: 'black', fontSize: 17, textAlign: 'justify'}}>
+                  {/* Lorem Ipsum is simply dummy text of the printing and typesetting
                 industry. Lorem Ipsum has been the industry's standard dummy
                 text ever since the 1500s, when an unknown printer took a galley
                 of type and scrambled it to make a type specimen book. It has
                 survived not only five centuries, but also the leap into
                 electronic typesetting, remaining essentially unchanged. */}
-                {salonInfo.about}
-              </Text>
+                  {salonInfo.about}
+                </Text>
+              </View>
             </View>
           </View>
-        </View>
-      </ScrollView>
-    </View>
+        </ScrollView>
+      </View>
+    </>
   );
 };
 
@@ -280,7 +284,7 @@ const styles = StyleSheet.create({
   },
 
   topContainer: {
-    flex: 1,
+    flex: 2,
     justifyContent: 'center',
     alignItems: 'center',
     borderBottomLeftRadius: 20,

@@ -15,12 +15,13 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 
 const UpcomingAppointment = ({item}) => {
-  // console.log("item: "+JSON.stringify(item.customerData))
+  console.log('item: ' + JSON.stringify(item));
 
   const [customerImg, setCustomerImg] = useState(undefined);
+  const [valDisable, setValDisable] = useState(false);
 
   let services = '';
-  item.services.forEach(service => {
+  item.docData.services.forEach(service => {
     services += service.serviceName + ', ';
   });
   services = services.replace(/,\s*$/, '');
@@ -30,16 +31,53 @@ const UpcomingAppointment = ({item}) => {
     setCustomerImg(downloadUrl);
   };
 
-  const acceptBtnPressed = () => {
-    alert('accept')
-  }
+  const acceptBtnPressed = docId => {
+    // alert('accept: '+docId);
+    firestore()
+      .collection('Appointments')
+      .doc(docId)
+      .update({
+        requestResult: 'Accepted',
+      })
+      .then(result => {
+        // setIsDisable(true);
+        alert('Appointment Accepted');
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  };
 
-  const rejectBtnPressed = () => {
-    alert('reject')
-  }
+  const rejectBtnPressed = docId => {
+    // alert('reject');
+    firestore()
+      .collection('Appointments')
+      .doc(docId)
+      .update({
+        appointmentCompleted: true,
+        requestResult: 'Rejected',
+      })
+      .then(result => {
+        // setIsDisable(true);
+        alert('Appointment Rejected');
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  };
+
+  const isDisabled = () => {
+    // alert('asdfads')
+    console.log('requeset state: ' + item.docData.requestResult);
+    if (item.docData.requestResult === 'Accepted') {
+      return true;
+    } else {
+      return false;
+    }
+  };
 
   useEffect(() => {
-    const imgUri = item.customerData.customerImage;
+    const imgUri = item.docData.customerData.customerImage;
 
     if (imgUri !== undefined) {
       // console.log('image exist');
@@ -53,33 +91,35 @@ const UpcomingAppointment = ({item}) => {
   }, []);
 
   return (
-    <View style={{flexDirection: 'column'}}>
+    <View style={{flexDirection: 'column', marginVertical: 8}}>
       <TouchableOpacity>
         <View style={styles.itemContainer}>
           <View style={styles.topItem}>
             <Heading size="sm" px="3" mt={4}>
-              {item.customerData.name}
+              {item.docData.customerData.name}
             </Heading>
             <View
               style={
-                item.requestResult === 'Pending'
+                item.docData.requestResult === 'Pending'
                   ? styles.pending
                   : styles.accepted
               }>
-              <Text style={{color: '#FFFFFF'}}>{item.requestResult}</Text>
+              <Text style={{color: '#FFFFFF', fontSize: 13}}>
+                {item.docData.requestResult}
+              </Text>
             </View>
           </View>
           <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
             <View style={{flexDirection: 'column', padding: 12}}>
               <View>
                 <Text fontWeight="400" fontSize="md">
-                  {item.customerData.mobileNo}
+                  {item.docData.customerData.mobileNo}
                 </Text>
                 <Text fontWeight="400" fontSize="md">
-                  Date: {item.date}
+                  Date: {item.docData.date}
                 </Text>
                 <Text fontWeight="400" fontSize="md">
-                  Time: {item.time}
+                  Time: {item.docData.time}
                 </Text>
 
                 <Text fontWeight="400" fontSize="md">
@@ -120,17 +160,19 @@ const UpcomingAppointment = ({item}) => {
           borderBottomRightRadius: 20,
         }}>
         <View style={styles.bottomContainer}>
-          <TouchableOpacity 
-          onPress={acceptBtnPressed}
-          style={styles.acceptBtn}>
+          <TouchableOpacity
+            disabled={isDisabled()}
+            onPress={() => acceptBtnPressed(item.docId)}
+            style={!isDisabled() ? styles.acceptBtn : styles.acceptBtnDisabled}>
             <Text style={{color: 'white'}} fontSize="md">
               Accept
             </Text>
           </TouchableOpacity>
           <Divider orientation="vertical" thickness="2" bg="muted.300" />
-          <TouchableOpacity 
-          onPress={rejectBtnPressed}
-          style={styles.rejectBtn}>
+          <TouchableOpacity
+            disabled={isDisabled()}
+            onPress={() => rejectBtnPressed(item.docId)}
+            style={!isDisabled() ? styles.rejectBtn : styles.rejectBtnDisabled}>
             <Text style={{color: 'white'}} fontsize="md">
               Reject
             </Text>
@@ -151,8 +193,8 @@ const PastAppointment = ({item}) => {
           </Heading>
           <View
             style={
-              item.requestResult === 'Pending'
-                ? styles.pending
+              item.requestResult === 'Rejected'
+                ? styles.rejected
                 : styles.accepted
             }>
             <Text style={{color: '#FFFFFF'}}>{item.requestResult}</Text>
@@ -222,6 +264,14 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 10,
   },
 
+  rejected: {
+    backgroundColor: '#dc2626',
+    paddingHorizontal: 6,
+    paddingVertical: 7,
+    borderBottomLeftRadius: 10,
+    borderTopRightRadius: 10,
+  },
+
   pending: {
     backgroundColor: '#ea580c',
     paddingHorizontal: 6,
@@ -240,8 +290,28 @@ const styles = StyleSheet.create({
     width: 120,
   },
 
+  acceptBtnDisabled: {
+    backgroundColor: '#d6d3d1',
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 120,
+  },
+
   rejectBtn: {
     backgroundColor: '#ef4444',
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 120,
+  },
+
+  rejectBtnDisabled: {
+    backgroundColor: '#d6d3d1',
     paddingHorizontal: 15,
     paddingVertical: 10,
     borderRadius: 25,
@@ -254,28 +324,33 @@ const styles = StyleSheet.create({
 });
 
 const FirstRoute = () => {
-  const [customerData, setCustomerData] = useState([]);
   const [saloninfo, setSalonInfo] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [imageUri, setImageUri] = useState('');
 
   const fetchAppointmentData = async currentUserId => {
     await firestore()
       .collection('Appointments')
       .where('salonid', '==', currentUserId)
+      .where('appointmentCompleted', '==', false)
       .onSnapshot(documents => {
         const appointmentDatas = [];
 
         documents.forEach(async document => {
-          console.log(
-            'document id: ' +
-              document.id +
-              '  salon appointment documentData: ' +
-              JSON.stringify(document.data()),
-          );
-
-          appointmentDatas.push(document.data());
+          // console.log(
+          //   'document id: ' +
+          //     document.id +
+          //     '  salon appointment documentData: ' +
+          //     JSON.stringify(document.data()),
+          // );
+          const docId = document.id;
+          const docData = document.data();
+          const allInfo = {
+            docId,
+            docData,
+          };
+          appointmentDatas.push(allInfo);
         });
+        console.log('appointmentdatas: ' + JSON.stringify(appointmentDatas));
         saloninfo.splice(0, saloninfo.length);
         setSalonInfo([...saloninfo, ...appointmentDatas]);
         // setCustomerData(customerInfos);
@@ -295,22 +370,81 @@ const FirstRoute = () => {
   }
 
   return (
-    <View style={{flex: 1}}>
-      <View style={{paddingHorizontal: 12, marginTop: 20}}>
-        <FlatList
-          data={saloninfo}
-          renderItem={({item}) => <UpcomingAppointment item={item} />}
-        />
-      </View>
-    </View>
+    <>
+      {saloninfo.length > 0 ? (
+        <View style={{flex: 1}}>
+          <View style={{paddingHorizontal: 12, marginTop: 20}}>
+            <FlatList
+              data={saloninfo}
+              renderItem={({item}) => <UpcomingAppointment item={item} />}
+            />
+          </View>
+        </View>
+      ) : (
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <EmptyList message="No Upcoming Appointments" />
+        </View>
+      )}
+    </>
   );
 };
 
-const SecondRoute = () => (
-  <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-    <EmptyList message="No Past Appointments" />
-  </View>
-);
+const SecondRoute = () => {
+  const [salonInfo, setSalonInfo] = useState();
+  const [loading, setLoading] = useState();
+
+  const fetchAppointmentData = async currentUserId => {
+    await firestore()
+      .collection('Appointments')
+      .where('salonid', '==', currentUserId)
+      .where('appointmentCompleted', '==', true)
+      .onSnapshot(documents => {
+        const datas = [];
+        documents.forEach(document => {
+          console.log(
+            'second route document id: ' +
+              document.id +
+              ' second route documentData: ' +
+              JSON.stringify(document.data()),
+          );
+          datas.push(document.data());
+        });
+        setSalonInfo(datas);
+        if (loading) {
+          setLoading(false);
+        }
+      });
+  };
+
+  useEffect(() => {
+    const currentUserId = auth().currentUser.uid;
+    fetchAppointmentData(currentUserId);
+  }, []);
+
+  if (loading) {
+    return null;
+  }
+
+  return (
+    <>
+      {salonInfo.length > 0 ? (
+        <View style={{flex: 1}}>
+          <View style={{paddingHorizontal: 12, marginTop: 20}}>
+            <FlatList
+              data={salonInfo}
+              renderItem={({item}) => <PastAppointment item={item} />}
+            />
+          </View>
+          {/* <EmptyList message="No Past Appointments" /> */}
+        </View>
+      ) : (
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <EmptyList message="No Past Appointments" />
+        </View>
+      )}
+    </>
+  );
+};
 
 const renderScene = SceneMap({
   first: FirstRoute,

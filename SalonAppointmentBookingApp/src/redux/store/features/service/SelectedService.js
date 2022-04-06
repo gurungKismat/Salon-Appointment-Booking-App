@@ -166,6 +166,7 @@ const SelectedServices = () => {
           salonName: salonInfo.salonName,
           salonAddress: salonInfo.address,
           salonImage: salonImage,
+          appointmentCompleted: false,
         })
         .then(() => {
           alert("Appointment Request Sent")

@@ -185,7 +185,7 @@ const Item = ({item}) => {
         rounded="xl"
         overflow="hidden"
         borderColor="coolGray.200"
-        backgroundColor="gray.50"
+        backgroundColor="light.200"
         shadow="3">
         <Stack p="4" space={2}>
           <Stack

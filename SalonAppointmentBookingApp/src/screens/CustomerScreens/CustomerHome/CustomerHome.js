@@ -182,11 +182,11 @@ const HomeScreen = () => {
     <>
       <StatusBar backgroundColor={'#6200ee'} />
       <Stack bg="muted.10">
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={() => onDisplayNotification()}
           style={{backgroundColor: 'red', marginVertical: 10, padding: 20}}>
           <Text style={{color: 'white'}}>Show Notification</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <ScrollView mx={5} mt={5} mb={5}>
           <VStack space={5}>
             <HStack justifyContent={'space-between'}>

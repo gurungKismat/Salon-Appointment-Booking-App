@@ -33,7 +33,9 @@ const UpcomingAppointment = ({item}) => {
                 ? styles.pending
                 : styles.accepted
             }>
-            <Text style={{color: '#FFFFFF'}}>{item.requestResult}</Text>
+            <Text style={{color: '#FFFFFF', fontSize: 13}}>
+              {item.requestResult}
+            </Text>
           </View>
         </View>
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
@@ -87,8 +89,8 @@ const PastAppointment = ({item}) => {
           </Heading>
           <View
             style={
-              item.requestResult === 'Pending'
-                ? styles.pending
+              item.requestResult === 'Rejected'
+                ? styles.rejected
                 : styles.accepted
             }>
             <Text style={{color: '#FFFFFF'}}>{item.requestResult}</Text>
@@ -141,6 +143,7 @@ const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'column',
     borderRadius: 20,
+    marginVertical: 8,
   },
 
   topItem: {
@@ -164,6 +167,14 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 10,
     borderTopRightRadius: 10,
   },
+
+  rejected: {
+    backgroundColor: '#dc2626',
+    paddingHorizontal: 6,
+    paddingVertical: 7,
+    borderBottomLeftRadius: 10,
+    borderTopRightRadius: 10,
+  },
 });
 
 const FirstRoute = () => {
@@ -176,6 +187,7 @@ const FirstRoute = () => {
     await firestore()
       .collection('Appointments')
       .where('customerId', '==', currentUserId)
+      .where('appointmentCompleted', '==', false)
       .onSnapshot(documents => {
         const datas = [];
         documents.forEach(document => {
@@ -195,7 +207,7 @@ const FirstRoute = () => {
   };
 
   useEffect(() => {
-    console.log('customer appintment')
+    console.log('customer appintment');
     const currentUserId = auth().currentUser.uid;
     fetchAppointmentData(currentUserId);
   }, []);
@@ -205,14 +217,22 @@ const FirstRoute = () => {
   }
 
   return (
-    <View style={{flex: 1}}>
-      <View style={{paddingHorizontal: 12, marginTop: 20}}>
-        <FlatList
-          data={saloninfo}
-          renderItem={({item}) => <UpcomingAppointment item={item} />}
-        />
-      </View>
-    </View>
+    <>
+      {saloninfo.length > 0 ? (
+        <View style={{flex: 1}}>
+          <View style={{paddingHorizontal: 12, marginTop: 20}}>
+            <FlatList
+              data={saloninfo}
+              renderItem={({item}) => <UpcomingAppointment item={item} />}
+            />
+          </View>
+        </View>
+      ) : (
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <EmptyList message="No Upcoming Appointments" />
+        </View>
+      )}
+    </>
   );
 };
 
@@ -224,13 +244,14 @@ const SecondRoute = () => {
     await firestore()
       .collection('Appointments')
       .where('customerId', '==', currentUserId)
+      .where('appointmentCompleted', '==', true)
       .onSnapshot(documents => {
         const datas = [];
         documents.forEach(document => {
           console.log(
-            'document id: ' +
+            'second route document id: ' +
               document.id +
-              'documentData: ' +
+              ' second route documentData: ' +
               JSON.stringify(document.data()),
           );
           datas.push(document.data());
@@ -252,14 +273,22 @@ const SecondRoute = () => {
   }
 
   return (
-    <View style={{flex: 1}}>
-      <View style={{paddingHorizontal: 12, marginTop: 20}}>
-        <FlatList
-          data={salonInfo}
-          renderItem={({item}) => <PastAppointment item={item} />}
-        />
-      </View>
-    </View>
+    <>
+      {salonInfo.length > 0 ? (
+        <View style={{flex: 1}}>
+          <View style={{paddingHorizontal: 12, marginTop: 20}}>
+            <FlatList
+              data={salonInfo}
+              renderItem={({item}) => <PastAppointment item={item} />}
+            />
+          </View>
+        </View>
+      ) : (
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <EmptyList message="No Upcoming Appointments" />
+        </View>
+      )}
+    </>
   );
 };
 
