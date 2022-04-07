@@ -17,17 +17,21 @@ import {useNavigation} from '@react-navigation/native';
 import {useSelector, useDispatch} from 'react-redux';
 import {serviceAdded} from '../redux/store/features/service/serviceSlice';
 
+
 const DATA = [
   {name: 'kismat', age: 21},
   {name: 'tobi', age: 22},
 ];
 
 const UpcomingAppointment = ({item}) => {
-  console.log('item doc id: ' + JSON.stringify(item));
+  // console.log('item doc id: ' + JSON.stringify(item));
+  const navigation = useNavigation();
 
   const upcomingAppointmentPressed = (id) => {
-    alert(id);
-    // navigation.navigate('RequestedAppointment');
+    // alert(id);
+    navigation.navigate('RequestedAppointment', {
+      requestedAppointmentId: id
+    });
   };
 
   return (

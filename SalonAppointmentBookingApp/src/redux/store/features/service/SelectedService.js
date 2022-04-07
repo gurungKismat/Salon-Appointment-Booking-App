@@ -25,7 +25,7 @@ const removeService = deleteItem => {
 
 // flat list services items
 const Item = ({title, deleteItem}) => {
-  console.log('item in selected service: '+JSON.stringify(title));
+  // console.log('item in selected service: '+JSON.stringify(title));
   return (
   <View style={{paddingHorizontal: 10}}>
     <View style={styles.item}>
