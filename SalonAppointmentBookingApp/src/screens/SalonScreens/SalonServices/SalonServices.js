@@ -42,7 +42,7 @@ const SalonServices = () => {
   var currServiceId;
 
   const editService = (header, service, index) => {
-    console.log('service: ' + JSON.stringify(service));
+    // console.log('service: ' + JSON.stringify(service));
 
     dispatch(
       updateService({

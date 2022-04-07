@@ -23,10 +23,12 @@ const removeService = deleteItem => {
 };
 
 // flat list services items
-const Item = ({title, deleteItem}) => (
+const Item = ({title, deleteItem}) => {
+  console.log('item in selected service: '+JSON.stringify(title));
+  return (
   <View style={{paddingHorizontal: 10}}>
     <View style={styles.item}>
-      <Text style={styles.title}>{title}</Text>
+      <Text style={styles.title}>{title.serviceHeading} - {title.serviceName}</Text>
       <Icon
         mr="2"
         size="7"
@@ -37,10 +39,17 @@ const Item = ({title, deleteItem}) => (
     </View>
   </View>
 );
-
+}
 const SelectedServices = () => {
   const cartItems = useSelector(state => state.service);
-  console.log('cartitms: ' + JSON.stringify(cartItems));
+  // console.log('cartitms: ' + JSON.stringify(cartItems));
+  let totalPrice = 0;
+  if (cartItems.length > 0) {
+    cartItems.forEach(item => {
+       totalPrice += Number(item.servicePrice);
+    })
+  }
+
   const dispatch = useDispatch();
 
   // const {id} = route.params;
@@ -69,7 +78,9 @@ const SelectedServices = () => {
   };
 
   const renderItem = ({item}) => (
-    <Item title={item.serviceName} deleteItem={() => deleteItem(item.id)} />
+
+    // <Item title={item.serviceName} deleteItem={() => deleteItem(item.id)} />
+    <Item title={item} deleteItem={() => deleteItem(item.id)} />
   );
 
   // handles the change after selecting date from the date picker
@@ -238,6 +249,8 @@ const SelectedServices = () => {
   // getting current date
   const currDate = new Date();
 
+
+
   if (loading) {
     return null;
   }
@@ -365,9 +378,12 @@ const SelectedServices = () => {
           </View>
           <Divider my="4" thickness={'3'} />
 
-          <View style={{marginTop: 7}}>
+          <View style={{flexDirection: 'row',justifyContent: 'space-between',alignItems: 'center',marginTop: 7}}>
             <Text style={{color: 'black', fontSize: 18, fontWeight: 'bold'}}>
               Services
+            </Text>
+            <Text style={{color: 'black', fontSize: 15, fontWeight: 'bold'}}>
+              Total Price: {totalPrice}
             </Text>
           </View>
         </View>

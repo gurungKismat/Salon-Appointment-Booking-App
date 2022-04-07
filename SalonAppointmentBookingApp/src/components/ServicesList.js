@@ -50,6 +50,7 @@ const Item = ({salonId, serviceName, headers}) => {
             serviceHeading: headers,
             serviceName: serviceName.serviceName,
             isSelected: value,
+            servicePrice: serviceName.price,
           }),
         );
       } else {
@@ -65,6 +66,7 @@ const Item = ({salonId, serviceName, headers}) => {
           serviceHeading: headers,
           serviceName: serviceName.serviceName,
           isSelected: value,
+          servicePrice: serviceName.price,
         }),
       );
     }
