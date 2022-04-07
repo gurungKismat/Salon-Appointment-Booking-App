@@ -13,6 +13,9 @@ import EmptyList from '../../../components/EmptyList';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import storage from '@react-native-firebase/storage';
+import {useNavigation} from '@react-navigation/native';
+import {useSelector, useDispatch} from 'react-redux';
+import {serviceAdded} from '../redux/store/features/service/serviceSlice';
 
 const DATA = [
   {name: 'kismat', age: 21},
@@ -20,21 +23,28 @@ const DATA = [
 ];
 
 const UpcomingAppointment = ({item}) => {
+  console.log('item doc id: ' + JSON.stringify(item));
+
+  const upcomingAppointmentPressed = (id) => {
+    alert(id);
+    // navigation.navigate('RequestedAppointment');
+  };
+
   return (
-    <TouchableOpacity>
+    <TouchableOpacity onPress={() => upcomingAppointmentPressed(item.docId)}>
       <View style={styles.itemContainer}>
         <View style={styles.topItem}>
           <Heading size="sm" px="3" mt={4}>
-            {item.salonName}
+            {item.docData.salonName}
           </Heading>
           <View
             style={
-              item.requestResult === 'Pending'
+              item.docData.requestResult === 'Pending'
                 ? styles.pending
                 : styles.accepted
             }>
             <Text style={{color: '#FFFFFF', fontSize: 13}}>
-              {item.requestResult}
+              {item.docData.requestResult}
             </Text>
           </View>
         </View>
@@ -42,18 +52,18 @@ const UpcomingAppointment = ({item}) => {
           <View style={{flexDirection: 'column', padding: 12}}>
             <View>
               <Text fontWeight="400" fontSize="md">
-                {item.salonAddress}
+                {item.docData.salonAddress}
               </Text>
               <Text fontWeight="400" fontSize="md">
-                Date: {item.date}
+                Date: {item.docData.date}
               </Text>
               <Text fontWeight="400" fontSize="md">
-                Time: {item.time}
+                Time: {item.docData.time}
               </Text>
             </View>
           </View>
           <View style={{paddingVertical: 10, paddingHorizontal: 13}}>
-            {item.salonImage === '' ? (
+            {item.docData.salonImage === '' ? (
               <Image
                 source={{
                   uri: 'https://wallpaperaccess.com/full/317501.jpg',
@@ -65,7 +75,7 @@ const UpcomingAppointment = ({item}) => {
             ) : (
               <Image
                 source={{
-                  uri: item.salonImage,
+                  uri: item.docData.salonImage,
                 }}
                 alt="Default Salon Img"
                 size="md"
@@ -137,51 +147,9 @@ const PastAppointment = ({item}) => {
   );
 };
 
-const styles = StyleSheet.create({
-  itemContainer: {
-    backgroundColor: '#e7e5e4',
-    width: '100%',
-    flexDirection: 'column',
-    borderRadius: 20,
-    marginVertical: 8,
-  },
-
-  topItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-
-  accepted: {
-    backgroundColor: '#065f46',
-    paddingHorizontal: 6,
-    paddingVertical: 7,
-    borderBottomLeftRadius: 10,
-    borderTopRightRadius: 10,
-  },
-
-  pending: {
-    backgroundColor: '#ea580c',
-    paddingHorizontal: 6,
-    paddingVertical: 7,
-    borderBottomLeftRadius: 10,
-    borderTopRightRadius: 10,
-  },
-
-  rejected: {
-    backgroundColor: '#dc2626',
-    paddingHorizontal: 6,
-    paddingVertical: 7,
-    borderBottomLeftRadius: 10,
-    borderTopRightRadius: 10,
-  },
-});
-
 const FirstRoute = () => {
- 
   const [saloninfo, setSalonInfo] = useState([]);
   const [loading, setLoading] = useState(true);
-
 
   const fetchAppointmentData = async currentUserId => {
     await firestore()
@@ -191,13 +159,20 @@ const FirstRoute = () => {
       .onSnapshot(documents => {
         const datas = [];
         documents.forEach(document => {
-          console.log(
-            'document id: ' +
-              document.id +
-              'documentData: ' +
-              JSON.stringify(document.data()),
-          );
-          datas.push(document.data());
+          // console.log(
+          //   'document id: ' +
+          //     document.id +
+          //     'documentData: ' +
+          //     JSON.stringify(document.data()),
+          // );
+          const docId = document.id;
+          const docData = document.data();
+          const allDatas = {
+            docId,
+            docData,
+          }
+         
+          datas.push(allDatas);
         });
         setSalonInfo(datas);
         if (loading) {
@@ -258,7 +233,7 @@ const SecondRoute = () => {
         });
         salonInfo.splice(0, salonInfo.length);
 
-        setSalonInfo([...salonInfo,...datas]);
+        setSalonInfo([...salonInfo, ...datas]);
         if (loading) {
           setLoading(false);
         }
@@ -337,3 +312,43 @@ const Appointment = () => {
 };
 
 export default Appointment;
+
+const styles = StyleSheet.create({
+  itemContainer: {
+    backgroundColor: '#e7e5e4',
+    width: '100%',
+    flexDirection: 'column',
+    borderRadius: 20,
+    marginVertical: 8,
+  },
+
+  topItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+
+  accepted: {
+    backgroundColor: '#065f46',
+    paddingHorizontal: 6,
+    paddingVertical: 7,
+    borderBottomLeftRadius: 10,
+    borderTopRightRadius: 10,
+  },
+
+  pending: {
+    backgroundColor: '#ea580c',
+    paddingHorizontal: 6,
+    paddingVertical: 7,
+    borderBottomLeftRadius: 10,
+    borderTopRightRadius: 10,
+  },
+
+  rejected: {
+    backgroundColor: '#dc2626',
+    paddingHorizontal: 6,
+    paddingVertical: 7,
+    borderBottomLeftRadius: 10,
+    borderTopRightRadius: 10,
+  },
+});

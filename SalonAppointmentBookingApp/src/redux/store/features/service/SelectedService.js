@@ -15,8 +15,9 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import storage from '@react-native-firebase/storage';
-import {serviceDeleted} from './serviceSlice';
+import {serviceDeleted, deleteAllServices} from './serviceSlice';
 import uuid from 'react-native-uuid';
+import { useNavigation } from '@react-navigation/native';
 
 const removeService = deleteItem => {
   deleteItem();
@@ -44,12 +45,16 @@ const SelectedServices = () => {
   const cartItems = useSelector(state => state.service);
   // console.log('cartitms: ' + JSON.stringify(cartItems));
   let totalPrice = 0;
+  let btnDisable = undefined;
   if (cartItems.length > 0) {
     cartItems.forEach(item => {
        totalPrice += Number(item.servicePrice);
+       btnDisable = item.btnDisable;
+      //  console.log('btn disable: '+btnDisable)
     })
   }
 
+  const navigation = useNavigation();
   const dispatch = useDispatch();
 
   // const {id} = route.params;
@@ -78,7 +83,6 @@ const SelectedServices = () => {
   };
 
   const renderItem = ({item}) => (
-
     // <Item title={item.serviceName} deleteItem={() => deleteItem(item.id)} />
     <Item title={item} deleteItem={() => deleteItem(item.id)} />
   );
@@ -181,6 +185,9 @@ const SelectedServices = () => {
         })
         .then(() => {
           alert("Appointment Request Sent")
+          navigation.popToTop();
+          navigation.navigate('CustomerAppointment')
+          dispatch(deleteAllServices())
         }).catch(error => {
           console.error(error);
         })
@@ -192,6 +199,15 @@ const SelectedServices = () => {
       alert('Please Select Date');
     }
   };
+
+  // check if request appointment button is disabled
+  function checkDisable() {
+    if (btnDisable === undefined) {
+      return false;
+    }else {
+      return true;
+    }
+  }
 
   useEffect(() => {
     var salonId;
@@ -394,6 +410,7 @@ const SelectedServices = () => {
       ListFooterComponent={
         <TouchableOpacity
           onPress={requestAppointment}
+          disabled={checkDisable()}
           style={styles.requestAppointment}>
           <Text style={{color: 'white', fontSize: 17, alignSelf: 'center'}}>
             Request Appointment
@@ -403,6 +420,8 @@ const SelectedServices = () => {
     />
   );
 };
+
+
 
 export default SelectedServices;
 

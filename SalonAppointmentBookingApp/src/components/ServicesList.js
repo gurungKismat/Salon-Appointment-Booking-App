@@ -8,9 +8,8 @@ import {
 } from 'react-native';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Icon} from 'native-base';
-import {useDispatch} from 'react-redux';
 import {serviceAdded} from '../redux/store/features/service/serviceSlice';
-import {useSelector} from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
 import uuid from 'react-native-uuid';
 

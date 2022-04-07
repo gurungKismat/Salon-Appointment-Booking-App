@@ -11,11 +11,13 @@ import CustomerProfile from '../screens/CustomerScreens/CustomerProfile/Customer
 import {View, Text} from 'react-native';
 import SelectedServices from "../redux/store/features/service/SelectedService";
 import CustomerProfileSettings from "../screens/CustomerScreens/ProfileSettings/ProfileSettings";
+import RequestedAppointment from '../screens/CustomerScreens/RequestedAppointment/RequestedAppointment';
 
 const Stack = createNativeStackNavigator();
 const HomeStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const SearchStack = createNativeStackNavigator();
+const AppointmentNavigator = createNativeStackNavigator();
 
 const Detail = () => {
   return (
@@ -24,6 +26,45 @@ const Detail = () => {
     </View>
   );
 };
+
+// Screens inside Apointment Tab bar
+const AppointmentsNavigator = () => {
+  return (
+    <AppointmentNavigator.Navigator initialRouteName="CustomerAppointment" headerMode="screen">
+      <AppointmentNavigator.Screen
+        name="CustomerAppointment"
+        component={AppointmentScreen}
+        options={{
+          title: 'Appointments',
+          headerStyle: {
+            backgroundColor: '#6200ee',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 20,
+          },
+        }}
+      />
+      <AppointmentNavigator.Screen
+        name="RequestedAppointment"
+        component={RequestedAppointment}
+        options={{
+          title: 'Requested Appointments',
+          headerStyle: {
+            backgroundColor: '#6200ee',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 20,
+          },
+        }}
+      />
+    </AppointmentNavigator.Navigator>
+  );
+};
+
 
 // Screens inside Search Tab bar
 const SearchNavigator = () => {
@@ -179,8 +220,21 @@ const Main = () => {
         }}
       />
       <Tab.Screen
-        name="CustomerAppointment"
-        component={AppointmentScreen}
+        name="CustomerAppointmentNavigator"
+        component={AppointmentsNavigator}
+        options={{
+          headerShown: false,
+          tabBarLabel: 'Appointment',
+          tabBarIcon: ({color, size}) => (
+            <Icon name="calendar-question" color={color} size={size} />
+          ),
+          tabBarActiveTintColor: '#6200ee',
+          tabBarInactiveTintColor: 'gray',
+        }}
+      />
+      {/* <Tab.Screen
+        name="CustomerAppointmentNavigator"
+        component={AppointmentNavigator}
         options={{
           title: 'Appointment',
           headerStyle: {
@@ -198,7 +252,7 @@ const Main = () => {
           tabBarActiveTintColor: '#6200ee',
           tabBarInactiveTintColor: 'gray',
         }}
-      />
+      /> */}
 
       <Tab.Screen
         name="CustomerNotification"

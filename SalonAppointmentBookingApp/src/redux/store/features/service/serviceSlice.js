@@ -24,9 +24,13 @@ const serviceSlice = createSlice({
         state.splice(itemIdx, 1);
       }
     },
+
+    deleteAllServices(state) {
+      state.splice(0, state.length);
+    }
   },
 });
 
-export const {serviceAdded, serviceDeleted} = serviceSlice.actions;
+export const {serviceAdded, serviceDeleted, deleteAllServices} = serviceSlice.actions;
 
 export default serviceSlice.reducer;
