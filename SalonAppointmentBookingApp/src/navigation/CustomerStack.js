@@ -12,6 +12,7 @@ import {View, Text} from 'react-native';
 import SelectedServices from "../redux/store/features/service/SelectedService";
 import CustomerProfileSettings from "../screens/CustomerScreens/ProfileSettings/ProfileSettings";
 import RequestedAppointment from '../screens/CustomerScreens/RequestedAppointment/RequestedAppointment';
+import PopularServices from '../screens/CustomerScreens/PopularServices/PopularServices';
 
 const Stack = createNativeStackNavigator();
 const HomeStack = createNativeStackNavigator();
@@ -174,6 +175,22 @@ const HomeNavigator = () => {
         component={SelectedServices}
         options={{
           title: 'Book Service',
+          headerStyle: {
+            backgroundColor: '#6200ee',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 20,
+          },
+          // headerShown: false,
+        }}
+      />
+       <HomeStack.Screen
+        name="PopularServices"
+        component={PopularServices}
+        options={{
+          title: 'Popular Services',
           headerStyle: {
             backgroundColor: '#6200ee',
           },

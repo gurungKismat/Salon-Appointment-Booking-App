@@ -25,12 +25,13 @@ import PopularSalons from '../../../components/PopularSalons';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import storage from '@react-native-firebase/storage';
-import notifee, {EventType} from '@notifee/react-native';
+import notifee from '@notifee/react-native';
 import messaging from '@react-native-firebase/messaging';
-import { Alert } from 'react-native';
 import {LogBox} from 'react-native';
+import UserAvatar from 'react-native-user-avatar';
 
 LogBox.ignoreLogs(['NativeBase:']);
+LogBox.ignoreLogs(['Require cycle:'])
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -48,7 +49,7 @@ const HomeScreen = () => {
     setCustomerAvatar(downloadUrl);
   };
 
-  const onDisplayNotification = async (remoteMessage) => {
+  const onDisplayNotification = async remoteMessage => {
     const channelId = await notifee.createChannel({
       id: 'default',
       name: 'Default Channel',
@@ -63,7 +64,6 @@ const HomeScreen = () => {
         // smallIcon: 'name-of-a-small-icon', // optional, defaults to 'ic_launcher'.
         // largeIcon: 'https://my-cdn.com/users/123456.png',
         smallIcon: 'ic_launcher',
-        
       },
     });
 
@@ -77,15 +77,14 @@ const HomeScreen = () => {
     //     smallIcon: 'ic_launcher',
     //     pressAction: {
     //       id: 'default',
-          
+
     //     }
     //   },
     // });
   };
 
-
   // useEffect(() => {
-    
+
   //   return notifee.onForegroundEvent(({ type, detail }) => {
   //     switch (type) {
   //       case EventType.DISMISSED:
@@ -98,7 +97,7 @@ const HomeScreen = () => {
   //   });
   // }, [])
 
-   // Bootstrap sequence function
+  // Bootstrap sequence function
   //  async function bootstrap() {
   //   const initialNotification = await notifee.getInitialNotification();
 
@@ -112,7 +111,6 @@ const HomeScreen = () => {
   // useEffect(() => {
   //   bootstrap();
   // }, [])
-
 
   // useEffect(() => {
   //   // for notification
@@ -201,16 +199,21 @@ const HomeScreen = () => {
                 <TouchableOpacity
                   onPress={() => navigation.navigate('CustomerProfile')}>
                   {customerDatas.customerImage === undefined ? (
-                    <Avatar
-                      bg="#6200ee"
-                      mr="1"
-                      source={{
-                        // uri: 'https://bit.ly/broken-link',
-                        uri: "https://wallpaperaccess.com/full/317501.jpg"
+                    // <Avatar
+                    //   bg="#6200ee"
+                    //   mr="1"
+                    //   source={{
+                    //     // uri: 'https://bit.ly/broken-link',
+                    //     uri: "https://wallpaperaccess.com/full/317501.jpg"
 
-                      }}>
-                      {customerDatas.name.charAt(0)}
-                    </Avatar>
+                    //   }}>
+                    //   {customerDatas.name.charAt(0)}
+                    // </Avatar>
+                    <UserAvatar
+                      size={50}
+                      name={customerDatas.name}
+                      bgColor="#6366f1"
+                    />
                   ) : (
                     <Avatar
                       bg="indigo.500"
@@ -256,7 +259,10 @@ const HomeScreen = () => {
               horizontal
               data={popularServices}
               renderItem={({item}) => (
-                <TouchableOpacity onPress={() => alert('clicked')}>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('PopularServices', {
+                    serviceName: item.alias,
+                  })}>
                   <Box
                     mx="2"
                     size={40}
