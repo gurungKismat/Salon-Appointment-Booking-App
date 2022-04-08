@@ -25,6 +25,7 @@ import UpdateSalonService from '../../../components/UpdateSalonService';
 import {useDispatch} from 'react-redux';
 import {useSelector} from 'react-redux';
 import {updateService} from '../../../redux/store/features/updateService/updateserviceSlice';
+import storage from '@react-native-firebase/storage';
 
 const SalonServices = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -122,6 +123,29 @@ const SalonServices = () => {
 
   const Item = ({service, headers, index}) => {
     const [select, setSelect] = useState(false);
+    const [serviceImg, setServiceImg] = useState('');
+    const [loading, setLoading] = useState(true);
+
+    const getServiceImage = async reference => {
+      const downloadUrl = await reference.getDownloadURL();
+      setServiceImg(downloadUrl);
+    };
+
+    const getImageUrl = () => {
+      const url = service.serviceImage;
+      if (url !== undefined) {
+        // console.log('image exist');
+        const reference = storage().ref().child('/serviceImages').child(url);
+        getServiceImage(reference);
+      }
+    };
+
+    useEffect(() => {
+      getImageUrl();
+    }, []);
+
+    // console.log('received service: '+JSON.stringify(service))
+
     // console.log('header: ' + headers);
     // console.log('service: ' + JSON.stringify(service));
 
@@ -216,14 +240,25 @@ const SalonServices = () => {
                 Duration: Rs {service.duration}
               </Text>
             </View>
-            <Image
-              source={{
-                uri: 'https://wallpaperaccess.com/full/317501.jpg',
-              }}
-              alt="Default Salon Img"
-              size="md"
-              rounded={10}
-            />
+            {serviceImg === '' ? (
+              <Image
+                source={{
+                  uri: 'https://wallpaperaccess.com/full/317501.jpg',
+                }}
+                alt="Default Salon Img"
+                size="md"
+                rounded={10}
+              />
+            ) : (
+              <Image
+                source={{
+                  uri: serviceImg,
+                }}
+                alt="Default Salon Img"
+                size="md"
+                rounded={10}
+              />
+            )}
           </View>
           <View style={styles.rowButtons}>
             <TouchableOpacity style={styles.iconBtn}>
@@ -236,8 +271,7 @@ const SalonServices = () => {
               />
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.iconBtn}>
+            <TouchableOpacity style={styles.iconBtn}>
               <Text style={{color: 'white'}}>Remove Service</Text>
               <Icon
                 ml="1"
@@ -253,6 +287,13 @@ const SalonServices = () => {
     );
   };
 
+  const getAvatar = async serviceImg => {
+    const reference = storage().ref().child('/serviceImages').child(serviceImg);
+    const downloadUrl = await reference.getDownloadURL();
+    console.log('downloadurl: ' + downloadUrl);
+    setServiceImg(downloadUrl);
+  };
+
   const docRef = firestore()
     .collection('salonServices')
     .doc(auth().currentUser.uid);
@@ -264,6 +305,11 @@ const SalonServices = () => {
         const result = documentSnapshot.data().data;
         // console.log('result ' + JSON.stringify(result));
         setAvailableServices(result);
+        // const serviceImg = documentSnapshot.data().serviceImage;
+        // if (serviceImg !== undefined) {
+        //   getAvatar(serviceImg);
+        // }
+
         if (loading) {
           setLoading(false);
         }
