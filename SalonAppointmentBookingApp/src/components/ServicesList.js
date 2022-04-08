@@ -23,11 +23,8 @@ const Item = ({salonId, serviceName, headers}) => {
 
   const [select, setSelect] = useState(false);
 
-  // useEffect(() => {
-  //   console.log("store value: "+JSON.stringify(service))
-  //   console.log("select value; "+select)
-  // },[service.length])
 
+  // check if the store already has the same data before adding
   const selectedService = pickedService => {
     const isServiceSelected = Boolean(
       service.find(item => pickedService === item.serviceName),

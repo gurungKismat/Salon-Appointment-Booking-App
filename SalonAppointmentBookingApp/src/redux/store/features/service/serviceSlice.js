@@ -11,9 +11,13 @@ const serviceSlice = createSlice({
       if (action.payload.isSelected) {
         state.push(action.payload);
       } else {
-        const result = state.filter(
+        const result = state.filter(  // initial method
           item => item.serviceName !== action.payload.serviceName,
         );
+
+        //  const result = state.filter(  // initial method
+        //   item => item.id !== action.payload.id,
+        // );
         state.splice(0, state.length, ...result);
       }
     },
