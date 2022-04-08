@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {
   Button,
   Modal,
@@ -11,12 +11,15 @@ import {
   Stack,
   Select,
   CheckIcon,
+  Text,
   useToast,
 } from 'native-base';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import CategoryList from '../components/CategoryList';
 import uuid from 'react-native-uuid';
+import * as ImagePicker from 'react-native-image-picker';
+import storage from '@react-native-firebase/storage';
 
 const AddNewServiceModal = props => {
   const toast = useToast();
@@ -26,6 +29,7 @@ const AddNewServiceModal = props => {
   const [price, setPrice] = useState('');
   const [duration, setDuration] = useState('');
   const [time, setTime] = useState('Min');
+  const [serviceImage, setServiceImage] = useState('');
   const [categoryError, setCategoryError] = useState({
     error: '',
     isError: false,
@@ -46,6 +50,11 @@ const AddNewServiceModal = props => {
     isError: false,
   });
 
+  const [imageError, setImageError] = useState({
+    error: '',
+    isError: false,
+  });
+
   var newServiceName;
   var newPrice;
   var newDuration;
@@ -60,9 +69,11 @@ const AddNewServiceModal = props => {
     setServiceNameError({isError: false});
     setPriceError({isError: false});
     setDurationError({isError: false});
+    setServiceImage('');
   };
   const saveData = async data => {
     var countCategoryExist = 0;
+
     // checks whether the category is already in the data and adds the service in the specific category if exist
     function updateCategory(value, index, initialData) {
       if (categoryTitle.toLowerCase() === value.categoryTitle.toLowerCase()) {
@@ -72,6 +83,7 @@ const AddNewServiceModal = props => {
           serviceName: newServiceName,
           price: newPrice,
           duration: newDuration + ' ' + time,
+          serviceImage: serviceImage.assets[0].fileName,
         });
       }
     }
@@ -88,7 +100,10 @@ const AddNewServiceModal = props => {
           .set({
             data: firestore.FieldValue.arrayUnion(data),
           })
-          .then(() => {
+          .then(async () => {
+
+            const reference = storage().ref().child('/serviceImages').child(serviceImage.assets[0].fileName);
+            await reference.putFile(serviceImage.assets[0].uri);
             displayToast();
           });
       } else {
@@ -109,6 +124,7 @@ const AddNewServiceModal = props => {
                 serviceName: newServiceName,
                 price: newPrice,
                 duration: newDuration + ' ' + time,
+                serviceImage: serviceImage.assets[0].fileName,
               },
             ],
           });
@@ -117,7 +133,9 @@ const AddNewServiceModal = props => {
           .set({
             data: firestore.FieldValue.arrayUnion(...services),
           })
-          .then(() => {
+          .then(async () => {
+            const reference = storage().ref().child('/serviceImages').child(serviceImage.assets[0].fileName);
+            await reference.putFile(serviceImage.assets[0].uri);
             displayToast();
           });
       }
@@ -136,8 +154,6 @@ const AddNewServiceModal = props => {
     }
   };
 
-  
-
   // add new service to the firestore database
   const addService = () => {
     removeWhiteSpace();
@@ -151,6 +167,7 @@ const AddNewServiceModal = props => {
             serviceName: newServiceName,
             price: newPrice,
             duration: newDuration + ' ' + time,
+            serviceImage: serviceImage.assets[0].fileName,
           },
         ],
       };
@@ -158,15 +175,28 @@ const AddNewServiceModal = props => {
     }
   };
 
-
-
-  // removes the whitespace from the textinput 
+  // removes the whitespace from the textinput
   function removeWhiteSpace() {
     newServiceName = serviceName.trim();
     newPrice = price.trim();
     newDuration = duration.trim();
-
   }
+
+  // add service image
+  const addImage = useCallback(() => {
+    const options = {
+      selectionLimit: 1,
+      mediaType: 'photo',
+      includeBase64: false,
+    };
+    ImagePicker.launchImageLibrary(options, response => {
+      console.log('response: ' + JSON.stringify(response));
+
+      if (!response.didCancel) {
+        setServiceImage(response);
+      }
+    });
+  }, []);
 
   // check if the textinput values are empty or not
   const isEmpty = () => {
@@ -265,6 +295,30 @@ const AddNewServiceModal = props => {
 
       setDurationError({
         ...durationError,
+        ...updatedValue,
+      });
+    }
+
+    if (serviceImage === '') {
+      countError++;
+
+      const newError = {
+        error: 'Image must be selected',
+        isError: true,
+      };
+
+      setImageError({
+        ...imageError,
+        ...newError,
+      });
+    } else {
+      const updatedValue = {
+        error: '',
+        isError: false,
+      };
+
+      setImageError({
+        ...imageError,
         ...updatedValue,
       });
     }
@@ -416,6 +470,23 @@ const AddNewServiceModal = props => {
                 </HStack>
               </FormControl>
             )}
+            {serviceImage === '' ? (
+              <FormControl mt="3">
+                <FormControl.Label>Image</FormControl.Label>
+                <Stack space="4" direction="column">
+                  <Text color="red.600">{imageError.error}</Text>
+                  <Button onPress={addImage}>Add Image</Button>
+                </Stack>
+              </FormControl>
+            ) : (
+              <FormControl mt="3">
+                <FormControl.Label>Image</FormControl.Label>
+                <Stack space="4" direction="column">
+                  <Text color={"blue.600"}>{serviceImage.assets[0].fileName}</Text>
+                  <Button onPress={addImage}>Add Image</Button>
+                </Stack>
+              </FormControl>
+            )}
           </Modal.Body>
           <Modal.Footer>
             <Button.Group space={2}>
@@ -449,3 +520,4 @@ const AddNewServiceModal = props => {
 };
 
 export default AddNewServiceModal;
+
