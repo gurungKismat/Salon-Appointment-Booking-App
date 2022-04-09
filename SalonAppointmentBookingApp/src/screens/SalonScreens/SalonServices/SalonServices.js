@@ -73,6 +73,8 @@ const SalonServices = () => {
     }
   };
 
+  var imageToDelete = '';
+
   function filterService(value, index, initialService) {
     console.log('current header: ' + currentHeader);
     if (currentHeader.toLowerCase() === value.categoryTitle.toLowerCase()) {
@@ -81,6 +83,9 @@ const SalonServices = () => {
       );
 
       if (serviceIndex !== -1) {
+        // imageToDelete = initialService[index].data[serviceIndex].serviceImage;
+        // console.log('imagetodlet: ' + imageToDelete);
+
         initialService[index].data.splice(serviceIndex, 1);
 
         if (initialService[index].data.length === 0) {
@@ -307,7 +312,7 @@ const SalonServices = () => {
             </TouchableOpacity>
 
             <TouchableOpacity
-              // onPress={removeService}
+              onPress={() => setIsOpen(!isOpen)}
               style={styles.iconBtn}>
               <Text style={{color: 'white'}}>Remove Service</Text>
               <Icon
@@ -318,6 +323,35 @@ const SalonServices = () => {
               />
             </TouchableOpacity>
           </View>
+          <AlertDialog
+            leastDestructiveRef={cancelRef}
+            isOpen={isOpen}
+            onClose={onClose}>
+            <AlertDialog.Content>
+              <AlertDialog.CloseButton />
+              <AlertDialog.Header>Delete Service</AlertDialog.Header>
+              <AlertDialog.Body>
+                This will remove the service. This action cannot be reversed.
+                Deleted data can not be recovered.
+              </AlertDialog.Body>
+              <AlertDialog.Footer>
+                <Button.Group space={2}>
+                  <Button
+                    variant="unstyled"
+                    colorScheme="coolGray"
+                    onPress={onClose}
+                    ref={cancelRef}>
+                    Cancel
+                  </Button>
+                  <Button
+                    colorScheme="danger"
+                    onPress={() => deleteService(headers, service)}>
+                    Delete
+                  </Button>
+                </Button.Group>
+              </AlertDialog.Footer>
+            </AlertDialog.Content>
+          </AlertDialog>
         </View>
         <Divider bg="muted.400" />
       </>
