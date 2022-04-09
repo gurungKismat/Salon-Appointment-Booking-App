@@ -403,7 +403,7 @@ const SalonServices = () => {
   }
   return (
     <View style={styles.mainContainer}>
-      <StatusBar backgroundColor={'#6200ee'} />
+      <StatusBar backgroundColor={'#6366f1'} />
       <AddNewServiceModal
         showModal={showModal}
         setShowModal={() => setShowModal(!showModal)}

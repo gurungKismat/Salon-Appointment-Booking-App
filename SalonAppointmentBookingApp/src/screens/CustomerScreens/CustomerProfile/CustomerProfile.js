@@ -155,7 +155,7 @@ const CustomerProfile = () => {
 
   return (
     <View style={styles.mainContainer}>
-      <StatusBar backgroundColor={'#6200ee'} />
+      <StatusBar backgroundColor={'#6366f1'} />
       <View style={styles.topContainer}>
         <View style={styles.topItems}>
           <View style={styles.imageStyle}>

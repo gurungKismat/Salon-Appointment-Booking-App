@@ -16,7 +16,7 @@ const AuthStack = () => {
         options={{
           title: 'Login',
           headerStyle: {
-            backgroundColor: '#6200ee',
+            backgroundColor: '#6366f1',
           },
           headerTintColor: '#fff',
           headerTitleStyle: {
@@ -31,7 +31,7 @@ const AuthStack = () => {
         options={{
           title: 'Customer Register',
           headerStyle: {
-            backgroundColor: '#6200ee',
+            backgroundColor: '#6366f1',
           },
           headerTintColor: '#fff',
           headerTitleStyle: {
@@ -47,7 +47,7 @@ const AuthStack = () => {
         options={{
           title: 'Salon Register',
           headerStyle: {
-            backgroundColor: '#6200ee',
+            backgroundColor: '#6366f1',
           },
           headerTintColor: '#fff',
           headerTitleStyle: {
@@ -63,7 +63,7 @@ const AuthStack = () => {
         options={{
           title: 'Register Selection',
           headerStyle: {
-            backgroundColor: '#6200ee',
+            backgroundColor: '#6366f1',
           },
           headerTintColor: '#fff',
           headerTitleStyle: {

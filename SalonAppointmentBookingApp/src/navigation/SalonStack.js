@@ -92,7 +92,7 @@ const ProfileNavigator = () => {
         options={{
           title: 'Profile',
           headerStyle: {
-            backgroundColor: '#6200ee',
+            backgroundColor: '#6366f1',
           },
           headerTintColor: '#fff',
           headerTitleStyle: {
@@ -108,7 +108,7 @@ const ProfileNavigator = () => {
         options={{
           title: 'Profile Settings',
           headerStyle: {
-            backgroundColor: '#6200ee',
+            backgroundColor: '#6366f1',
           },
           headerTintColor: '#fff',
           headerTitleStyle: {
@@ -133,7 +133,7 @@ const SalonTabScreen = () => {
           tabBarIcon: ({color, size}) => (
             <Icon name="home" color={color} size={size} />
           ),
-          tabBarActiveTintColor: '#6200ee',
+          tabBarActiveTintColor: '#6366f1',
           tabBarInactiveTintColor: 'gray',
         }}
       />
@@ -144,7 +144,7 @@ const SalonTabScreen = () => {
         options={{
           title: 'Appointment',
           headerStyle: {
-            backgroundColor: '#6200ee',
+            backgroundColor: '#6366f1',
           },
           headerTintColor: '#fff',
           headerTitleStyle: {
@@ -155,7 +155,7 @@ const SalonTabScreen = () => {
           tabBarIcon: ({color, size}) => (
             <Icon name="calendar-question" color={color} size={size} />
           ),
-          tabBarActiveTintColor: '#6200ee',
+          tabBarActiveTintColor: '#6366f1',
           tabBarInactiveTintColor: 'gray',
         }}
       />
@@ -166,7 +166,7 @@ const SalonTabScreen = () => {
         options={{
           title: 'Notification',
           headerStyle: {
-            backgroundColor: '#6200ee',
+            backgroundColor: '#6366f1',
           },
           headerTintColor: '#fff',
           headerTitleStyle: {
@@ -177,7 +177,7 @@ const SalonTabScreen = () => {
           tabBarIcon: ({color, size}) => (
             <Icon name="bell" color={color} size={size} />
           ),
-          tabBarActiveTintColor: '#6200ee',
+          tabBarActiveTintColor: '#6366f1',
           tabBarInactiveTintColor: 'gray',
         }}
       />
@@ -191,7 +191,7 @@ const SalonTabScreen = () => {
           tabBarIcon: ({color, size}) => (
             <Icon name="account" color={color} size={size} />
           ),
-          tabBarActiveTintColor: '#6200ee',
+          tabBarActiveTintColor: '#6366f1',
           tabBarInactiveTintColor: 'gray',
         }}
       />

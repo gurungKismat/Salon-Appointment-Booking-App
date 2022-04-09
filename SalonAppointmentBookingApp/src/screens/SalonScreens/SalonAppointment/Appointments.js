@@ -481,7 +481,7 @@ function TabViewExample() {
 
   return (
     <>
-      <StatusBar backgroundColor={'#6200ee'} />
+      <StatusBar backgroundColor={'#6366f1'} />
       <TabView
         navigationState={{index, routes}}
         renderScene={renderScene}

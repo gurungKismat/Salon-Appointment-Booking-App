@@ -65,7 +65,7 @@ const Profile = () => {
               const ref = storage().refFromURL(
                 'gs://salon-appointment-booking-app.appspot.com/salonImages/' +
                   salonData.salonImage,
-              );          
+              );
 
               ref.delete().then(() => {
                 console.log('image deleted');
@@ -153,7 +153,7 @@ const Profile = () => {
 
   return (
     <>
-      <StatusBar backgroundColor={'#6200ee'} />
+      <StatusBar backgroundColor={'#6366f1'} />
       <View style={styles.mainContainer}>
         <AnimatedLoader
           visible={loadAnimation}

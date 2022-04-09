@@ -77,7 +77,7 @@ const SearchNavigator = () => {
         options={{
           title: 'Search',
           headerStyle: {
-            backgroundColor: '#6200ee',
+            backgroundColor: '#6366f1',
           },
           headerTintColor: '#fff',
           headerTitleStyle: {
@@ -92,7 +92,7 @@ const SearchNavigator = () => {
         options={{
           title: 'Detail',
           headerStyle: {
-            backgroundColor: '#6200ee',
+            backgroundColor: '#6366f1',
           },
           headerTintColor: '#fff',
           headerTitleStyle: {
@@ -115,7 +115,7 @@ const HomeNavigator = () => {
         options={{
           title: 'Home',
           headerStyle: {
-            backgroundColor: '#6200ee',
+            backgroundColor: '#6366f1',
           },
           headerTintColor: '#fff',
           headerTitleStyle: {
@@ -130,7 +130,7 @@ const HomeNavigator = () => {
         options={{
           title: 'Profile',
           headerStyle: {
-            backgroundColor: '#6200ee',
+            backgroundColor: '#6366f1',
           },
           headerTintColor: '#fff',
           headerTitleStyle: {
@@ -145,7 +145,7 @@ const HomeNavigator = () => {
         options={{
           title: 'Profile Settings',
           headerStyle: {
-            backgroundColor: '#6200ee',
+            backgroundColor: '#6366f1',
           },
           headerTintColor: '#fff',
           headerTitleStyle: {
@@ -176,7 +176,7 @@ const HomeNavigator = () => {
         options={{
           title: 'Book Service',
           headerStyle: {
-            backgroundColor: '#6200ee',
+            backgroundColor: '#6366f1',
           },
           headerTintColor: '#fff',
           headerTitleStyle: {
@@ -192,7 +192,7 @@ const HomeNavigator = () => {
         options={{
           title: 'Popular Services',
           headerStyle: {
-            backgroundColor: '#6200ee',
+            backgroundColor: '#6366f1',
           },
           headerTintColor: '#fff',
           headerTitleStyle: {
@@ -219,7 +219,7 @@ const Main = () => {
           tabBarIcon: ({color, size}) => (
             <Icon name="home" color={color} size={size} />
           ),
-          tabBarActiveTintColor: '#6200ee',
+          tabBarActiveTintColor: '#6366f1',
           tabBarInactiveTintColor: 'gray',
         }}
       />
@@ -232,7 +232,7 @@ const Main = () => {
           tabBarIcon: ({color, size}) => (
             <Icon name="magnify" color={color} size={size} />
           ),
-          tabBarActiveTintColor: '#6200ee',
+          tabBarActiveTintColor: '#6366f1',
           tabBarInactiveTintColor: 'gray',
         }}
       />
@@ -245,7 +245,7 @@ const Main = () => {
           tabBarIcon: ({color, size}) => (
             <Icon name="calendar-question" color={color} size={size} />
           ),
-          tabBarActiveTintColor: '#6200ee',
+          tabBarActiveTintColor: '#6366f1',
           tabBarInactiveTintColor: 'gray',
         }}
       />
@@ -277,7 +277,7 @@ const Main = () => {
         options={{
           title: 'Notification',
           headerStyle: {
-            backgroundColor: '#6200ee',
+            backgroundColor: '#6366f1',
           },
           headerTintColor: '#fff',
           headerTitleStyle: {
@@ -288,7 +288,7 @@ const Main = () => {
           tabBarIcon: ({color, size}) => (
             <Icon name="bell" color={color} size={size} />
           ),
-          tabBarActiveTintColor: '#6200ee',
+          tabBarActiveTintColor: '#6366f1',
           tabBarInactiveTintColor: 'gray',
         }}
       />

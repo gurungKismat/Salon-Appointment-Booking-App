@@ -346,7 +346,7 @@ const SalonAvailability = () => {
 
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor={'#6200ee'} />
+      <StatusBar backgroundColor={'#6366f1'} />
       <FlatList
         data={days}
         renderItem={renderItem}

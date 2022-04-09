@@ -11,15 +11,15 @@ import {
   StatusBar,
 } from 'native-base';
 import GetIcons from '../../../components/GetIcons';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 
 const Home = () => {
-    const navigation = useNavigation();
+  const navigation = useNavigation();
   return (
     <Stack space={2} direction="row">
-            <StatusBar backgroundColor={'#6200ee'} />
+      <StatusBar backgroundColor={'#6366f1'} />
       <VStack space={2}>
-        <Pressable onPress={() => navigation.navigate("SalonAppointment")}>
+        <Pressable onPress={() => navigation.navigate('SalonAppointment')}>
           <Box
             width={40}
             height={48}
@@ -49,7 +49,7 @@ const Home = () => {
           </Box>
         </Pressable>
 
-        <Pressable onPress={() => navigation.navigate("SalonAvailability")}>
+        <Pressable onPress={() => navigation.navigate('SalonAvailability')}>
           <Box
             width={40}
             height={48}
@@ -82,7 +82,7 @@ const Home = () => {
       </VStack>
 
       <VStack space={2}>
-        <Pressable onPress={() => navigation.navigate("SalonServices")}>
+        <Pressable onPress={() => navigation.navigate('SalonServices')}>
           <Box
             w={40}
             h={56}
@@ -113,7 +113,7 @@ const Home = () => {
           </Box>
         </Pressable>
 
-        <Pressable onPress={() => navigation.navigate("SalonTransaction")}>
+        <Pressable onPress={() => navigation.navigate('SalonTransaction')}>
           <Box
             size={40}
             rounded="lg"

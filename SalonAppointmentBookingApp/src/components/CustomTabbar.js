@@ -120,7 +120,7 @@ const CutomHeaderScreen = ({data}) => {
         // uri:  'https://www.holidify.com/images/cmsuploads/compressed/Bangalore_citycover_20190613234056.jpg',
         uri: salonImage,
       }}
-      backgroundColor={'#6200ee'}
+      backgroundColor={'#6366f1'}
       header={renderHeader}
       title={salonInfo.salonName}
       titleStyle={styles.titleStyle}
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#6200ee',
+    backgroundColor: '#6366f1',
   },
   headerWrapper: {
     flexDirection: 'row',

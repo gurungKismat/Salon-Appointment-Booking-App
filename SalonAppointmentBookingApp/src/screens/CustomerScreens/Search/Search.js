@@ -82,7 +82,7 @@ const SearchScreen = () => {
 
   return (
     <Box w="100%" mt="5">
-      <StatusBar backgroundColor={'#6200ee'} />
+      <StatusBar backgroundColor={'#6366f1'} />
       <Center>
         <Box w={'90%'}>
           <Center>
