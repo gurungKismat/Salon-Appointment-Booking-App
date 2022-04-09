@@ -22,6 +22,8 @@ import * as ImagePicker from 'react-native-image-picker';
 import storage from '@react-native-firebase/storage';
 
 const AddNewServiceModal = props => {
+  const [img, setImg] = useState();
+
   const toast = useToast();
   const id = 'test-toast';
   const [categoryTitle, setCategoryTitle] = useState('');
@@ -58,6 +60,7 @@ const AddNewServiceModal = props => {
   var newServiceName;
   var newPrice;
   var newDuration;
+  // var newDownloadUrl = '';
 
   // clears the text from the input field
   const clearText = () => {
@@ -70,7 +73,7 @@ const AddNewServiceModal = props => {
     setPriceError({isError: false});
     setDurationError({isError: false});
     setServiceImage('');
-    setImageError({isError: false})
+    setImageError({isError: false});
   };
   const saveData = async data => {
     var countCategoryExist = 0;
@@ -86,6 +89,7 @@ const AddNewServiceModal = props => {
           duration: newDuration + ' ' + time,
           serviceImage: serviceImage.assets[0].fileName,
           imageUri: serviceImage.assets[0].uri,
+    
         });
       }
     }
@@ -105,7 +109,10 @@ const AddNewServiceModal = props => {
           .child('/serviceImages')
           .child(serviceImage.assets[0].fileName);
         const task = reference.putFile(serviceImage.assets[0].uri);
-        task.then(() => {
+        task.then(async () => {
+          // const downloadUrl = await reference.getDownloadURL();
+          // console.log('donload url: ' + downloadUrl);
+          // console.log('empty data: '+JSON.stringify(data))
           docRef
             .set({
               data: firestore.FieldValue.arrayUnion(data),
@@ -136,12 +143,14 @@ const AddNewServiceModal = props => {
                 duration: newDuration + ' ' + time,
                 serviceImage: serviceImage.assets[0].fileName,
                 imageUri: serviceImage.assets[0].uri,
+              
               },
             ],
           });
         }
 
-        const reference = storage()
+        // task.then(async () => {
+          const reference = storage()
           .ref()
           .child('/serviceImages')
           .child(serviceImage.assets[0].fileName);
@@ -179,20 +188,38 @@ const AddNewServiceModal = props => {
     removeWhiteSpace();
     const result = isEmpty();
     if (!result) {
-      const data = {
-        categoryTitle: categoryTitle,
-        data: [
-          {
-            id: uuid.v4(),
-            serviceName: newServiceName,
-            price: newPrice,
-            duration: newDuration + ' ' + time,
-            serviceImage: serviceImage.assets[0].fileName,
-            imageUri: serviceImage.assets[0].uri,
-          },
-        ],
-      };
-      saveData(data);
+      // added laterr
+      // const reference = storage()
+      //   .ref()
+      //   .child('/serviceImages')
+      //   .child(serviceImage.assets[0].fileName);
+      // const task = reference.putFile(serviceImage.assets[0].uri);
+      // task.then(async () => {
+      //   const newDownloadUrl = await reference.getDownloadURL();
+      //   console.log('download url: ' + newDownloadUrl);
+      //   setImg(newDownloadUrl);
+
+        //later
+        const data = {
+          categoryTitle: categoryTitle,
+          data: [
+            {
+              id: uuid.v4(),
+              serviceName: newServiceName,
+              price: newPrice,
+              duration: newDuration + ' ' + time,
+              serviceImage: serviceImage.assets[0].fileName,
+              imageUri: serviceImage.assets[0].uri,
+              // uri: newDownloadUrl,
+            },
+          ],
+        };
+        saveData(data);
+
+
+      
+
+      
     }
   };
 

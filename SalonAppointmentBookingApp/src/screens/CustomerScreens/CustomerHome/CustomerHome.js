@@ -31,7 +31,7 @@ import {LogBox} from 'react-native';
 import UserAvatar from 'react-native-user-avatar';
 
 LogBox.ignoreLogs(['NativeBase:']);
-LogBox.ignoreLogs(['Require cycle:'])
+LogBox.ignoreLogs(['Require cycle:']);
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -260,9 +260,11 @@ const HomeScreen = () => {
               data={popularServices}
               renderItem={({item}) => (
                 <TouchableOpacity
-                  onPress={() => navigation.navigate('PopularServices', {
-                    serviceName: item.alias,
-                  })}>
+                  onPress={() =>
+                    navigation.navigate('PopularServices', {
+                      serviceName: item.alias,
+                    })
+                  }>
                   <Box
                     mx="2"
                     size={40}

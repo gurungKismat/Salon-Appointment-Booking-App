@@ -134,6 +134,8 @@ const SalonServices = () => {
     const [serviceImg, setServiceImg] = useState(undefined);
     const [loading, setLoading] = useState(true);
 
+    // console.log('service: ' + JSON.stringify(service));
+
     // const getServiceImage = async reference => {
     //   const downloadUrl = await reference.getDownloadURL();
     //   setServiceImg(downloadUrl);
@@ -176,6 +178,7 @@ const SalonServices = () => {
       return () => {
         isMounted = false;
       };
+
     }, []);
 
     // if (loading) {
@@ -370,7 +373,7 @@ const SalonServices = () => {
     .doc(auth().currentUser.uid);
 
   useEffect(() => {
-    console.log('use effect of salon servcies called');
+    // console.log('use effect of salon servcies called');
     const fetchServices = docRef.onSnapshot(documentSnapshot => {
       // console.log('result: ' + JSON.stringify(documentSnapshot.data()));
       if (documentSnapshot.exists) {
