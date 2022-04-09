@@ -279,14 +279,16 @@ export default ServiceList;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 10,
+    paddingTop: 30,
     // marginHorizontal: 16,
+    bottom: 45,
   },
   item: {
     backgroundColor: '#6200ee',
     padding: 15,
     marginVertical: 8,
     borderRadius: 20,
+  
   },
   header: {
     marginVertical: 10,

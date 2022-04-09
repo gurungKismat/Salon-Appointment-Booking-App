@@ -7,6 +7,8 @@ import {serviceAdded} from '../../../redux/store/features/service/serviceSlice';
 import {useSelector, useDispatch} from 'react-redux';
 import uuid from 'react-native-uuid';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import storage from '@react-native-firebase/storage';
+import ViewCart from '../../../components/ViewCart';
 
 // const DATA = [
 //   {
@@ -28,6 +30,7 @@ const Item = ({data}) => {
   console.log('serviceselector; ' + JSON.stringify(serviceSelector));
   const dispatch = useDispatch();
   const [select, setSelect] = useState(false);
+  const [serviceImage, setServiceImg] = useState(undefined);
 
   // check if service is already added to the store
   const selectedService = pickedService => {
@@ -71,13 +74,47 @@ const Item = ({data}) => {
     }
   };
 
-  const removeService = () => {
-    alert('remove');
+  // downloads the image from the storage
+  const getImageUrl = async () => {
+    const url = data.serviceImage;
+    if (url !== undefined) {
+      // console.log('image exist');
+      const reference = storage().ref().child('/serviceImages').child(url);
+      // getServiceImage(reference);
+
+      const downloadUrl = await reference.getDownloadURL();
+      return downloadUrl;
+    } else {
+      // console.log('image undefined: '+url);
+      return undefined;
+    }
   };
+
+  useEffect(() => {
+    let isMounted = true;
+    getImageUrl()
+      .then(downloadUrl => {
+        if (isMounted) {
+          if (downloadUrl !== undefined) {
+            setServiceImg(downloadUrl);
+          }
+          // if (loading) {
+          //   setLoading(false);
+          // }
+        }
+      })
+      .catch(error => {
+        console.error('error in salon services' + error);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  });
 
   return (
     <>
-      <Divider bg='muted.400' />
+      <Divider bg="muted.400" />
       <View
         style={!select ? styles.itemContainer : styles.itemContainerSelected}>
         <View style={styles.topRowItem}>
@@ -90,14 +127,25 @@ const Item = ({data}) => {
               Duration: Rs {data.duration}
             </Text>
           </View>
-          <Image
-            source={{
-              uri: 'https://wallpaperaccess.com/full/317501.jpg',
-            }}
-            alt="Default Salon Img"
-            size="md"
-            rounded={10}
-          />
+          {serviceImage === undefined ? (
+            <Image
+              source={{
+                uri: 'https://wallpaperaccess.com/full/317501.jpg',
+              }}
+              alt="Default Salon Img"
+              size="lg"
+              rounded={10}
+            />
+          ) : (
+            <Image
+              source={{
+                uri: serviceImage,
+              }}
+              alt="Default Salon Img"
+              size="lg"
+              rounded={10}
+            />
+          )}
         </View>
         <View style={styles.rowButtons}>
           {!selectedService(data.serviceName) ? (
@@ -127,7 +175,7 @@ const Item = ({data}) => {
           )}
         </View>
       </View>
-      <Divider bg='muted.400' />
+      <Divider bg="muted.400" />
     </>
   );
 };
@@ -144,7 +192,7 @@ const PopularServices = ({route}) => {
   useEffect(() => {
     const subscriber = firestore()
       .collection('salonServices')
-      .doc('OBJM3MsbiQbGcoxJZYakosA5BvT2')
+      .doc('UnA41iSIg0dGRbJVUYtEdtPossn2')
       .onSnapshot(doc => {
         if (doc.exists) {
           // console.log('doc exist')
@@ -162,7 +210,7 @@ const PopularServices = ({route}) => {
 
           newData.data.forEach(service => {
             service.categoryTitle = category;
-            service.salonId = 'OBJM3MsbiQbGcoxJZYakosA5BvT2';
+            service.salonId = 'UnA41iSIg0dGRbJVUYtEdtPossn2';
           });
           setServiceData(newData);
         }
@@ -173,15 +221,17 @@ const PopularServices = ({route}) => {
 
   return (
     <View style={styles.rootContainer}>
-      <Heading ml={4} p={4}>
+      <Heading ml={2} p={3} mb={5}>
         {serviceData.categoryTitle}
       </Heading>
       <FlatList
-        style={{marginTop: 5}}
+        style={{marginTop: 5, bottom: 30}}
         data={serviceData.data}
         renderItem={renderItem}
         keyExtractor={item => item.id}
       />
+
+      <ViewCart />
     </View>
   );
 };
@@ -192,22 +242,21 @@ const styles = StyleSheet.create({
   rootContainer: {
     flex: 1,
     backgroundColor: '#e7e5e4',
-
+    paddingTop: 10,
+    // bottom: 20,
   },
 
   itemContainer: {
     backgroundColor: '#e7e5e4',
-    
+
     paddingHorizontal: 20,
     paddingVertical: 20,
-    
   },
 
   itemContainerSelected: {
     backgroundColor: '#d6d3d1',
     paddingHorizontal: 20,
     paddingVertical: 20,
-   
   },
 
   columnItems: {
