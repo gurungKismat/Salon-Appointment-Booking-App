@@ -65,7 +65,7 @@ const Profile = () => {
               const ref = storage().refFromURL(
                 'gs://salon-appointment-booking-app.appspot.com/salonImages/' +
                   salonData.salonImage,
-              );
+              );          
 
               ref.delete().then(() => {
                 console.log('image deleted');

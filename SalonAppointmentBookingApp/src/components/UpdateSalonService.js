@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {
   Button,
   Modal,
@@ -12,6 +12,7 @@ import {
   Select,
   CheckIcon,
   useToast,
+  Text,
 } from 'native-base';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
@@ -19,6 +20,8 @@ import CategoryList from '../components/CategoryList';
 import {useSelector} from 'react-redux';
 import {useDispatch} from 'react-redux';
 import uuid from 'react-native-uuid';
+import * as ImagePicker from 'react-native-image-picker';
+import storage from '@react-native-firebase/storage';
 
 const UpdateSalonService = props => {
   // console.log("service name update: "+props.serviceUpdated.serviceName)
@@ -40,6 +43,10 @@ const UpdateSalonService = props => {
   const [price, setPrice] = useState('');
   const [duration, setDuration] = useState('');
   const [time, setTime] = useState('Min');
+  const [serviceImage, setServiceImage] = useState('');
+  const [serviceUri, setServiceUri] = useState('');
+  const [newServiceImage, setNewServiceImage] = useState('');
+  const [newServiceUri, setNewServiceUri] = useState('');
   const [categoryError, setCategoryError] = useState({
     error: '',
     isError: false,
@@ -60,6 +67,11 @@ const UpdateSalonService = props => {
     isError: false,
   });
 
+  const [imageError, setImageError] = useState({
+    error: '',
+    isError: false,
+  });
+
   var newServiceName;
   var newPrice;
   var newDuration;
@@ -70,7 +82,9 @@ const UpdateSalonService = props => {
     setServiceName('');
     setPrice('');
     setDuration('');
+    setServiceImage('');
     clearErrorMessage();
+ 
   };
 
   // clear the error message displayed below the text input
@@ -79,11 +93,25 @@ const UpdateSalonService = props => {
     setServiceNameError({isError: false});
     setPriceError({isError: false});
     setDurationError({isError: false});
+    setImageError({isError: false})
   };
 
-  
+  // add service image
+  const addImage = useCallback(() => {
+    const options = {
+      selectionLimit: 1,
+      mediaType: 'photo',
+      includeBase64: false,
+    };
+    ImagePicker.launchImageLibrary(options, response => {
+      console.log('response: ' + JSON.stringify(response));
 
-  
+      if (!response.didCancel) {
+        setServiceImage(response.assets[0].fileName);
+        setServiceUri(response.assets[0].uri);
+      }
+    });
+  }, []);
 
   const saveData = async data => {
     const docRef = firestore()
@@ -93,47 +121,56 @@ const UpdateSalonService = props => {
     var countCategoryExist = 0;
     var categoryIndex = -1;
 
-         
- // checks whether the category is already in the data and adds the service in the specific category if exist
- function updateCategory(value, index, initialData) {
-  // console.log('VAlue: ' + JSON.stringify(value));
+    // checks whether the category is already in the data and adds the service in the specific category if exist
+    function updateCategory(value, index, initialData) {
+      // console.log('VAlue: ' + JSON.stringify(value));
 
-  if (categoryTitle.toLowerCase() === value.categoryTitle.toLowerCase()) {
-    const serviceIndex = value.data.findIndex(
-      element => element.id === serviceId,
-    );
-    // console.log('skinfade index: ' + serviceIndex);
-    // console.log('CURRENT SERVICE: ' + serviceName);
+      if (categoryTitle.toLowerCase() === value.categoryTitle.toLowerCase()) {
+        const serviceIndex = value.data.findIndex(
+          element => element.id === serviceId,
+        );
+        // console.log('skinfade index: ' + serviceIndex);
+        // console.log('CURRENT SERVICE: ' + serviceName);
 
-    if (serviceIndex !== -1) {
-      console.log('service index exist');
-      initialData[index].data[serviceIndex] = {
-        id: serviceId,
-        serviceName: newServiceName,
-        price: newPrice,
-        duration: newDuration + ' ' + time,
-      };
-      countCategoryExist++;
+        if (serviceIndex !== -1) {
+          // console.log('service index exist');
+          initialData[index].data[serviceIndex] = {
+            id: serviceId,
+            serviceName: newServiceName,
+            price: newPrice,
+            duration: newDuration + ' ' + time,
+            serviceImage: serviceImage,
+            imageUri: serviceUri,
+          };
+          countCategoryExist++;
+        }
+      }
     }
-  }
-}
-        
-  
 
     await docRef.get().then(documentSnapshot => {
       if (!documentSnapshot.exists) {
         // if the salon service is added for the first time
-        docRef
-          .set(
-            {
+        console.log('updating for the first time');
+        const reference = storage()
+          .ref()
+          .child('/serviceImages')
+          .child(serviceImage);
+        const task = reference.putFile(serviceUri);
+
+        task.then(() => {
+          docRef
+            .set({
               data: firestore.FieldValue.arrayUnion(data),
-            },
-            // {merge: true},
-          )
-          .then(() => {
-            displayToast();
-          });
+            })
+            .then(() => {
+              displayToast();
+            })
+            .catch(error => {
+              console.error(error);
+            });
+        });
       } else {
+        console.log('updating for the second time');
         // if the salon services is already added then update the service
         const servicesList = documentSnapshot.data();
         const services = servicesList.data;
@@ -150,17 +187,35 @@ const UpdateSalonService = props => {
                 serviceName: newServiceName,
                 price: newPrice,
                 duration: newDuration + ' ' + time,
+                serviceImage: serviceImage,
+                imageUri: serviceUri,
               },
             ],
           });
-          services.splice(categoryIndex,1);
+          services.splice(categoryIndex, 1);
         }
-        docRef
-          .set({
-            data: firestore.FieldValue.arrayUnion(...services),
-          })
+
+        const reference = storage()
+          .ref()
+          .child('/serviceImages')
+          .child(serviceImage);
+        // console.log('service uri: ' + serviceUri);
+        const task = reference.putFile(serviceUri);
+        task
           .then(() => {
-            displayToast();
+            docRef
+              .set({
+                data: firestore.FieldValue.arrayUnion(...services),
+              })
+              .then(() => {
+                displayToast();
+              })
+              .catch(error => {
+                console.error('error while updating database: ' + error);
+              });
+          })
+          .catch(error => {
+            console.error('error whilte saving image: ' + error);
           });
       }
     });
@@ -191,24 +246,20 @@ const UpdateSalonService = props => {
             serviceName: newServiceName,
             price: newPrice,
             duration: newDuration + ' ' + time,
+            serviceImage: serviceImage,
+            imageUri: serviceUri,
           },
         ],
       };
       saveData(data);
-      //
-      //  setServicesData(data);
-      // console.log(`Services data: ${JSON.stringify(servicesData)}`);
     }
   };
 
-
-
-  // removes the whitespace from the textinput 
+  // removes the whitespace from the textinput
   function removeWhiteSpace() {
     newServiceName = serviceName.trim();
     newPrice = price.trim();
     newDuration = duration.trim();
-
   }
 
   // check if the textinput values are empty or not
@@ -312,6 +363,30 @@ const UpdateSalonService = props => {
       });
     }
 
+    if (serviceImage === '') {
+      countError++;
+
+      const newError = {
+        error: 'Image must be selected',
+        isError: true,
+      };
+
+      setImageError({
+        ...imageError,
+        ...newError,
+      });
+    } else {
+      const updatedValue = {
+        error: '',
+        isError: false,
+      };
+
+      setImageError({
+        ...imageError,
+        ...updatedValue,
+      });
+    }
+
     if (countError === 0) {
       // console.log('all good');
       return false;
@@ -345,8 +420,8 @@ const UpdateSalonService = props => {
       setPrice(service[0].price);
       setDuration(timeArray[0]);
       setTime(timeArray[1]);
-    } else {
-      console.log('undefined');
+      setServiceImage(service[0].serviceImage);
+      setServiceUri(service[0].imageUri);
     }
 
     if (loading) {
@@ -493,6 +568,23 @@ const UpdateSalonService = props => {
                     </Radio.Group>
                   </Stack>
                 </HStack>
+              </FormControl>
+            )}
+            {serviceImage === '' ? (
+              <FormControl mt="3">
+                <FormControl.Label>Image</FormControl.Label>
+                <Stack space="4" direction="column">
+                  <Text color="red.600">{imageError.error}</Text>
+                  <Button onPress={addImage}>Add Image</Button>
+                </Stack>
+              </FormControl>
+            ) : (
+              <FormControl mt="3">
+                <FormControl.Label>Image</FormControl.Label>
+                <Stack space="4" direction="column">
+                  <Text color={'blue.600'}>{serviceImage}</Text>
+                  <Button onPress={addImage}>Add Image</Button>
+                </Stack>
               </FormControl>
             )}
           </Modal.Body>

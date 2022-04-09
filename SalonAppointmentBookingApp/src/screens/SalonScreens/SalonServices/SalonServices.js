@@ -43,7 +43,7 @@ const SalonServices = () => {
   var currServiceId;
 
   const editService = (header, service, index) => {
-    // console.log('service: ' + JSON.stringify(service));
+    console.log('service: ' + JSON.stringify(service));
 
     dispatch(
       updateService({
@@ -52,6 +52,8 @@ const SalonServices = () => {
         service: service.serviceName,
         price: service.price,
         duration: service.duration,
+        serviceImage: service.serviceImage,
+        imageUri: service.imageUri,
       }),
     );
     setUpdateModal(true);
@@ -121,28 +123,59 @@ const SalonServices = () => {
     getData(docRef);
   };
 
+  // section list item
   const Item = ({service, headers, index}) => {
     const [select, setSelect] = useState(false);
-    const [serviceImg, setServiceImg] = useState('');
+    const [serviceImg, setServiceImg] = useState(undefined);
     const [loading, setLoading] = useState(true);
 
-    const getServiceImage = async reference => {
-      const downloadUrl = await reference.getDownloadURL();
-      setServiceImg(downloadUrl);
-    };
+    // const getServiceImage = async reference => {
+    //   const downloadUrl = await reference.getDownloadURL();
+    //   setServiceImg(downloadUrl);
+    // };
 
-    const getImageUrl = () => {
+    // downloads the image from the storage
+    const getImageUrl = async () => {
       const url = service.serviceImage;
       if (url !== undefined) {
         // console.log('image exist');
         const reference = storage().ref().child('/serviceImages').child(url);
-        getServiceImage(reference);
+        // getServiceImage(reference);
+
+        const downloadUrl = await reference.getDownloadURL();
+        return downloadUrl;
+      } else {
+        // console.log('image undefined: '+url);
+        return undefined;
       }
     };
 
     useEffect(() => {
-      getImageUrl();
+      // console.log('item use effect called');
+      let isMounted = true;
+      getImageUrl()
+        .then(downloadUrl => {
+          if (isMounted) {
+            if (downloadUrl !== undefined) {
+              setServiceImg(downloadUrl);
+            }
+            // if (loading) {
+            //   setLoading(false);
+            // }
+          }
+        })
+        .catch(error => {
+          console.error('error in salon services' + error);
+        });
+
+      return () => {
+        isMounted = false;
+      };
     }, []);
+
+    // if (loading) {
+    //   return null;
+    // }
 
     // console.log('received service: '+JSON.stringify(service))
 
@@ -240,7 +273,7 @@ const SalonServices = () => {
                 Duration: Rs {service.duration}
               </Text>
             </View>
-            {serviceImg === '' ? (
+            {serviceImg === undefined ? (
               <Image
                 source={{
                   uri: 'https://wallpaperaccess.com/full/317501.jpg',
@@ -255,13 +288,15 @@ const SalonServices = () => {
                   uri: serviceImg,
                 }}
                 alt="Default Salon Img"
-                size="md"
+                size="lg"
                 rounded={10}
               />
             )}
           </View>
           <View style={styles.rowButtons}>
-            <TouchableOpacity style={styles.iconBtn}>
+            <TouchableOpacity
+              onPress={() => editService(headers, service, index)}
+              style={styles.iconBtn}>
               <Text style={{color: 'white'}}>Edit Service</Text>
               <Icon
                 ml="1"
@@ -271,7 +306,9 @@ const SalonServices = () => {
               />
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.iconBtn}>
+            <TouchableOpacity
+              // onPress={removeService}
+              style={styles.iconBtn}>
               <Text style={{color: 'white'}}>Remove Service</Text>
               <Icon
                 ml="1"
@@ -299,6 +336,7 @@ const SalonServices = () => {
     .doc(auth().currentUser.uid);
 
   useEffect(() => {
+    console.log('use effect of salon servcies called');
     const fetchServices = docRef.onSnapshot(documentSnapshot => {
       // console.log('result: ' + JSON.stringify(documentSnapshot.data()));
       if (documentSnapshot.exists) {
@@ -324,7 +362,7 @@ const SalonServices = () => {
   }, []);
 
   if (loading) {
-    null;
+    return null;
   }
   return (
     <View style={styles.mainContainer}>
@@ -336,9 +374,6 @@ const SalonServices = () => {
       <UpdateSalonService
         showModal={showUpdateModal}
         setShowModal={() => setUpdateModal(!showUpdateModal)}
-        // sectionUpdated={sectionUpdated}
-        // serviceUpdated={serviceUpdated}
-        // indexUpdated={indexUpdated}
       />
       <View style={styles.addServiceRow}>
         <Heading size="md">Add New Services</Heading>
@@ -509,7 +544,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: 'red',
-    padding: 12,
+    padding: 8,
     marginRight: 5,
     borderRadius: 25,
   },
