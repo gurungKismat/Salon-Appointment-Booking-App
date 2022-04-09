@@ -16,8 +16,8 @@ const CutomHeaderScreen = ({data}) => {
   const {salonInfo, salonImage} = data.params;
   const [loading, setLoading] = useState(true);
   const [availableTime, setAvailableTime] = useState('');
-  console.log("salonInfo: "+JSON.stringify(salonInfo))
-  console.log('salon Name: ' + JSON.stringify(salonInfo.salonName) + "id: "+salonInfo.salonId);
+  // console.log("salonInfo: "+JSON.stringify(salonInfo))
+  // console.log('salon Name: ' + JSON.stringify(salonInfo.salonName) + "id: "+salonInfo.salonId);
 
   const navigation = useNavigation();
 
@@ -97,13 +97,13 @@ const CutomHeaderScreen = ({data}) => {
         if (documentSnapshot.exists) {
           const salonAvailableTime =
             documentSnapshot.data().data.salonAvailability.availableTime;
-          console.log('result: ' + JSON.stringify(salonAvailableTime));
+          // console.log('result: ' + JSON.stringify(salonAvailableTime));
           setAvailableTime(salonAvailableTime);
           if (loading) {
             setLoading(false);
           }
         }else {
-          console.log("salon doesnnot exist")
+          // console.log("salon doesnnot exist")
           setLoading(false);
         }
       });

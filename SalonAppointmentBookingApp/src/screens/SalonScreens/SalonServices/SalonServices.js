@@ -287,7 +287,7 @@ const SalonServices = () => {
                   uri: 'https://wallpaperaccess.com/full/317501.jpg',
                 }}
                 alt="Default Salon Img"
-                size="md"
+                size="lg"
                 rounded={10}
               />
             ) : (

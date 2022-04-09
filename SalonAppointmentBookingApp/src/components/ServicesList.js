@@ -6,12 +6,26 @@ import {
   Text,
   TouchableOpacity,
 } from 'react-native';
+import {Heading, Image, Divider, Icon} from 'native-base';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {Icon} from 'native-base';
 import {serviceAdded} from '../redux/store/features/service/serviceSlice';
 import {useSelector, useDispatch} from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
 import uuid from 'react-native-uuid';
+import storage from '@react-native-firebase/storage';
+
+const DATA = [
+  {
+    id: 1,
+    name: 'kismat',
+    age: 21,
+  },
+  {
+    id: 2,
+    name: 'gurung',
+    age: 25,
+  },
+];
 
 const Item = ({salonId, serviceName, headers}) => {
   // console.log('serviceName ' + JSON.stringify(serviceName));
@@ -19,10 +33,8 @@ const Item = ({salonId, serviceName, headers}) => {
   const dispatch = useDispatch();
   const service = useSelector(state => state.service);
 
-  // console.log('salon Id; ' + salonId);
-
   const [select, setSelect] = useState(false);
-
+  const [serviceImage, setServiceImg] = useState(undefined);
 
   // check if the store already has the same data before adding
   const selectedService = pickedService => {
@@ -73,35 +85,143 @@ const Item = ({salonId, serviceName, headers}) => {
     // }
   };
 
+  // return (
+  //   <View style={styles.item}>
+  //     <TouchableOpacity
+  //       style={styles.servicesItem}
+  //       onPress={() => onValChange(!select)}>
+  //       <View style={{flexDirection: 'column'}}>
+  //         <Text style={styles.title}>{serviceName.serviceName}</Text>
+  //         <Text style={styles.servicePrice}>Price: Rs {serviceName.price}</Text>
+  //         <Text style={styles.serviceDuration}>
+  //           Duration: {serviceName.duration}
+  //         </Text>
+  //       </View>
+  //       {!selectedService(serviceName.serviceName) ? (
+  //         <Icon
+  //           ml="1"
+  //           size="8"
+  //           color="white"
+  //           as={<MaterialCommunityIcon name="plus" />}
+  //         />
+  //       ) : (
+  //         <Icon
+  //           ml="1"
+  //           size="8"
+  //           color="white"
+  //           as={<MaterialCommunityIcon name="check" />}
+  //         />
+  //       )}
+  //     </TouchableOpacity>
+  //   </View>
+  // );
+  // const [selected, setSelected] = useState(false);
+
+  // downloads the image from the storage
+  const getImageUrl = async () => {
+    const url = serviceName.serviceImage;
+    if (url !== undefined) {
+      // console.log('image exist');
+      const reference = storage().ref().child('/serviceImages').child(url);
+      // getServiceImage(reference);
+
+      const downloadUrl = await reference.getDownloadURL();
+      return downloadUrl;
+    } else {
+      // console.log('image undefined: '+url);
+      return undefined;
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    getImageUrl()
+      .then(downloadUrl => {
+        if (isMounted) {
+          if (downloadUrl !== undefined) {
+            setServiceImg(downloadUrl);
+          }
+          // if (loading) {
+          //   setLoading(false);
+          // }
+        }
+      })
+      .catch(error => {
+        console.error('error in salon services' + error);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  });
+
   return (
-    <View style={styles.item}>
-      <TouchableOpacity
-        style={styles.servicesItem}
-        onPress={() => onValChange(!select)}>
-        <View style={{flexDirection: 'column'}}>
-          <Text style={styles.title}>{serviceName.serviceName}</Text>
-          <Text style={styles.servicePrice}>Price: Rs {serviceName.price}</Text>
-          <Text style={styles.serviceDuration}>
-            Duration: {serviceName.duration}
-          </Text>
+    <>
+      <Divider bg="muted.400" />
+      <View
+        style={!select ? styles.itemContainer : styles.itemContainerSelected}>
+        <View style={styles.topRowItem}>
+          <View style={styles.columnItems}>
+            <Text style={{color: 'black', paddingVertical: 3, fontSize: 18}}>
+              {serviceName.serviceName}
+            </Text>
+            <Text style={styles.serviceDetail}>
+              Price: Rs {serviceName.price}
+            </Text>
+            <Text style={styles.serviceDetail}>
+              Duration: Rs {serviceName.duration}
+            </Text>
+          </View>
+          {serviceImage === undefined ? (
+            <Image
+              source={{
+                uri: 'https://wallpaperaccess.com/full/317501.jpg',
+              }}
+              alt="Default Salon Img"
+              size="lg"
+              rounded={10}
+            />
+          ) : (
+            <Image
+              source={{
+                uri: serviceImage,
+              }}
+              alt="Default Salon Img"
+              size="lg"
+              rounded={10}
+            />
+          )}
         </View>
-        {!selectedService(serviceName.serviceName) ? (
-          <Icon
-            ml="1"
-            size="8"
-            color="white"
-            as={<MaterialCommunityIcon name="plus" />}
-          />
-        ) : (
-          <Icon
-            ml="1"
-            size="8"
-            color="white"
-            as={<MaterialCommunityIcon name="check" />}
-          />
-        )}
-      </TouchableOpacity>
-    </View>
+        <View style={styles.rowButtons}>
+          {!selectedService(serviceName.serviceName) ? (
+            <TouchableOpacity
+              style={styles.iconBtn}
+              onPress={() => onValChange(!select)}>
+              <Text style={{color: 'white'}}>Add Service</Text>
+              <Icon
+                ml="1"
+                size="5"
+                color="white"
+                as={<MaterialCommunityIcon name="plus" />}
+              />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={styles.iconBtn}
+              onPress={() => onValChange(!select)}>
+              <Text style={{color: 'white'}}>Service Added</Text>
+              <Icon
+                ml="1"
+                size="5"
+                color="white"
+                as={<MaterialCommunityIcon name="check" />}
+              />
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
+      <Divider bg="muted.400" />
+    </>
   );
 };
 
@@ -160,7 +280,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 10,
-    marginHorizontal: 16,
+    // marginHorizontal: 16,
   },
   item: {
     backgroundColor: '#6200ee',
@@ -169,7 +289,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   header: {
-    marginTop: 10,
+    marginVertical: 10,
+    marginLeft: 13,
     fontSize: 30,
     color: 'black',
   },
@@ -198,5 +319,64 @@ const styles = StyleSheet.create({
     marginTop: 4,
     color: 'white',
     fontSize: 15,
+  },
+
+  // added later
+
+  rootContainer: {
+    flex: 1,
+    backgroundColor: '#e7e5e4',
+  },
+
+  itemContainer: {
+    backgroundColor: '#e7e5e4',
+
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+  },
+
+  itemContainerSelected: {
+    backgroundColor: '#d6d3d1',
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+  },
+
+  columnItems: {
+    flexDirection: 'column',
+  },
+
+  topRowItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+
+  serviceDetail: {
+    color: 'black',
+    fontSize: 17,
+    paddingVertical: 2,
+  },
+
+  rowButtons: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    paddingTop: 15,
+  },
+
+  btnStyle: {
+    backgroundColor: 'red',
+    padding: 10,
+    marginRight: 5,
+    borderRadius: 20,
+  },
+
+  iconBtn: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: 'red',
+    padding: 12,
+    marginRight: 5,
+    borderRadius: 25,
   },
 });
