@@ -17,7 +17,7 @@ const Item = ({item, index, value, onValueChange}) => {
           justifyContent: 'space-between',
           alignItems: 'center',
         }}>
-        <Text fontSize="lg" color={'indigo.500'}>
+        <Text fontSize="lg" color={'black'}>
           {item.day}
         </Text>
         <Switch
@@ -28,7 +28,7 @@ const Item = ({item, index, value, onValueChange}) => {
         />
       </View>
       <View style={{marginTop: 10}}>
-        <Divider bg="indigo.100" thickness="3" />
+        <Divider bg="muted.300" thickness="2" />
       </View>
     </View>
   );
@@ -191,7 +191,7 @@ const SalonAvailability = () => {
       <>
         <View>
           <View style={styles.availableTime}>
-            <Text fontSize="lg" color={'indigo.500'}>
+            <Text fontSize="lg" color={'black'}>
               Available Time
             </Text>
             <Pressable onPress={() => onChangeTime()}>
@@ -230,7 +230,7 @@ const SalonAvailability = () => {
             }}>
             {initialTime.length > 0 ? (
               <>
-                <Text fontSize="lg" color={'indigo.500'}>
+                <Text fontSize="lg" color={'black'}>
                   {`${initialTime} to ${endTime}`}
                 </Text>
                 <Pressable onPress={() => resetTime()}>
@@ -277,7 +277,7 @@ const SalonAvailability = () => {
                   borderWidth="1"
                   borderColor="coolGray.300"
                   shadow="3"
-                  bg={isPressed ? 'primary.400' : 'primary.500'}
+                  bg={isPressed ? 'indigo.400' : 'indigo.500'}
                   px="3"
                   py="3"
                   rounded="8"

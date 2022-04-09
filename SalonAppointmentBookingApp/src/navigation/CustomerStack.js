@@ -38,7 +38,7 @@ const AppointmentsNavigator = () => {
         options={{
           title: 'Appointments',
           headerStyle: {
-            backgroundColor: '#6200ee',
+            backgroundColor: '#6366f1',
           },
           headerTintColor: '#fff',
           headerTitleStyle: {

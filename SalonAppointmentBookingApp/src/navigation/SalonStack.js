@@ -25,7 +25,7 @@ const HomeNavigator = () => {
         options={{
           title: 'Home',
           headerStyle: {
-            backgroundColor: '#6200ee',
+            backgroundColor: '#6366f1',
           },
           headerTintColor: '#fff',
           headerTitleStyle: {
@@ -40,7 +40,7 @@ const HomeNavigator = () => {
         options={{
           title: 'Salon Availability',
           headerStyle: {
-            backgroundColor: '#6200ee',
+            backgroundColor: '#6366f1',
           },
           headerTintColor: '#fff',
           headerTitleStyle: {
@@ -55,7 +55,7 @@ const HomeNavigator = () => {
         options={{
           title: 'Salon Services',
           headerStyle: {
-            backgroundColor: '#6200ee',
+            backgroundColor: '#6366f1',
           },
           headerTintColor: '#fff',
           headerTitleStyle: {
@@ -70,7 +70,7 @@ const HomeNavigator = () => {
         options={{
           title: 'Salon Transaction',
           headerStyle: {
-            backgroundColor: '#6200ee',
+            backgroundColor: '#6366f1',
           },
           headerTintColor: '#fff',
           headerTitleStyle: {

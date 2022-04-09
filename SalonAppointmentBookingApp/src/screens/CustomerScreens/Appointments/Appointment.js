@@ -292,14 +292,14 @@ function TabViewExample() {
       <TabBar
         {...props}
         indicatorStyle={{backgroundColor: 'white'}}
-        style={{backgroundColor: '#6200ee', border: 0}}
+        style={{backgroundColor: '#6366f1', border: 0}}
       />
     );
   };
 
   return (
     <>
-      <StatusBar backgroundColor={'#6200ee'} />
+      <StatusBar backgroundColor={'#6366f1'} />
       <TabView
         navigationState={{index, routes}}
         renderScene={renderScene}

@@ -29,7 +29,7 @@ const Home = () => {
             borderWidth="1"
             background={'coolGray.50'}
             shadow="3"
-            bg={'red.100'}>
+            bg={'indigo.300'}>
             <Box mt="3">
               <AspectRatio w="100%" ratio={16 / 9}>
                 <Center>
@@ -59,7 +59,7 @@ const Home = () => {
             borderWidth="1"
             background={'coolGray.50'}
             shadow="3"
-            bg={'red.100'}
+            bg={'rose.200'}
             justifyContent="space-evenly">
             <Box mt="3">
               <AspectRatio w="100%" ratio={16 / 9}>
@@ -92,7 +92,7 @@ const Home = () => {
             borderWidth="1"
             background={'coolGray.50'}
             shadow="3"
-            bg={'red.100'}
+            bg={'warning.300'}
             justifyContent="space-evenly">
             <Box mt="3">
               <AspectRatio w="100%" ratio={16 / 9}>
@@ -122,7 +122,7 @@ const Home = () => {
             borderWidth="1"
             background={'coolGray.50'}
             shadow="3"
-            bg={'red.100'}
+            bg={'info.400'}
             justifyContent="space-evenly">
             <Box mt="2">
               <AspectRatio w="100%" ratio={16 / 9}>
@@ -149,7 +149,7 @@ const Home = () => {
 
 const Eg = () => {
   return (
-    <Center flex={1} bg="yellow.100" px={'10%'} py={'10%'}>
+    <Center flex={1} bg="white" px={'10%'} py={'10%'}>
       <Home />
     </Center>
   );
