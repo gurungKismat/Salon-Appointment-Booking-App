@@ -10,11 +10,53 @@ import SalonAvailability from '../screens/SalonScreens/SalonAvailability/SalonAv
 import SalonServices from '../screens/SalonScreens/SalonServices/SalonServices';
 import SalonTransactionScreen from '../screens/SalonScreens/SalonTransactionHistory/SalonTransactionHistory';
 import ProfileSettings from '../screens/SalonScreens/ProfileSettings/ProfileSettings';
+import RequestedAppointment from '../screens/SalonScreens/RequestedAppointment/RequestedAppointment';
 
 const Stack = createNativeStackNavigator();
 const HomeStack = createNativeStackNavigator();
 const ProfileStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+const AppointmentNavigatorSalon = createNativeStackNavigator();
+
+// Screens inside Apointment Tab bar
+const AppointmentsNavigator = () => {
+  return (
+    <AppointmentNavigatorSalon.Navigator
+      initialRouteName="SalonAppointment"
+      headerMode="screen">
+      <AppointmentNavigatorSalon.Screen
+        name="SalonAppointment"
+        component={Appointment}
+        options={{
+          title: 'Appointments',
+          headerStyle: {
+            backgroundColor: '#6366f1',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 20,
+          },
+        }}
+      />
+      <AppointmentNavigatorSalon.Screen
+        name="SalonRequestedAppointment"
+        component={RequestedAppointment}
+        options={{
+          title: 'Requested Appointments',
+          headerStyle: {
+            backgroundColor: '#6366f1',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 20,
+          },
+        }}
+      />
+    </AppointmentNavigatorSalon.Navigator>
+  );
+};
 
 const HomeNavigator = () => {
   return (
@@ -139,6 +181,20 @@ const SalonTabScreen = () => {
       />
 
       <Tab.Screen
+        name="SalonAppointmentNavigator"
+        component={AppointmentsNavigator}
+        options={{
+          headerShown: false,
+          tabBarLabel: 'Appointment',
+          tabBarIcon: ({color, size}) => (
+            <Icon name="calendar-question" color={color} size={size} />
+          ),
+          tabBarActiveTintColor: '#6366f1',
+          tabBarInactiveTintColor: 'gray',
+        }}
+      />
+      {/* 
+      <Tab.Screen
         name="SalonAppointment"
         component={Appointment}
         options={{
@@ -158,7 +214,7 @@ const SalonTabScreen = () => {
           tabBarActiveTintColor: '#6366f1',
           tabBarInactiveTintColor: 'gray',
         }}
-      />
+      /> */}
 
       <Tab.Screen
         name="Notification"

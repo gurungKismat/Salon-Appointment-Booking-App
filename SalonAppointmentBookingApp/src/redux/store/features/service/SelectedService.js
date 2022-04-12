@@ -18,6 +18,7 @@ import storage from '@react-native-firebase/storage';
 import {serviceDeleted, deleteAllServices} from './serviceSlice';
 import uuid from 'react-native-uuid';
 import { useNavigation } from '@react-navigation/native';
+import { StackActions } from '@react-navigation/native';
 
 const removeService = deleteItem => {
   deleteItem();
@@ -42,6 +43,7 @@ const Item = ({title, deleteItem}) => {
 );
 }
 const SelectedServices = () => {
+  const popAction = StackActions.pop(1);
   const cartItems = useSelector(state => state.service);
   // console.log('cartitms: ' + JSON.stringify(cartItems));
   let totalPrice = 0;
@@ -185,8 +187,11 @@ const SelectedServices = () => {
         })
         .then(() => {
           alert("Appointment Request Sent")
-          navigation.popToTop();
-          navigation.navigate('CustomerAppointment')
+          // navigation.popToTop();
+          // navigation.dispatch(popAction)
+          // navigation.goBack();
+          // navigation.navigate('CustomerAppointment')
+          navigation.navigate('Home');
           dispatch(deleteAllServices())
         }).catch(error => {
           console.error(error);
@@ -276,7 +281,7 @@ const SelectedServices = () => {
       style={{backgroundColor: 'white'}}
       ListHeaderComponent={
         <View style={{flex: 1, padding: 13, backgroundColor: 'white'}}>
-          <StatusBar backgroundColor={'#6200ee'} />
+          <StatusBar backgroundColor={'#6366f1'} />
           <View style={styles.salonInfo}>
             <View style={styles.leftContent}>
               <Text style={styles.salonName}>{salonInfo.salonName}</Text>

@@ -13,10 +13,11 @@ import EmptyList from '../../../components/EmptyList';
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import { useNavigation } from '@react-navigation/native';
 
 const UpcomingAppointment = ({item}) => {
   // console.log('item: ' + JSON.stringify(item));
-
+  const navigation = useNavigation();
   const [customerImg, setCustomerImg] = useState(undefined);
   const [valDisable, setValDisable] = useState(false);
 
@@ -39,7 +40,7 @@ const UpcomingAppointment = ({item}) => {
       .update({
         requestResult: 'Accepted',
       })
-      .then(result => {
+      .then(() => {
         // setIsDisable(true);
         alert('Appointment Accepted');
       })
@@ -66,15 +67,33 @@ const UpcomingAppointment = ({item}) => {
       });
   };
 
-  const isDisabled = () => {
+  const isAccepted = () => {
     // alert('asdfads')
-    console.log('requeset state: ' + item.docData.requestResult);
+    // console.log('requeset state: ' + item.docData.requestResult);
     if (item.docData.requestResult === 'Accepted') {
       return true;
     } else {
       return false;
     }
   };
+
+  // end the accepted appointments
+  const endAppointments = (docId) => {
+    firestore()
+    .collection('Appointments')
+    .doc(docId)
+    .update({
+      appointmentCompleted: true,
+      requestResult: 'Completed',
+    })
+    .then(() => {
+      // setIsDisable(true);
+      alert('Session Completed');
+    })
+    .catch(error => {
+      console.error(error);
+    });
+  }
 
   useEffect(() => {
     const imgUri = item.docData.customerData.customerImage;
@@ -92,7 +111,9 @@ const UpcomingAppointment = ({item}) => {
 
   return (
     <View style={{flexDirection: 'column', marginVertical: 8}}>
-      <TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('SalonRequestedAppointment')}
+      >
         <View style={styles.itemContainer}>
           <View style={styles.topItem}>
             <Heading size="sm" px="3" mt={4}>
@@ -159,25 +180,38 @@ const UpcomingAppointment = ({item}) => {
           borderBottomLeftRadius: 20,
           borderBottomRightRadius: 20,
         }}>
-        <View style={styles.bottomContainer}>
-          <TouchableOpacity
-            disabled={isDisabled()}
-            onPress={() => acceptBtnPressed(item.docId)}
-            style={!isDisabled() ? styles.acceptBtn : styles.acceptBtnDisabled}>
-            <Text style={{color: 'white'}} fontSize="md">
-              Accept
-            </Text>
-          </TouchableOpacity>
-          <Divider orientation="vertical" thickness="2" bg="muted.300" />
-          <TouchableOpacity
-            disabled={isDisabled()}
-            onPress={() => rejectBtnPressed(item.docId)}
-            style={!isDisabled() ? styles.rejectBtn : styles.rejectBtnDisabled}>
-            <Text style={{color: 'white'}} fontsize="md">
-              Reject
-            </Text>
-          </TouchableOpacity>
-        </View>
+        {isAccepted() ? (
+          <View style={{alignItems: 'center', justifyContent: 'center'}}>
+            <TouchableOpacity 
+            onPress={() => endAppointments(item.docId)}
+            style={styles.acceptBtn}>
+              <Text color="white" fontSize="md">
+                End Session
+              </Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={styles.bottomContainer}>
+            <TouchableOpacity
+              // disabled={isDisabled()}
+              onPress={() => acceptBtnPressed(item.docId)}
+              style={styles.acceptBtn}>
+              <Text style={{color: 'white'}} fontSize="md">
+                Accept
+              </Text>
+            </TouchableOpacity>
+
+            <Divider orientation="vertical" thickness="2" bg="muted.300" />
+            <TouchableOpacity
+             
+              onPress={() => rejectBtnPressed(item.docId)}
+              style={styles.rejectBtn}>
+              <Text style={{color: 'white'}} fontsize="md">
+                Reject
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     </View>
   );
@@ -191,7 +225,7 @@ const PastAppointment = ({item}) => {
   services = services.replace(/,\s*$/, '');
   return (
     <TouchableOpacity>
-      <View style={styles.itemContainer}>
+      <View style={styles.pastAppointmentItemContainer}>
         <View style={styles.topItem}>
           <Heading size="sm" px="3" mt={4}>
             {item.customerData.name}
@@ -256,6 +290,16 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
+
+    
+  },
+
+  pastAppointmentItemContainer: {
+    backgroundColor: '#e7e5e4',
+    width: '100%',
+    flexDirection: 'column',
+    borderRadius: 20,
+    marginVertical: 8,
   },
 
   topItem: {
@@ -358,7 +402,7 @@ const FirstRoute = () => {
           };
           appointmentDatas.push(allInfo);
         });
-        console.log('appointmentdatas: ' + JSON.stringify(appointmentDatas));
+        // console.log('appointmentdatas: ' + JSON.stringify(appointmentDatas));
         saloninfo.splice(0, saloninfo.length);
         setSalonInfo([...saloninfo, ...appointmentDatas]);
         // setCustomerData(customerInfos);
@@ -409,12 +453,12 @@ const SecondRoute = () => {
       .onSnapshot(documents => {
         const datas = [];
         documents.forEach(document => {
-          console.log(
-            'second route document id: ' +
-              document.id +
-              ' second route documentData: ' +
-              JSON.stringify(document.data()),
-          );
+          // console.log(
+          //   'second route document id: ' +
+          //     document.id +
+          //     ' second route documentData: ' +
+          //     JSON.stringify(document.data()),
+          // );
           datas.push(document.data());
         });
         salonInfo.splice(0, salonInfo.length);

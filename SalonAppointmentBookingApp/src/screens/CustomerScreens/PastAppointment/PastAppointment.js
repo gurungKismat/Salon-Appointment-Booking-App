@@ -5,13 +5,11 @@ import {
   StatusBar,
   FlatList,
   StyleSheet,
-  TouchableOpacity,
 } from 'react-native';
-import {Image, Icon, Divider} from 'native-base';
+import {Image, Divider} from 'native-base';
 import {Rating} from 'react-native-ratings';
 import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
-import {useSafeAreaFrame} from 'react-native-safe-area-context';
+
 
 const Item = ({salonData}) => {
   // console.log('SALON DATA IN ITEM: ' + JSON.stringify(salonData));
@@ -27,18 +25,16 @@ const Item = ({salonData}) => {
   );
 };
 
-const RequestedAppointment = ({route}) => {
+const PastAppointment = ({route}) => {
   const [loading, setLoading] = useState(true);
   const [salonInfo, setSalonInfo] = useState([]);
-  const [salonAvailability, setSalonAvailability] = useState();
-  const [salonImage, setSalonImage] = useState();
   const [totalPrice, setTotalPrice] = useState('');
   const [appointmentInfo, setAppointmentInfo] = useState({});
   const [availableTime, setAvailableTime] = useState('');
   const [salonAddress, setSalonAddress] = useState('');
 
-  const {requestedAppointmentId} = route.params;
-  // console.log('requesetd id: ' + requestedAppointmentId);
+  const {pastDocId} = route.params;
+//   console.log('past requesetd id: ' + pastDocId);
 
   // handle payment method select
   const paymentBtnPressed = () => {
@@ -52,7 +48,7 @@ const RequestedAppointment = ({route}) => {
   useEffect(() => {
     firestore()
       .collection('Appointments')
-      .doc(requestedAppointmentId)
+      .doc(pastDocId)
       .get()
       .then(async documentSanpshot => {
         if (documentSanpshot.exists) {
@@ -204,22 +200,22 @@ const RequestedAppointment = ({route}) => {
         data={salonInfo}
         renderItem={renderItem}
         keyExtractor={item => item.id}
-        ListFooterComponent={
-          <TouchableOpacity
-            onPress={paymentBtnPressed}
-            // disabled={checkDisable()}
-            style={styles.requestAppointment}>
-            <Text style={{color: 'white', fontSize: 17, alignSelf: 'center'}}>
-              Select Payment Method
-            </Text>
-          </TouchableOpacity>
-        }
+        // ListFooterComponent={
+        //   <TouchableOpacity
+        //     onPress={paymentBtnPressed}
+        //     // disabled={checkDisable()}
+        //     style={styles.requestAppointment}>
+        //     <Text style={{color: 'white', fontSize: 17, alignSelf: 'center'}}>
+        //       Select Payment Method
+        //     </Text>
+        //   </TouchableOpacity>
+        // }
       />
     </>
   );
 };
 
-export default RequestedAppointment;
+export default PastAppointment;
 
 const styles = StyleSheet.create({
   item: {

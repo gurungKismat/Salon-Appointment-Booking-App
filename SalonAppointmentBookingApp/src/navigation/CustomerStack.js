@@ -13,6 +13,7 @@ import SelectedServices from "../redux/store/features/service/SelectedService";
 import CustomerProfileSettings from "../screens/CustomerScreens/ProfileSettings/ProfileSettings";
 import RequestedAppointment from '../screens/CustomerScreens/RequestedAppointment/RequestedAppointment';
 import PopularServices from '../screens/CustomerScreens/PopularServices/PopularServices';
+import PastAppointment from '../screens/CustomerScreens/PastAppointment/PastAppointment';
 
 const Stack = createNativeStackNavigator();
 const HomeStack = createNativeStackNavigator();
@@ -53,7 +54,22 @@ const AppointmentsNavigator = () => {
         options={{
           title: 'Requested Appointments',
           headerStyle: {
-            backgroundColor: '#6200ee',
+            backgroundColor: '#6366f1',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 20,
+          },
+        }}
+      />
+      <AppointmentNavigator.Screen
+        name="CustomerPastAppointment"
+        component={PastAppointment}
+        options={{
+          title: 'Past Appointments',
+          headerStyle: {
+            backgroundColor: '#6366f1',
           },
           headerTintColor: '#fff',
           headerTitleStyle: {

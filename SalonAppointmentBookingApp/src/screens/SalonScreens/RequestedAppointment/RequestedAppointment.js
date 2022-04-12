@@ -13,99 +13,8 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import {useSafeAreaFrame} from 'react-native-safe-area-context';
 
-const Item = ({salonData}) => {
-  // console.log('SALON DATA IN ITEM: ' + JSON.stringify(salonData));
-  return (
-    <View style={{paddingHorizontal: 10}}>
-      <View style={styles.item}>
-        <Text style={styles.title}>
-          {salonData.serviceHeading} - {salonData.serviceName}
-        </Text>
-        <Text style={styles.title}>Price: {salonData.servicePrice}</Text>
-      </View>
-    </View>
-  );
-};
-
-const RequestedAppointment = ({route}) => {
+const SalonRequestedAppointment = () => {
   const [loading, setLoading] = useState(true);
-  const [salonInfo, setSalonInfo] = useState([]);
-  const [salonAvailability, setSalonAvailability] = useState();
-  const [salonImage, setSalonImage] = useState();
-  const [totalPrice, setTotalPrice] = useState('');
-  const [appointmentInfo, setAppointmentInfo] = useState({});
-  const [availableTime, setAvailableTime] = useState('');
-  const [salonAddress, setSalonAddress] = useState('');
-
-  const {requestedAppointmentId} = route.params;
-  // console.log('requesetd id: ' + requestedAppointmentId);
-
-  // handle payment method select
-  const paymentBtnPressed = () => {
-    alert('hello');
-  };
-
-  const renderItem = ({item}) => {
-    return <Item salonData={item} />;
-  };
-
-  useEffect(() => {
-    firestore()
-      .collection('Appointments')
-      .doc(requestedAppointmentId)
-      .get()
-      .then(async documentSanpshot => {
-        if (documentSanpshot.exists) {
-          // console.log('requrest appointment data: '+JSON.stringify(documentSanpshot.data()))
-
-          let priceAmount = 0;
-          const salonDatas = documentSanpshot.data().services;
-          salonDatas.forEach(salonData => {
-            priceAmount += Number(salonData.servicePrice);
-          });
-
-          const salonId = documentSanpshot.data().salonid;
-          // console.log('salon Id: ' + salonId);
-          let availableTime = '';
-          await firestore()
-            .collection('salonProfile')
-            .doc(salonId)
-            .get()
-            .then(doc => {
-              if (doc.exists) {
-                // console.log('available time exist');
-                availableTime = doc.data().data.salonAvailability.availableTime;
-              }
-            });
-
-          let salonAddress = '';
-          await firestore()
-            .collection('salons')
-            .doc(salonId)
-            .get()
-            .then(doc => {
-              if (doc.exists) {
-                // console.log('available time exist');
-                salonAddress = doc.data().address;
-              }
-            });
-
-            // console.log('slaon address: '+salonAddress)
-          setAvailableTime(availableTime);
-          setSalonAddress(salonAddress);
-          setAppointmentInfo(documentSanpshot.data());
-          setTotalPrice(priceAmount);
-          setSalonInfo(salonDatas);
-          if (loading) {
-            setLoading(false);
-          }
-        }
-      });
-
-    // if (loading) {
-    //   setLoading(false);
-    // }
-  }, []);
 
   if (loading) {
     return null;
@@ -219,7 +128,7 @@ const RequestedAppointment = ({route}) => {
   );
 };
 
-export default RequestedAppointment;
+export default SalonRequestedAppointment;
 
 const styles = StyleSheet.create({
   item: {

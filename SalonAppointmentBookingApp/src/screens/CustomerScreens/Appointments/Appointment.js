@@ -17,20 +17,19 @@ import {useNavigation} from '@react-navigation/native';
 import {useSelector, useDispatch} from 'react-redux';
 import {serviceAdded} from '../redux/store/features/service/serviceSlice';
 
-
 const DATA = [
   {name: 'kismat', age: 21},
   {name: 'tobi', age: 22},
 ];
 
 const UpcomingAppointment = ({item}) => {
-  // console.log('item doc id: ' + JSON.stringify(item));
+  // console.log('upcoiming item doc id: ' + JSON.stringify(item));
   const navigation = useNavigation();
 
-  const upcomingAppointmentPressed = (id) => {
+  const upcomingAppointmentPressed = id => {
     // alert(id);
     navigation.navigate('RequestedAppointment', {
-      requestedAppointmentId: id
+      requestedAppointmentId: id,
     });
   };
 
@@ -94,38 +93,46 @@ const UpcomingAppointment = ({item}) => {
 };
 
 const PastAppointment = ({item}) => {
+  // console.log('past item: '+JSON.stringify(item))
+  const navigation = useNavigation();
+
   return (
-    <TouchableOpacity>
+    <TouchableOpacity
+      onPress={() =>
+        navigation.navigate('CustomerPastAppointment', {
+          pastDocId: item.docId,
+        })
+      }>
       <View style={styles.itemContainer}>
         <View style={styles.topItem}>
           <Heading size="sm" px="3" mt={4}>
-            {item.salonName}
+            {item.docData.salonName}
           </Heading>
           <View
             style={
-              item.requestResult === 'Rejected'
+              item.docData.requestResult === 'Rejected'
                 ? styles.rejected
                 : styles.accepted
             }>
-            <Text style={{color: '#FFFFFF'}}>{item.requestResult}</Text>
+            <Text style={{color: '#FFFFFF'}}>{item.docData.requestResult}</Text>
           </View>
         </View>
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           <View style={{flexDirection: 'column', padding: 12}}>
             <View>
               <Text fontWeight="400" fontSize="md">
-                {item.salonAddress}
+                {item.docData.salonAddress}
               </Text>
               <Text fontWeight="400" fontSize="md">
-                Date: {item.date}
+                Date: {item.docData.date}
               </Text>
               <Text fontWeight="400" fontSize="md">
-                Time: {item.time}
+                Time: {item.docData.time}
               </Text>
             </View>
           </View>
           <View style={{paddingVertical: 10, paddingHorizontal: 13}}>
-            {item.salonImage === '' ? (
+            {item.docData.salonImage === '' ? (
               <Image
                 source={{
                   uri: 'https://wallpaperaccess.com/full/317501.jpg',
@@ -137,7 +144,7 @@ const PastAppointment = ({item}) => {
             ) : (
               <Image
                 source={{
-                  uri: item.salonImage,
+                  uri: item.docData.salonImage,
                 }}
                 alt="Default Salon Img"
                 size="md"
@@ -174,8 +181,8 @@ const FirstRoute = () => {
           const allDatas = {
             docId,
             docData,
-          }
-         
+          };
+
           datas.push(allDatas);
         });
         setSalonInfo(datas);
@@ -186,7 +193,7 @@ const FirstRoute = () => {
   };
 
   useEffect(() => {
-    console.log('customer appintment');
+    // console.log('customer appintment');
     const currentUserId = auth().currentUser.uid;
     fetchAppointmentData(currentUserId);
   }, []);
@@ -227,17 +234,25 @@ const SecondRoute = () => {
       .onSnapshot(documents => {
         const datas = [];
         documents.forEach(document => {
-          console.log(
-            'second route document id: ' +
-              document.id +
-              ' second route documentData: ' +
-              JSON.stringify(document.data()),
-          );
-          datas.push(document.data());
-        });
-        salonInfo.splice(0, salonInfo.length);
+          // console.log(
+          //   'second route document id: ' +
+          //     document.id +
+          //     ' second route documentData: ' +
+          //     JSON.stringify(document.data()),
+          // );
 
-        setSalonInfo([...salonInfo, ...datas]);
+          const docId = document.id;
+          const docData = document.data();
+          const allDatas = {
+            docId,
+            docData,
+          };
+
+          datas.push(allDatas);
+        });
+        // salonInfo.splice(0, salonInfo.length);
+
+        setSalonInfo(datas);
         if (loading) {
           setLoading(false);
         }
