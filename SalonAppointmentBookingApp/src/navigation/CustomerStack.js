@@ -232,11 +232,15 @@ const Main = () => {
         options={{
           headerShown: false,
           tabBarLabel: 'Home',
+          tabBarStyle: {
+            backgroundColor: '#6366f1'
+          },
           tabBarIcon: ({color, size}) => (
             <Icon name="home" color={color} size={size} />
           ),
-          tabBarActiveTintColor: '#6366f1',
-          tabBarInactiveTintColor: 'gray',
+          // tabBarActiveTintColor: '#6366f1',
+          tabBarActiveTintColor: 'white',
+          tabBarInactiveTintColor: '#a5b4fc',
         }}
       />
       <Tab.Screen
@@ -245,11 +249,14 @@ const Main = () => {
         options={{
           headerShown: false,
           tabBarLabel: 'Discover',
+          tabBarStyle: {
+            backgroundColor: '#6366f1'
+          },
           tabBarIcon: ({color, size}) => (
             <Icon name="magnify" color={color} size={size} />
           ),
-          tabBarActiveTintColor: '#6366f1',
-          tabBarInactiveTintColor: 'gray',
+          tabBarActiveTintColor: 'white',
+          tabBarInactiveTintColor: '#a5b4fc',
         }}
       />
       <Tab.Screen
@@ -258,11 +265,14 @@ const Main = () => {
         options={{
           headerShown: false,
           tabBarLabel: 'Appointment',
+          tabBarStyle: {
+            backgroundColor: '#6366f1'
+          },
           tabBarIcon: ({color, size}) => (
             <Icon name="calendar-question" color={color} size={size} />
           ),
-          tabBarActiveTintColor: '#6366f1',
-          tabBarInactiveTintColor: 'gray',
+          tabBarActiveTintColor: 'white',
+          tabBarInactiveTintColor: '#a5b4fc',
         }}
       />
       {/* <Tab.Screen
@@ -292,6 +302,9 @@ const Main = () => {
         component={NotificationScreen}
         options={{
           title: 'Notification',
+          tabBarStyle: {
+            backgroundColor: '#6366f1'
+          },
           headerStyle: {
             backgroundColor: '#6366f1',
           },
@@ -304,8 +317,8 @@ const Main = () => {
           tabBarIcon: ({color, size}) => (
             <Icon name="bell" color={color} size={size} />
           ),
-          tabBarActiveTintColor: '#6366f1',
-          tabBarInactiveTintColor: 'gray',
+          tabBarActiveTintColor: 'white',
+          tabBarInactiveTintColor: '#a5b4fc',
         }}
       />
     </Tab.Navigator>

@@ -13,7 +13,7 @@ import EmptyList from '../../../components/EmptyList';
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 
 const UpcomingAppointment = ({item}) => {
   // console.log('item: ' + JSON.stringify(item));
@@ -78,22 +78,22 @@ const UpcomingAppointment = ({item}) => {
   };
 
   // end the accepted appointments
-  const endAppointments = (docId) => {
+  const endAppointments = docId => {
     firestore()
-    .collection('Appointments')
-    .doc(docId)
-    .update({
-      appointmentCompleted: true,
-      requestResult: 'Completed',
-    })
-    .then(() => {
-      // setIsDisable(true);
-      alert('Session Completed');
-    })
-    .catch(error => {
-      console.error(error);
-    });
-  }
+      .collection('Appointments')
+      .doc(docId)
+      .update({
+        appointmentCompleted: true,
+        requestResult: 'Completed',
+      })
+      .then(() => {
+        // setIsDisable(true);
+        alert('Session Completed');
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  };
 
   useEffect(() => {
     const imgUri = item.docData.customerData.customerImage;
@@ -112,8 +112,11 @@ const UpcomingAppointment = ({item}) => {
   return (
     <View style={{flexDirection: 'column', marginVertical: 8}}>
       <TouchableOpacity
-        onPress={() => navigation.navigate('SalonRequestedAppointment')}
-      >
+        onPress={() =>
+          navigation.navigate('SalonRequestedAppointment', {
+            docId: item.docId,
+          })
+        }>
         <View style={styles.itemContainer}>
           <View style={styles.topItem}>
             <Heading size="sm" px="3" mt={4}>
@@ -143,7 +146,7 @@ const UpcomingAppointment = ({item}) => {
                   Time: {item.docData.time}
                 </Text>
 
-                <Text fontWeight="400" fontSize="md">
+                <Text fontWeight="400" fontSize="md" maxW="48">
                   Services: {services}
                 </Text>
               </View>
@@ -182,9 +185,9 @@ const UpcomingAppointment = ({item}) => {
         }}>
         {isAccepted() ? (
           <View style={{alignItems: 'center', justifyContent: 'center'}}>
-            <TouchableOpacity 
-            onPress={() => endAppointments(item.docId)}
-            style={styles.acceptBtn}>
+            <TouchableOpacity
+              onPress={() => endAppointments(item.docId)}
+              style={styles.acceptBtn}>
               <Text color="white" fontSize="md">
                 End Session
               </Text>
@@ -203,7 +206,6 @@ const UpcomingAppointment = ({item}) => {
 
             <Divider orientation="vertical" thickness="2" bg="muted.300" />
             <TouchableOpacity
-             
               onPress={() => rejectBtnPressed(item.docId)}
               style={styles.rejectBtn}>
               <Text style={{color: 'white'}} fontsize="md">
@@ -218,38 +220,62 @@ const UpcomingAppointment = ({item}) => {
 };
 
 const PastAppointment = ({item}) => {
+  const [customerImage, setCustomerImage] = useState(undefined);
+
+  // console.log('pst item: ' + JSON.stringify(item));
+  const navigation = useNavigation();
+
   let services = '';
-  item.services.forEach(service => {
+  item.docData.services.forEach(service => {
     services += service.serviceName + ', ';
   });
   services = services.replace(/,\s*$/, '');
+
+  async function getImageUrl(reference) {
+    const imgDownloadUrl = await reference.getDownloadURL();
+    setCustomerImage(imgDownloadUrl);
+  }
+
+  useEffect(() => {
+    const reference = storage()
+      .ref()
+      .child('/customerProfilePicture')
+      .child(item.docData.customerData.customerImage);
+
+    getImageUrl(reference);
+  }, []);
+
   return (
-    <TouchableOpacity>
+    <TouchableOpacity
+    onPress={() => navigation.navigate('SalonPastAppointment', {
+      docId: item.docId,
+    })}
+    >
       <View style={styles.pastAppointmentItemContainer}>
         <View style={styles.topItem}>
           <Heading size="sm" px="3" mt={4}>
-            {item.customerData.name}
+            {item.docData.customerData.name}
           </Heading>
           <View
             style={
-              item.requestResult === 'Rejected'
+              item.docData.requestResult === 'Rejected'
                 ? styles.rejected
                 : styles.accepted
             }>
-            <Text style={{color: '#FFFFFF'}}>{item.requestResult}</Text>
+            <Text style={{color: '#FFFFFF'}}>{item.docData.requestResult}</Text>
           </View>
         </View>
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           <View style={{flexDirection: 'column', padding: 12}}>
             <View>
               <Text fontWeight="400" fontSize="md">
-                {item.customerData.mobileNo}
+                {item.docData.customerData.mobileNo}
               </Text>
               <Text fontWeight="400" fontSize="md">
-                Date: {item.date}
+                Date: {item.docData.date}
               </Text>
               <Text fontWeight="400" fontSize="md">
-                Time: {item.time}
+                Time: {item.docData.time}
               </Text>
               <Text fontWeight="400" fontSize="md" maxW="48">
                 Services: {services}
@@ -257,23 +283,23 @@ const PastAppointment = ({item}) => {
             </View>
           </View>
           <View style={{paddingVertical: 10, paddingHorizontal: 13}}>
-            {item.salonImage === '' ? (
+            {customerImage === undefined ? (
               <Image
                 source={{
                   uri: 'https://wallpaperaccess.com/full/317501.jpg',
                 }}
                 alt="Default Salon Img"
                 size="md"
-                rounded="md"
+                borderRadius={100}
               />
             ) : (
               <Image
                 source={{
-                  uri: item.salonImage,
+                  uri: customerImage,
                 }}
-                alt="Default Salon Img"
+                alt="Customer Img"
                 size="md"
-                rounded="md"
+                borderRadius={100}
               />
             )}
           </View>
@@ -290,8 +316,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-
-    
   },
 
   pastAppointmentItemContainer: {
@@ -459,7 +483,13 @@ const SecondRoute = () => {
           //     ' second route documentData: ' +
           //     JSON.stringify(document.data()),
           // );
-          datas.push(document.data());
+          const docId = document.id;
+          const docData = document.data();
+          const allInfo = {
+            docId,
+            docData,
+          };
+          datas.push(allInfo);
         });
         salonInfo.splice(0, salonInfo.length);
         setSalonInfo([...salonInfo, ...datas]);

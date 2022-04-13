@@ -1,17 +1,7 @@
 import React, {useState, useEffect} from 'react';
-import {
-  View,
-  Text,
-  StatusBar,
-  FlatList,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
-import {Image, Icon, Divider} from 'native-base';
-import {Rating} from 'react-native-ratings';
+import {View, Text, StatusBar, FlatList, StyleSheet} from 'react-native';
+import {Image, Divider} from 'native-base';
 import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
-import {useSafeAreaFrame} from 'react-native-safe-area-context';
 import storage from '@react-native-firebase/storage';
 import {useNavigation} from '@react-navigation/native';
 
@@ -29,7 +19,7 @@ const Item = ({salonData}) => {
   );
 };
 
-const SalonRequestedAppointment = ({route}) => {
+const PastAppointment = ({route}) => {
   const [loading, setLoading] = useState(true);
   const [salonInfo, setSalonInfo] = useState([]);
   const [customerImage, setCustomerImage] = useState();
@@ -39,76 +29,10 @@ const SalonRequestedAppointment = ({route}) => {
   const {docId} = route.params;
   const navigation = useNavigation();
 
-  // console.log('docid in slaon: ' + docId);
+  console.log('docid in slaon: ' + docId);
 
   const renderItem = ({item}) => {
     return <Item salonData={item} />;
-  };
-
-  // end the accepted appointments
-  const endAppointments = () => {
-    firestore()
-      .collection('Appointments')
-      .doc(docId)
-      .update({
-        appointmentCompleted: true,
-        requestResult: 'Completed',
-      })
-      .then(() => {
-        // setIsDisable(true);
-
-        alert('Session Completed');
-        navigation.goBack();
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  };
-
-  const acceptBtnPressed = () => {
-    // alert('accept: '+docId);
-    firestore()
-      .collection('Appointments')
-      .doc(docId)
-      .update({
-        requestResult: 'Accepted',
-      })
-      .then(() => {
-        // setIsDisable(true);
-        alert('Appointment Accepted');
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  };
-
-  const rejectBtnPressed = () => {
-    // alert('reject');
-    firestore()
-      .collection('Appointments')
-      .doc(docId)
-      .update({
-        appointmentCompleted: true,
-        requestResult: 'Rejected',
-      })
-      .then(result => {
-        // setIsDisable(true);
-        alert('Appointment Rejected');
-        navigation.goBack();
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  };
-
-  const isAccepted = () => {
-    // alert('asdfads')
-    // console.log('requeset state: ' + item.docData.requestResult);
-    if (appointmentInfo.requestResult === 'Accepted') {
-      return true;
-    } else {
-      return false;
-    }
   };
 
   useEffect(() => {
@@ -233,48 +157,12 @@ const SalonRequestedAppointment = ({route}) => {
         data={salonInfo}
         renderItem={renderItem}
         keyExtractor={item => item.id}
-        ListFooterComponent={
-          <View
-            style={{
-              padding: 20,
-              marginTop: 20,
-            }}>
-            {isAccepted() ? (
-              <View style={{alignItems: 'center', justifyContent: 'center'}}>
-                <TouchableOpacity
-                  onPress={endAppointments}
-                  style={styles.acceptBtn}>
-                  {/* <Text color="white" fontSize="md"> */}
-                  <Text style={{color: 'white', fontSize: 16}}>
-                    End Session
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            ) : (
-              <View style={styles.bottomContainer}>
-                <TouchableOpacity
-                  // disabled={isDisabled()}
-                  onPress={acceptBtnPressed}
-                  style={styles.acceptBtn}>
-                  <Text style={{color: 'white', fontSize: 15}}>Accept</Text>
-                </TouchableOpacity>
-
-                <Divider orientation="vertical" thickness="2" bg="muted.300" />
-                <TouchableOpacity
-                  onPress={rejectBtnPressed}
-                  style={styles.rejectBtn}>
-                  <Text style={{color: 'white', fontSize: 15}}>Reject</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          </View>
-        }
       />
     </>
   );
 };
 
-export default SalonRequestedAppointment;
+export default PastAppointment;
 
 const styles = StyleSheet.create({
   item: {

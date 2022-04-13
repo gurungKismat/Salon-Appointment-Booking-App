@@ -123,17 +123,17 @@ const CustomerProfile = () => {
   };
 
   useEffect(() => {
-    console.log('use effect of customer profile');
+    // console.log('use effect of customer profile');
     firestore()
       .collection('customers')
       .doc(auth().currentUser.uid)
       .onSnapshot(document => {
         if (document.exists) {
-          console.log('customer exist');
+          // console.log('customer exist');
           const customerDatas = document.data();
-          console.log(
-            'customer document data: ' + JSON.stringify(customerDatas),
-          );
+          // console.log(
+          //   'customer document data: ' + JSON.stringify(customerDatas),
+          // );
           setCustomerInfo(customerDatas);
           if (customerDatas.customerImage !== undefined) {
             const reference = storage()
