@@ -113,7 +113,7 @@ const Home = () => {
           </Box>
         </Pressable>
 
-        <Pressable onPress={() => navigation.navigate('SalonTransaction')}>
+        <Pressable onPress={() => navigation.navigate('SalonProfile')}>
           <Box
             size={40}
             rounded="lg"
@@ -128,8 +128,8 @@ const Home = () => {
               <AspectRatio w="100%" ratio={16 / 9}>
                 <Center>
                   <Image
-                    size={'md'}
-                    source={GetIcons.transactionHistory}
+                    size={'lg'}
+                    source={GetIcons.profile}
                     alt="image"
                   />
                 </Center>
@@ -137,7 +137,7 @@ const Home = () => {
             </Box>
             <Center p="2">
               <Heading size="sm" color={'white'}>
-                Transaction History
+                Profile
               </Heading>
             </Center>
           </Box>

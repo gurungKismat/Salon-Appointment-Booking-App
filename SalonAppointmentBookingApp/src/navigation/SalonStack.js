@@ -55,7 +55,7 @@ const AppointmentsNavigator = () => {
           },
         }}
       />
-       <AppointmentNavigatorSalon.Screen
+      <AppointmentNavigatorSalon.Screen
         name="SalonPastAppointment"
         component={PastAppointment}
         options={{
@@ -122,7 +122,56 @@ const HomeNavigator = () => {
           },
         }}
       />
+
       <HomeStack.Screen
+        name="SalonAppointment"
+        component={Appointment}
+        options={{
+          title: 'Appointments',
+          headerStyle: {
+            backgroundColor: '#6366f1',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 20,
+          },
+        }}
+      />
+
+      <HomeStack.Screen
+        name="SalonProfile"
+        component={Profile}
+        options={{
+          title: 'Profile',
+          headerStyle: {
+            backgroundColor: '#6366f1',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 20,
+          },
+        }}
+      />
+
+      <ProfileStack.Screen
+        name="ProfileSettings"
+        component={ProfileSettings}
+        options={{
+          title: 'Profile Settings',
+          headerStyle: {
+            backgroundColor: '#6366f1',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 20,
+          },
+        }}
+      />
+
+      {/* <HomeStack.Screen
         name="SalonTransaction"
         component={SalonTransactionScreen}
         options={{
@@ -136,7 +185,7 @@ const HomeNavigator = () => {
             fontSize: 20,
           },
         }}
-      />
+      /> */}
     </HomeStack.Navigator>
   );
 };
@@ -189,7 +238,7 @@ const SalonTabScreen = () => {
           headerShown: false,
           tabBarLabel: 'Home',
           tabBarStyle: {
-            backgroundColor: '#6366f1'
+            backgroundColor: '#6366f1',
           },
           tabBarIcon: ({color, size}) => (
             <Icon name="home" color={color} size={size} />
@@ -206,7 +255,7 @@ const SalonTabScreen = () => {
           headerShown: false,
           tabBarLabel: 'Appointment',
           tabBarStyle: {
-            backgroundColor: '#6366f1'
+            backgroundColor: '#6366f1',
           },
           tabBarIcon: ({color, size}) => (
             <Icon name="calendar-question" color={color} size={size} />
@@ -238,7 +287,7 @@ const SalonTabScreen = () => {
         }}
       /> */}
 
-      <Tab.Screen
+      {/* <Tab.Screen
         name="Notification"
         component={Notification}
         options={{
@@ -261,7 +310,7 @@ const SalonTabScreen = () => {
           tabBarActiveTintColor: 'white',
           tabBarInactiveTintColor: '#a5b4fc',
         }}
-      />
+      /> */}
 
       <Tab.Screen
         name="Profile"
@@ -270,7 +319,7 @@ const SalonTabScreen = () => {
           headerShown: false,
           tabBarLabel: 'Profile',
           tabBarStyle: {
-            backgroundColor: '#6366f1'
+            backgroundColor: '#6366f1',
           },
           tabBarIcon: ({color, size}) => (
             <Icon name="account" color={color} size={size} />
