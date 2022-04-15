@@ -241,9 +241,8 @@ export default PopularServices;
 const styles = StyleSheet.create({
   rootContainer: {
     flex: 1,
-    backgroundColor: '#e7e5e4',
+    backgroundColor: '#f9fafb',
     paddingTop: 10,
-    // bottom: 20,
   },
 
   itemContainer: {

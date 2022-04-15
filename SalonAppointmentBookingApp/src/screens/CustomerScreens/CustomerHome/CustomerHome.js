@@ -179,77 +179,66 @@ const HomeScreen = () => {
   return (
     <>
       <StatusBar backgroundColor={'#6366f1'} />
-      <Stack bg="muted.10">
-        {/* <TouchableOpacity
-          onPress={() => onDisplayNotification()}
-          style={{backgroundColor: 'red', marginVertical: 10, padding: 20}}>
-          <Text style={{color: 'white'}}>Show Notification</Text>
-        </TouchableOpacity> */}
+      <Stack bg="coolGray.50">
         <ScrollView mx={5} mt={5} mb={5}>
           <VStack space={5}>
-            <HStack justifyContent={'space-between'}>
-              <Center>
-                {customerDatas && (
-                  <Heading size={'md'}>{`Hi ${
-                    customerDatas.name.split(' ')[0]
-                  }`}</Heading>
-                )}
-              </Center>
-              <Center>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('CustomerProfile')}>
-                  {customerDatas.customerImage === undefined ? (
-                    // <Avatar
-                    //   bg="#6200ee"
-                    //   mr="1"
-                    //   source={{
-                    //     // uri: 'https://bit.ly/broken-link',
-                    //     uri: "https://wallpaperaccess.com/full/317501.jpg"
-
-                    //   }}>
-                    //   {customerDatas.name.charAt(0)}
-                    // </Avatar>
-                    <UserAvatar
-                      size={50}
-                      name={customerDatas.name}
-                      bgColor="#6366f1"
-                    />
-                  ) : (
-                    <Avatar
-                      bg="indigo.500"
-                      source={{
-                        uri: customerAvatar,
-                      }}>
-                      {customerDatas.name.charAt(0)}
-                    </Avatar>
-                  )}
-                </TouchableOpacity>
-              </Center>
-            </HStack>
-            <Center>
-              <Box w={'100%'}>
+            <Stack bg="#65a30d" space={5} px={2} py={4} borderRadius={10}>
+              <HStack justifyContent={'space-between'}>
                 <Center>
-                  <Input
-                    color="amber.100"
-                    placeholder="Search Salons"
-                    variant="filled"
-                    borderRadius="10"
-                    py="2"
-                    px="2"
-                    // borderWidth="1"
-                    onPressIn={() => navigation.navigate('Discover')}
-                    InputLeftElement={
-                      <Icon
-                        ml="2"
-                        size="6"
-                        color="muted.500"
-                        as={<MaterialCommunityIcon name="magnify" />}
-                      />
-                    }
-                  />
+                  {customerDatas && (
+                    <Heading color="#f5f5f5" size={'md'}>{`Hi ${
+                      customerDatas.name.split(' ')[0]
+                    }`}</Heading>
+                  )}
                 </Center>
-              </Box>
-            </Center>
+                <Center>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate('CustomerProfile')}>
+                    {customerDatas.customerImage === undefined ? (
+                      <UserAvatar
+                        size={50}
+                        name={customerDatas.name}
+                        bgColor="#6366f1"
+                      />
+                    ) : (
+                      <Avatar
+                        bg="indigo.500"
+                        source={{
+                          uri: customerAvatar,
+                        }}>
+                        {customerDatas.name.charAt(0)}
+                      </Avatar>
+                    )}
+                  </TouchableOpacity>
+                </Center>
+              </HStack>
+              <Center>
+                <Box w={'100%'}>
+                  <Center>
+                    <Input
+                      borderWidth={2}
+                      color="amber.100"
+                      placeholder="Search Salons"
+                      variant="filled"
+                      borderRadius="10"
+                      py="2"
+                      px="2"
+                      // borderWidth="1"
+                      onPressIn={() => navigation.navigate('Discover')}
+                      InputLeftElement={
+                        <Icon
+                          ml="2"
+                          size="6"
+                          color="muted.500"
+                          as={<MaterialCommunityIcon name="magnify" />}
+                        />
+                      }
+                    />
+                  </Center>
+                </Box>
+              </Center>
+            </Stack>
+
             <Heading size="md" mt="4">
               Popular Services
             </Heading>
@@ -270,10 +259,10 @@ const HomeScreen = () => {
                     size={40}
                     rounded="lg"
                     overflow="hidden"
-                    borderColor="coolGray.200"
-                    borderWidth="1"
+                    borderColor="coolGray.100"
+                    // borderWidth="1"
                     background={item.containerColor}
-                    shadow="3">
+                    shadow="1">
                     <Box mt="4">
                       <AspectRatio w="100%" ratio={16 / 9}>
                         <Center>
@@ -314,14 +303,4 @@ const HomeScreen = () => {
   );
 };
 
-// const HomeScreen = () => {
-//   return (
-
-//   );
-// };
-
 export default HomeScreen;
-
-// <Center flex={1} px="4">
-//   <HomeUi />
-// </Center>

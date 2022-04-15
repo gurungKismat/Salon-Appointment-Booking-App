@@ -7,18 +7,14 @@ import {
   Stack,
   Heading,
   Text,
-  Avatar,
   StatusBar,
   Icon,
   Image,
   useToast,
 } from 'native-base';
 import {TouchableOpacity} from 'react-native';
-import SearchBar from '../../../components/SearchBar';
 import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
 import storage from '@react-native-firebase/storage';
-// import {Box, Center, Input, Icon} from 'native-base';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import EmptyList from '../../../components/EmptyList';
 import {useNavigation} from '@react-navigation/native';
@@ -63,13 +59,10 @@ const SearchScreen = () => {
               //     'doc data: ' +
               //     JSON.stringify(document.data()),
               // );
-            
 
               const salonId = {salonId: document.id};
               const salonInfos = document.data();
               const mergedData = {...salonId, ...salonInfos};
-
-            
 
               salonData.push(mergedData);
             });
@@ -81,7 +74,7 @@ const SearchScreen = () => {
   };
 
   return (
-    <Box w="100%" mt="5">
+    <Box w="100%" pt="5" bg="coolGray.50">
       <StatusBar backgroundColor={'#6366f1'} />
       <Center>
         <Box w={'90%'}>

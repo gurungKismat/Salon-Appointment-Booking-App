@@ -266,6 +266,7 @@ const Main = () => {
         name="Discover"
         component={SearchNavigator}
         options={{
+          tabBarHideOnKeyboard: true,
           headerShown: false,
           tabBarLabel: 'Discover',
           tabBarStyle: {

@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {View, Dimensions, Animated, StyleSheet, Text} from 'react-native';
 import StickyParallaxHeader from 'react-native-sticky-parallax-header';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {Icon} from 'native-base';
+import {Icon, Divider} from 'native-base';
 import {useNavigation} from '@react-navigation/native';
 import ServiceList from './ServicesList';
 import {Rating} from 'react-native-ratings';
@@ -46,6 +46,7 @@ const CutomHeaderScreen = ({data}) => {
         <Text style={styles.basicInfoTxt}>{salonInfo.address}</Text>
         <Text style={styles.basicInfoTxt}>Available Time: {availableTime}</Text>
       </View>
+      <Divider thickness={2} my={2} bg="coolGray.200"/>
       <View style={styles.description}>
         <Text style={{fontSize: 22, fontWeight: 'bold', color: 'black'}}>
           About
@@ -218,14 +219,15 @@ const styles = StyleSheet.create({
     marginTop: 15,
     padding: 3,
     marginBottom: 10,
+    backgroundColor: '#f9fafb'
   },
 
   basicInfo: {
-    backgroundColor: 'white',
+    backgroundColor: '#f9fafb',
     padding: 10,
     flexDirection: 'column',
-    elevation: 4,
-    borderRadius: 10,
+    // elevation: 4,
+    // borderRadius: 10,
   },
 
   basicInfoTxt: {
@@ -240,11 +242,11 @@ const styles = StyleSheet.create({
   },
 
   description: {
-    marginTop: 10,
+    // marginTop: 10,
     padding: 10,
-    backgroundColor: 'white',
-    borderTopStartRadius: 10,
-    borderTopStartRadius: 10,
-    elevation: 10,
+    backgroundColor: '#f9fafb',
+    // borderTopStartRadius: 10,
+    // borderTopStartRadius: 10,
+    // elevation: 10,
   },
 });

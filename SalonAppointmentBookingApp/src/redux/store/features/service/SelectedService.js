@@ -278,9 +278,9 @@ const SelectedServices = () => {
 
   return (
     <FlatList
-      style={{backgroundColor: 'white'}}
+      style={{backgroundColor: '#f9fafb'}}
       ListHeaderComponent={
-        <View style={{flex: 1, padding: 13, backgroundColor: 'white'}}>
+        <View style={{flex: 1, padding: 13, backgroundColor: '#f9fafb'}}>
           <StatusBar backgroundColor={'#6366f1'} />
           <View style={styles.salonInfo}>
             <View style={styles.leftContent}>
@@ -334,7 +334,7 @@ const SelectedServices = () => {
               )}
             </View>
           </View>
-          <Divider my="4" thickness={'3'} />
+          <Divider my="4" thickness={'2'} bg="coolGray.200"/>
           <View style={{marginTop: 7}}>
             {/* <DateTimePickerUi /> */}
             <View
@@ -397,7 +397,7 @@ const SelectedServices = () => {
               />
             )}
           </View>
-          <Divider my="4" thickness={'3'} />
+          <Divider my="4" thickness={'2'} bg="coolGray.200"/>
 
           <View style={{flexDirection: 'row',justifyContent: 'space-between',alignItems: 'center',marginTop: 7}}>
             <Text style={{color: 'black', fontSize: 18, fontWeight: 'bold'}}>
@@ -422,6 +422,7 @@ const SelectedServices = () => {
           </Text>
         </TouchableOpacity>
       }
+      ListFooterComponentStyle={{color: '#f9fafb'}}
     />
   );
 };

@@ -205,8 +205,8 @@ const FirstRoute = () => {
   return (
     <>
       {saloninfo.length > 0 ? (
-        <View style={{flex: 1}}>
-          <View style={{paddingHorizontal: 12, marginTop: 20}}>
+        <View style={{flex: 1, backgroundColor: '#f9fafb'}}>
+          <View style={{paddingHorizontal: 12, marginTop: 20,}}>
             <FlatList
               data={saloninfo}
               renderItem={({item}) => <UpcomingAppointment item={item} />}
@@ -214,7 +214,7 @@ const FirstRoute = () => {
           </View>
         </View>
       ) : (
-        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f9fafb'}}>
           <EmptyList message="No Upcoming Appointments" />
         </View>
       )}
@@ -271,7 +271,7 @@ const SecondRoute = () => {
   return (
     <>
       {salonInfo.length > 0 ? (
-        <View style={{flex: 1}}>
+        <View style={{flex: 1, backgroundColor: '#f9fafb'}}>
           <View style={{paddingHorizontal: 12, marginTop: 20}}>
             <FlatList
               data={salonInfo}
@@ -280,7 +280,7 @@ const SecondRoute = () => {
           </View>
         </View>
       ) : (
-        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f9fafb'}}>
           <EmptyList message="No Upcoming Appointments" />
         </View>
       )}

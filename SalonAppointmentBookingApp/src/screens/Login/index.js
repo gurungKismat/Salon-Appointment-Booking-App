@@ -15,10 +15,9 @@ import {
   Icon,
   Image,
 } from 'native-base';
-import {StatusBar, View} from 'react-native';
+import {StatusBar, View, StyleSheet} from 'react-native';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import auth from '@react-native-firebase/auth';
-import AlertBox from '../../components/AlertBox';
 import AnimatedLoader from 'react-native-animated-loader';
 
 const LoginForm = () => {
@@ -28,9 +27,7 @@ const LoginForm = () => {
   const [password, setPassword] = useState('');
   const [showEmailError, setShowEmailError] = useState(false);
   const [showPasswordError, setShowPasswordError] = useState(false);
-  const [detail, setDetail] = useState({email: 'hello', password: '123'});
   const [errorMsg, setErrorMsg] = useState({message: 'Require'});
-  const [showAlert, setShowAlert] = useState(true);
   const [loading, setLoading] = useState(false);
 
   var newEmail;
@@ -132,6 +129,10 @@ const LoginForm = () => {
                       color="muted.400"
                     />
                   }
+                  // style={styles.inputStyle}
+                  // style={borderColor: 'red'}
+                  
+                  borderRadius="lg"
                   placeholder="Email"
                   value={emailId}
                   onChangeText={text => setEmailId(text)}
@@ -154,6 +155,10 @@ const LoginForm = () => {
                       color="muted.400"
                     />
                   }
+                  // style={styles.inputStyle}
+                  borderColor="#a5b4fc"
+                  borderWidth={2}
+                  variant="outline"
                   placeholder="Email"
                   value={emailId}
                   onChangeText={text => setEmailId(text)}
@@ -213,6 +218,8 @@ const LoginForm = () => {
                       color="muted.400"
                     />
                   }
+                  borderColor="#a5b4fc"
+                  borderWidth={2}
                   placeholder="Password"
                   value={password}
                   onChangeText={text => setPassword(text)}
@@ -220,7 +227,7 @@ const LoginForm = () => {
               </FormControl>
             )}
 
-            <Link
+            {/* <Link
               _text={{
                 fontSize: 'xs',
                 fontWeight: '500',
@@ -229,7 +236,7 @@ const LoginForm = () => {
               alignSelf="flex-end"
               mt="1">
               Forget Password?
-            </Link>
+            </Link> */}
             <Button mt="2" colorScheme="indigo" onPress={isEmpty}>
               Sign in
             </Button>
@@ -268,7 +275,7 @@ const Login = () => {
           flex: 1,
           justifyContent: 'center',
           alignItems: 'center',
-          backgroundColor: 'white',
+          backgroundColor: '#f9fafb',
         }}>
         <Image
           size="24"
@@ -283,3 +290,10 @@ const Login = () => {
 };
 
 export default Login;
+
+const styles = StyleSheet.create({
+  inputStyle: {
+    borderWidth: 10,
+    borderColor: '#d1d5db',
+  },
+});
