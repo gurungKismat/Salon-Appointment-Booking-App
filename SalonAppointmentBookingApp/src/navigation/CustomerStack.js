@@ -9,8 +9,8 @@ import NotificationScreen from '../screens/CustomerScreens/Notifications/Notific
 import SalonInfo from '../screens/CustomerScreens/ViewSalonInfo/SalonInfo';
 import CustomerProfile from '../screens/CustomerScreens/CustomerProfile/CustomerProfile';
 import {View, Text} from 'react-native';
-import SelectedServices from "../redux/store/features/service/SelectedService";
-import CustomerProfileSettings from "../screens/CustomerScreens/ProfileSettings/ProfileSettings";
+import SelectedServices from '../redux/store/features/service/SelectedService';
+import CustomerProfileSettings from '../screens/CustomerScreens/ProfileSettings/ProfileSettings';
 import RequestedAppointment from '../screens/CustomerScreens/RequestedAppointment/RequestedAppointment';
 import PopularServices from '../screens/CustomerScreens/PopularServices/PopularServices';
 import PastAppointment from '../screens/CustomerScreens/PastAppointment/PastAppointment';
@@ -20,19 +20,14 @@ const HomeStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const SearchStack = createNativeStackNavigator();
 const AppointmentNavigator = createNativeStackNavigator();
-
-const Detail = () => {
-  return (
-    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      <Text style={{color: 'black'}}>Detail Screen</Text>
-    </View>
-  );
-};
+const ProfileNavigator = createNativeStackNavigator();
 
 // Screens inside Apointment Tab bar
 const AppointmentsNavigator = () => {
   return (
-    <AppointmentNavigator.Navigator initialRouteName="CustomerAppointment" headerMode="screen">
+    <AppointmentNavigator.Navigator
+      initialRouteName="CustomerAppointment"
+      headerMode="screen">
       <AppointmentNavigator.Screen
         name="CustomerAppointment"
         component={AppointmentScreen}
@@ -82,7 +77,6 @@ const AppointmentsNavigator = () => {
   );
 };
 
-
 // Screens inside Search Tab bar
 const SearchNavigator = () => {
   return (
@@ -102,11 +96,21 @@ const SearchNavigator = () => {
           },
         }}
       />
-      <SearchStack.Screen
-        name="Detail"
-        component={Detail}
+    </SearchStack.Navigator>
+  );
+};
+
+// Screens inside Search Tab bar
+const CustomerProfileNavigator = () => {
+  return (
+    <ProfileNavigator.Navigator
+      initialRouteName="CustomerProfile"
+      headerMode="screen">
+      <ProfileNavigator.Screen
+        name="CustomerProfile"
+        component={CustomerProfile}
         options={{
-          title: 'Detail',
+          title: 'Profile',
           headerStyle: {
             backgroundColor: '#6366f1',
           },
@@ -117,7 +121,22 @@ const SearchNavigator = () => {
           },
         }}
       />
-    </SearchStack.Navigator>
+      <ProfileNavigator.Screen
+        name="CustomerProfileSettings"
+        component={CustomerProfileSettings}
+        options={{
+          title: 'Profile Settings',
+          headerStyle: {
+            backgroundColor: '#6366f1',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 20,
+          },
+        }}
+      />
+    </ProfileNavigator.Navigator>
   );
 };
 
@@ -140,7 +159,7 @@ const HomeNavigator = () => {
           },
         }}
       />
-       <HomeStack.Screen
+      <HomeStack.Screen
         name="CustomerProfile"
         component={CustomerProfile}
         options={{
@@ -186,7 +205,7 @@ const HomeNavigator = () => {
           headerShown: false,
         }}
       />
-       <HomeStack.Screen
+      <HomeStack.Screen
         name="ServiceList"
         component={SelectedServices}
         options={{
@@ -202,7 +221,7 @@ const HomeNavigator = () => {
           // headerShown: false,
         }}
       />
-       <HomeStack.Screen
+      <HomeStack.Screen
         name="PopularServices"
         component={PopularServices}
         options={{
@@ -233,7 +252,7 @@ const Main = () => {
           headerShown: false,
           tabBarLabel: 'Home',
           tabBarStyle: {
-            backgroundColor: '#6366f1'
+            backgroundColor: '#6366f1',
           },
           tabBarIcon: ({color, size}) => (
             <Icon name="home" color={color} size={size} />
@@ -250,7 +269,7 @@ const Main = () => {
           headerShown: false,
           tabBarLabel: 'Discover',
           tabBarStyle: {
-            backgroundColor: '#6366f1'
+            backgroundColor: '#6366f1',
           },
           tabBarIcon: ({color, size}) => (
             <Icon name="magnify" color={color} size={size} />
@@ -266,10 +285,26 @@ const Main = () => {
           headerShown: false,
           tabBarLabel: 'Appointment',
           tabBarStyle: {
-            backgroundColor: '#6366f1'
+            backgroundColor: '#6366f1',
           },
           tabBarIcon: ({color, size}) => (
             <Icon name="calendar-question" color={color} size={size} />
+          ),
+          tabBarActiveTintColor: 'white',
+          tabBarInactiveTintColor: '#a5b4fc',
+        }}
+      />
+      <Tab.Screen
+        name="CustomerProfileNavigator"
+        component={CustomerProfileNavigator}
+        options={{
+          headerShown: false,
+          tabBarLabel: 'Profile',
+          tabBarStyle: {
+            backgroundColor: '#6366f1',
+          },
+          tabBarIcon: ({color, size}) => (
+            <Icon name="account" color={color} size={size} />
           ),
           tabBarActiveTintColor: 'white',
           tabBarInactiveTintColor: '#a5b4fc',
@@ -297,7 +332,7 @@ const Main = () => {
         }}
       /> */}
 
-      <Tab.Screen
+      {/* <Tab.Screen
         name="CustomerNotification"
         component={NotificationScreen}
         options={{
@@ -320,7 +355,7 @@ const Main = () => {
           tabBarActiveTintColor: 'white',
           tabBarInactiveTintColor: '#a5b4fc',
         }}
-      />
+      /> */}
     </Tab.Navigator>
   );
 };
