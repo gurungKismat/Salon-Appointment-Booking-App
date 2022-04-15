@@ -149,7 +149,7 @@ const Home = () => {
 
 const Eg = () => {
   return (
-    <Center flex={1} bg="white" px={'10%'} py={'10%'}>
+    <Center flex={1} bg="coolGray.50" px={'10%'} py={'10%'}>
       <Home />
     </Center>
   );

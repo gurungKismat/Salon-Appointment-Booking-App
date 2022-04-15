@@ -281,6 +281,7 @@ export default Profile;
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
+    backgroundColor: '#f9fafb'
   },
 
   topContainer: {

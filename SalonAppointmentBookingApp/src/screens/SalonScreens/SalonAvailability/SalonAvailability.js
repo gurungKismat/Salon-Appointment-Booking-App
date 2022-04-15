@@ -373,8 +373,9 @@ export default SalonAvailability;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 20,
-    marginHorizontal: 15,
+    paddingTop: 20,
+    paddingHorizontal: 15,
+    backgroundColor: '#f9fafb'
   },
 
   item: {

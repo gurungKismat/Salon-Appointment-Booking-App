@@ -178,91 +178,7 @@ const SalonServices = () => {
       return () => {
         isMounted = false;
       };
-
     }, []);
-
-    // if (loading) {
-    //   return null;
-    // }
-
-    // console.log('received service: '+JSON.stringify(service))
-
-    // console.log('header: ' + headers);
-    // console.log('service: ' + JSON.stringify(service));
-
-    // return (
-    //   <View style={styles.serviceContainer}>
-    //     <View style={styles.availableServices}>
-    //       <View style={styles.itemRow}>
-    //         <View style={styles.itemColumn}>
-    //           <Text style={styles.availableItmText}>{service.serviceName}</Text>
-
-    //           <Text style={styles.servicePrice}>Price: Rs {service.price}</Text>
-    //           <Text style={styles.serviceDuration}>
-    //             Duration: {service.duration}
-    //           </Text>
-
-    //           {/* <Icon
-    //           as={<MaterialCommunityIcon name={'pencil'} />}
-    //           size={7}
-    //           mr="2"
-    //           color="white"
-    //           onPress={() => editService(headers, service, index)}
-    //         /> */}
-    //         </View>
-    //         <View>
-    //           <Image
-    //             source={{
-    //               uri: 'https://wallpaperaccess.com/full/317501.jpg',
-    //             }}
-    //             alt="Default Salon Img"
-    //             size="md"
-    //             rounded={10}
-    //           />
-    //         </View>
-    //       </View>
-    //       <View style={styles.deleteServiceRow}>
-    //         {/* <Icon
-    //           as={<MaterialCommunityIcon name={'delete'} />}
-    //           size={7}
-    //           mr="2"
-    //           my="5"
-    //           color="white"
-    //           onPress={() => setIsOpen(!isOpen)}
-    //         /> */}
-    //       </View>
-    //       <AlertDialog
-    //         leastDestructiveRef={cancelRef}
-    //         isOpen={isOpen}
-    //         onClose={onClose}>
-    //         <AlertDialog.Content>
-    //           <AlertDialog.CloseButton />
-    //           <AlertDialog.Header>Delete Service</AlertDialog.Header>
-    //           <AlertDialog.Body>
-    //             This will remove the service. This action cannot be reversed.
-    //             Deleted data can not be recovered.
-    //           </AlertDialog.Body>
-    //           <AlertDialog.Footer>
-    //             <Button.Group space={2}>
-    //               <Button
-    //                 variant="unstyled"
-    //                 colorScheme="coolGray"
-    //                 onPress={onClose}
-    //                 ref={cancelRef}>
-    //                 Cancel
-    //               </Button>
-    //               <Button
-    //                 colorScheme="danger"
-    //                 onPress={() => deleteService(headers, service)}>
-    //                 Delete
-    //               </Button>
-    //             </Button.Group>
-    //           </AlertDialog.Footer>
-    //         </AlertDialog.Content>
-    //       </AlertDialog>
-    //     </View>
-    //   </View>
-    // );
 
     return (
       <>
@@ -414,15 +330,16 @@ const SalonServices = () => {
       />
       <View style={styles.addServiceRow}>
         <Heading size="md">Add New Services</Heading>
-        <Icon
-          as={<MaterialCommunityIcon name={'plus'} />}
-          size={10}
-          mr="2"
-          color="muted.400"
-          onPress={() => setShowModal(!showModal)}
-        />
+        <TouchableOpacity onPress={() => setShowModal(!showModal)}>
+          <Icon
+            as={<MaterialCommunityIcon name={'plus'} />}
+            size={10}
+            mr="2"
+            color="muted.400"
+          />
+        </TouchableOpacity>
       </View>
-      <Divider bg="black" thickness="2" my="1" />
+      <Divider bg="coolGray.400" thickness="2" my="1" />
       <View style={{padding: 5}}>
         <Heading size="md" my="4">
           Available Services
@@ -458,7 +375,7 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     // padding: 15,
-    backgroundColor: '#e7e5e4',
+    backgroundColor: '#f9fafb',
   },
 
   addServiceRow: {

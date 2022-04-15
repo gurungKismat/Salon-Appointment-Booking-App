@@ -275,7 +275,7 @@ const ProfileSettings = ({route}) => {
   }
 
   return (
-    <ScrollView>
+    <ScrollView bg='coolGray.50'>
       <StatusBar backgroundColor={'#6366f1'} />
       <Center w="100%">
         <AnimatedLoader
