@@ -237,6 +237,37 @@ const HomeNavigator = () => {
           // headerShown: false,
         }}
       />
+      <HomeStack.Screen
+        name="CustomerAppointment"
+        component={AppointmentScreen}
+        options={{
+          title: 'Appointments',
+          headerStyle: {
+            backgroundColor: '#6366f1',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 20,
+          },
+        }}
+      />
+
+      <HomeStack.Screen
+        name="RequestedAppointment"
+        component={RequestedAppointment}
+        options={{
+          title: 'Requested Appointments',
+          headerStyle: {
+            backgroundColor: '#6366f1',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 20,
+          },
+        }}
+      />
     </HomeStack.Navigator>
   );
 };

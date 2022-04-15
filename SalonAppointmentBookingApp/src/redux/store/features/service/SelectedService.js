@@ -189,9 +189,9 @@ const SelectedServices = () => {
           alert("Appointment Request Sent")
           // navigation.popToTop();
           // navigation.dispatch(popAction)
-          // navigation.goBack();
-          // navigation.navigate('CustomerAppointment')
-          navigation.navigate('Home');
+          navigation.goBack();
+          navigation.navigate('CustomerAppointment')
+          // navigation.navigate('Home');
           dispatch(deleteAllServices())
         }).catch(error => {
           console.error(error);
