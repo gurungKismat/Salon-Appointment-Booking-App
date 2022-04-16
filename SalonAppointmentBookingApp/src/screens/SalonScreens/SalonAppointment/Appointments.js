@@ -233,7 +233,8 @@ const PastAppointment = ({item}) => {
 
   async function getImageUrl(reference) {
     const imgDownloadUrl = await reference.getDownloadURL();
-    setCustomerImage(imgDownloadUrl);
+    // setCustomerImage(imgDownloadUrl);
+    return imgDownloadUrl;
   }
 
   useEffect(() => {
@@ -242,15 +243,18 @@ const PastAppointment = ({item}) => {
       .child('/customerProfilePicture')
       .child(item.docData.customerData.customerImage);
 
-    getImageUrl(reference);
+    getImageUrl(reference).then(imgDownloadUrl => {
+      setCustomerImage(imgDownloadUrl);
+    });
   }, []);
 
   return (
     <TouchableOpacity
-    onPress={() => navigation.navigate('SalonPastAppointment', {
-      docId: item.docId,
-    })}
-    >
+      onPress={() =>
+        navigation.navigate('SalonPastAppointment', {
+          docId: item.docId,
+        })
+      }>
       <View style={styles.pastAppointmentItemContainer}>
         <View style={styles.topItem}>
           <Heading size="sm" px="3" mt={4}>
@@ -449,7 +453,12 @@ const FirstRoute = () => {
     <>
       {saloninfo.length > 0 ? (
         <View style={{flex: 1}}>
-          <View style={{paddingHorizontal: 12, marginTop: 20, backgroundColor: '#f9fafb'}}>
+          <View
+            style={{
+              paddingHorizontal: 12,
+              marginTop: 20,
+              backgroundColor: '#f9fafb',
+            }}>
             <FlatList
               data={saloninfo}
               renderItem={({item}) => <UpcomingAppointment item={item} />}
@@ -457,7 +466,13 @@ const FirstRoute = () => {
           </View>
         </View>
       ) : (
-        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f9fafb'}}>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: '#f9fafb',
+          }}>
           <EmptyList message="No Upcoming Appointments" />
         </View>
       )}
@@ -512,7 +527,12 @@ const SecondRoute = () => {
     <>
       {salonInfo.length > 0 ? (
         <View style={{flex: 1}}>
-          <View style={{paddingHorizontal: 12, marginTop: 20, backgroundColor: '#f9fafb'}}>
+          <View
+            style={{
+              paddingHorizontal: 12,
+              marginTop: 20,
+              backgroundColor: '#f9fafb',
+            }}>
             <FlatList
               data={salonInfo}
               renderItem={({item}) => <PastAppointment item={item} />}
@@ -521,7 +541,13 @@ const SecondRoute = () => {
           {/* <EmptyList message="No Past Appointments" /> */}
         </View>
       ) : (
-        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f9fafb'}}>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: '#f9fafb',
+          }}>
           <EmptyList message="No Past Appointments" />
         </View>
       )}

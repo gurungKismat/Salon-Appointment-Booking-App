@@ -7,8 +7,13 @@ import {Provider} from 'react-redux';
 
 // import AuthStack from "./src/navigation/AuthStack";
 
-const App = () => {
+const config = {
+  dependencies: {
+    'linear-gradient': require('react-native-linear-gradient').default,
+  },
+};
 
+const App = () => {
   const theme = extendTheme({
     components: {
       Input: {
@@ -20,7 +25,7 @@ const App = () => {
 
   return (
     <Provider store={store}>
-      <NativeBaseProvider theme={theme} >
+      <NativeBaseProvider theme={theme} config={config}>
         <NavigationContainer>
           <Router />
         </NavigationContainer>

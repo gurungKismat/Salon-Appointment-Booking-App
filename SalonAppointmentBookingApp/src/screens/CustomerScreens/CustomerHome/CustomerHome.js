@@ -25,8 +25,6 @@ import PopularSalons from '../../../components/PopularSalons';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import storage from '@react-native-firebase/storage';
-import notifee from '@notifee/react-native';
-import messaging from '@react-native-firebase/messaging';
 import {LogBox} from 'react-native';
 import UserAvatar from 'react-native-user-avatar';
 
@@ -48,81 +46,6 @@ const HomeScreen = () => {
     const downloadUrl = await reference.getDownloadURL();
     setCustomerAvatar(downloadUrl);
   };
-
-  const onDisplayNotification = async remoteMessage => {
-    const channelId = await notifee.createChannel({
-      id: 'default',
-      name: 'Default Channel',
-    });
-
-    // Display a notification
-    await notifee.displayNotification({
-      title: remoteMessage.notification.title,
-      body: remoteMessage.notification.body,
-      android: {
-        channelId,
-        // smallIcon: 'name-of-a-small-icon', // optional, defaults to 'ic_launcher'.
-        // largeIcon: 'https://my-cdn.com/users/123456.png',
-        smallIcon: 'ic_launcher',
-      },
-    });
-
-    // await notifee.displayNotification({
-    //   title: "Test 1",
-    //   body: "Hello world",
-    //   android: {
-    //     channelId,
-    //     // smallIcon: 'name-of-a-small-icon', // optional, defaults to 'ic_launcher'.
-    //     // largeIcon: 'https://my-cdn.com/users/123456.png',
-    //     smallIcon: 'ic_launcher',
-    //     pressAction: {
-    //       id: 'default',
-
-    //     }
-    //   },
-    // });
-  };
-
-  // useEffect(() => {
-
-  //   return notifee.onForegroundEvent(({ type, detail }) => {
-  //     switch (type) {
-  //       case EventType.DISMISSED:
-  //         console.log('User dismissed notification', detail.notification);
-  //         break;
-  //       case EventType.PRESS:
-  //         console.log('User pressed notification', detail.notification);
-  //         break;
-  //     }
-  //   });
-  // }, [])
-
-  // Bootstrap sequence function
-  //  async function bootstrap() {
-  //   const initialNotification = await notifee.getInitialNotification();
-
-  //   if (initialNotification) {
-  //     navigation.navigate("CustomerNotification");
-  //     console.log('Notification caused application to open', initialNotification.notification);
-  //     console.log('Press action used to open the app', initialNotification.pressAction);
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   bootstrap();
-  // }, [])
-
-  // useEffect(() => {
-  //   // for notification
-  //   console.log("remote notificaiotn useefect")
-  //   const unsubscribe = messaging().onMessage(async remoteMessage => {
-  //     console.log("notification data: "+JSON.stringify(remoteMessage))
-  //     alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
-  //     onDisplayNotification(remoteMessage);
-  //   });
-
-  //   return unsubscribe;
-  // }, []);
 
   useEffect(() => {
     // console.log('use effect customer data');
@@ -182,13 +105,24 @@ const HomeScreen = () => {
       <Stack bg="coolGray.50">
         <ScrollView mx={5} mt={5} mb={5}>
           <VStack space={5}>
-            <Stack bg="#65a30d" space={5} px={2} py={4} borderRadius={10}>
+            <Stack
+              bg={{
+                linearGradient: {
+                  colors: ['indigo.400', 'violet.800'],
+                  start: [0, 0],
+                  end: [1, 0],
+                },
+              }}
+              space={5}
+              px={3}
+              py={4}
+              borderRadius={10}>
               <HStack justifyContent={'space-between'}>
                 <Center>
                   {customerDatas && (
-                    <Heading color="#f5f5f5" size={'md'}>{`Hi ${
+                    <Text color="#f5f5f5" fontSize={'xl'}>{`Hi ${
                       customerDatas.name.split(' ')[0]
-                    }`}</Heading>
+                    }`}</Text>
                   )}
                 </Center>
                 <Center>
@@ -239,7 +173,7 @@ const HomeScreen = () => {
               </Center>
             </Stack>
 
-            <Heading size="md" mt="4">
+            <Heading size="md" mt="4" pl={2}>
               Popular Services
             </Heading>
 
@@ -286,7 +220,7 @@ const HomeScreen = () => {
             />
 
             {/* popular Salons */}
-            <Heading size="md" mt="4">
+            <Heading size="md" mt="4" ml={2}>
               Popular Salons
             </Heading>
 

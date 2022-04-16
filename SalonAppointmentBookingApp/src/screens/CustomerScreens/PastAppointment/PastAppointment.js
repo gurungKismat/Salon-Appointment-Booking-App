@@ -1,15 +1,10 @@
 import React, {useState, useEffect} from 'react';
-import {
-  View,
-  Text,
-  StatusBar,
-  FlatList,
-  StyleSheet,
-} from 'react-native';
+import {View, Text, StatusBar, FlatList, StyleSheet} from 'react-native';
 import {Image, Divider} from 'native-base';
 import {Rating} from 'react-native-ratings';
 import firestore from '@react-native-firebase/firestore';
-
+import uuid from 'react-native-uuid';
+import auth from '@react-native-firebase/auth';
 
 const Item = ({salonData}) => {
   // console.log('SALON DATA IN ITEM: ' + JSON.stringify(salonData));
@@ -32,17 +27,97 @@ const PastAppointment = ({route}) => {
   const [appointmentInfo, setAppointmentInfo] = useState({});
   const [availableTime, setAvailableTime] = useState('');
   const [salonAddress, setSalonAddress] = useState('');
+  const [salonId, setSalonId] = useState('');
+  const [ratingData, setRatingData] = useState({});
+  const [startingRating, setStartingRating] = useState(0);
+  const [ratingStatus, setRatingStatus] = useState(false);
+  const [rating, setRating] = useState({
+    5: '0',
+    4: '0',
+    3: '0',
+    2: '0',
+    1: '0',
+  });
 
   const {pastDocId} = route.params;
-//   console.log('past requesetd id: ' + pastDocId);
+  // console.log('past requesetd id: ' + pastDocId);
 
-  // handle payment method select
-  const paymentBtnPressed = () => {
-    alert('hello');
+  const ratingCompleted = async rating => {
+    console.log('Rating is: ' + rating);
+
+    await firestore()
+      .collection('salons')
+      .doc(salonId)
+      .get()
+      .then(doc => {
+        if (doc.exists) {
+          // console.log('available time exist');
+          salonRating = doc.data().ratings;
+          if (salonRating !== undefined) {
+            console.log('salon rating is not undefined');
+            salonRating[rating] = Number(salonRating[rating]) + 1;
+            firestore()
+              .collection('salons')
+              .doc(salonId)
+              .update({
+                ratings: salonRating,
+              })
+              .then(() => {
+                const ratingData = {
+                  ratingNo: rating,
+                  isRated: true,
+                  salonId: salonId,
+                  customerId: auth().currentUser.uid,
+                };
+                firestore().collection('Appointments').doc(pastDocId).update({
+                  ratingDatas: ratingData,
+                });
+                console.log('Salon Rated');
+              });
+          } else {
+            const ratingData = {
+              5: '0',
+              4: '0',
+              3: '0',
+              2: '0',
+              1: '0',
+            };
+            ratingData[rating] = Number(ratingData[rating]) + 1;
+            firestore()
+              .collection('salons')
+              .doc(salonId)
+              .update({
+                ratings: ratingData,
+              })
+              .then(() => {
+                // console.log('Salon Rated');
+                firestore().collection('Appointments').doc(pastDocId).update({
+                  ratingNo: rating,
+                  isRated: true,
+                  salonId: salonId,
+                  customerId: auth().currentUser.uid,
+                });
+              });
+            console.log('initial rating');
+          }
+        }
+      });
+
+    // console.log('rating data after rating: ' + JSON.stringify(ratingData));
   };
 
   const renderItem = ({item}) => {
     return <Item salonData={item} />;
+  };
+
+  // check if rating of salon is done or not
+  const isRated = () => {
+    // console.log('israted: ' + ratingData.isRated);
+    if (ratingStatus) {
+      return true;
+    } else {
+      return false;
+    }
   };
 
   useEffect(() => {
@@ -59,6 +134,8 @@ const PastAppointment = ({route}) => {
           salonDatas.forEach(salonData => {
             priceAmount += Number(salonData.servicePrice);
           });
+
+          // console.log('ratings: '+JSON.stringify(ratings))
 
           const salonId = documentSanpshot.data().salonid;
           // console.log('salon Id: ' + salonId);
@@ -86,21 +163,28 @@ const PastAppointment = ({route}) => {
               }
             });
 
-            // console.log('slaon address: '+salonAddress)
+          const ratings = documentSanpshot.data().ratingDatas;
+          if (ratings !== undefined) {
+            const initialRating = ratings.ratingNo;
+            const isRated = ratings.isRated;
+            setStartingRating(initialRating);
+            setRatingStatus(isRated);
+          }
+
+          // console.log('slaon address: '+salonAddress)
           setAvailableTime(availableTime);
           setSalonAddress(salonAddress);
           setAppointmentInfo(documentSanpshot.data());
           setTotalPrice(priceAmount);
           setSalonInfo(salonDatas);
+          setSalonId(salonId);
+          setRatingData(ratings);
+
           if (loading) {
             setLoading(false);
           }
         }
       });
-
-    // if (loading) {
-    //   setLoading(false);
-    // }
   }, []);
 
   if (loading) {
@@ -129,7 +213,7 @@ const PastAppointment = ({route}) => {
                     type="custom"
                     ratingBackgroundColor="silver"
                     tintColor="white"
-                    ratingColor="blue"
+                    // ratingColor="blue"
                     readonly
                     imageSize={24}
                     style={{paddingVertical: 5}}
@@ -171,7 +255,8 @@ const PastAppointment = ({route}) => {
                 )}
               </View>
             </View>
-            <Divider my="4" thickness={'2'} />
+
+            <Divider bg="coolGray.200" my={4} thickness={2} />
             <View style={{marginTop: 3}}>
               <Text style={{color: 'black', fontSize: 19}}>
                 Date: {appointmentInfo.date}
@@ -180,7 +265,7 @@ const PastAppointment = ({route}) => {
                 Time: {appointmentInfo.time}
               </Text>
             </View>
-            <Divider my="4" thickness={'2'} />
+            <Divider bg="coolGray.200" my={4} thickness={2} />
             <View
               style={{
                 flexDirection: 'row',
@@ -200,16 +285,39 @@ const PastAppointment = ({route}) => {
         data={salonInfo}
         renderItem={renderItem}
         keyExtractor={item => item.id}
-        // ListFooterComponent={
-        //   <TouchableOpacity
-        //     onPress={paymentBtnPressed}
-        //     // disabled={checkDisable()}
-        //     style={styles.requestAppointment}>
-        //     <Text style={{color: 'white', fontSize: 17, alignSelf: 'center'}}>
-        //       Select Payment Method
-        //     </Text>
-        //   </TouchableOpacity>
-        // }
+        ListFooterComponent={
+          // <TouchableOpacity
+          //   // onPress={paymentBtnPressed}
+          //   // disabled={checkDisable()}
+          //   style={styles.requestAppointment}>
+          //   <Text style={{color: 'white', fontSize: 17, alignSelf: 'center'}}>
+
+          //   </Text>
+          // </TouchableOpacity>
+
+          <View style={{flex: 1, marginTop: 25, paddingHorizontal: 15}}>
+            <Divider bg="coolGray.200" my={4} thickness={2} />
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}>
+              <Text style={{color: 'black', fontSize: 20}}>Rate Salon</Text>
+              <Rating
+                startingValue={startingRating}
+                onFinishRating={ratingCompleted}
+                style={{paddingVertical: 10}}
+                imageSize={30}
+                readonly={isRated()}
+                type="custom"
+                ratingBackgroundColor="silver"
+                tintColor="white"
+              />
+            </View>
+            <Divider bg="coolGray.200" my={4} thickness={2} />
+          </View>
+        }
       />
     </>
   );

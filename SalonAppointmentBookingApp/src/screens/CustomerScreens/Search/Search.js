@@ -12,7 +12,7 @@ import {
   Image,
   useToast,
 } from 'native-base';
-import {TouchableOpacity} from 'react-native';
+import {TouchableOpacity, View} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -23,6 +23,66 @@ const SearchScreen = () => {
   const [searchPhrase, setSearchPhrase] = useState('');
   const [searchedSalon, setSearchedSalon] = useState([]);
   const [searchResult, setSearchResult] = useState('No Items Searched');
+  const [searchBySalon, setSearchBySalon] = useState(true);
+  const [searchByPlace, setSearchByPlace] = useState(false);
+
+  const filterSearch = () => {
+    if (searchByPlace === false) {
+      setSearchBySalon(false);
+      setSearchByPlace(true);
+    } else {
+      setSearchBySalon(true);
+      setSearchByPlace(false);
+    }
+  };
+
+  const searchSalonByPlaces = async () => {
+    searchedSalon.splice(0, searchedSalon.length);
+    if (searchPhrase !== '') {
+      const newSearchPhrase =
+        searchPhrase.charAt(0).toUpperCase() + searchPhrase.substring(1);
+      // alert(newSearchPhrase);
+      const collectionRef = firestore().collection('salons');
+      await collectionRef
+        .where('address', '>=', newSearchPhrase)
+        .where('address', '<=', newSearchPhrase + '\uf8ff')
+        .get()
+        .then(documents => {
+          if (documents.empty) {
+            setSearchResult('No Salon Found');
+            if (!toast.isActive(id)) {
+              toast.show({
+                id,
+                title: 'No Salon Found!',
+              });
+            }
+            // console.log('no matching documents');
+          } else {
+            // console.log("docment data: "+document.data())
+            const salonData = [];
+            documents.forEach(document => {
+              // console.log(
+              //   'doc id: ' +
+              //     document.id +
+              //     '  ' +
+              //     'doc data: ' +
+              //     JSON.stringify(document.data()),
+              // );
+
+              const salonId = {salonId: document.id};
+              const salonInfos = document.data();
+              const mergedData = {...salonId, ...salonInfos};
+
+              salonData.push(mergedData);
+            });
+            console.log('Salon Data: ' + JSON.stringify(salonData));
+            setSearchedSalon(salonData);
+          }
+        });
+    } else {
+      alert('Enter Places');
+    }
+  };
 
   const toast = useToast();
   const id = 'test-toast';
@@ -74,45 +134,97 @@ const SearchScreen = () => {
   };
 
   return (
-    <Box w="100%" pt="5" bg="coolGray.50">
+    <Box w="100%" h="100%" pt="5" bg="coolGray.50">
       <StatusBar backgroundColor={'#6366f1'} />
       <Center>
         <Box w={'90%'}>
           <Center>
-            <Input
-              placeholder="Search Salons"
-              variant="filled"
-              borderRadius="10"
-              py="2"
-              px="2"
-              value={searchPhrase}
-              onChangeText={setSearchPhrase}
-              InputLeftElement={
-                <Icon
-                  onPress={searchSalon}
-                  ml="2"
-                  size="6"
-                  color="muted.500"
-                  as={<MaterialCommunityIcon name="magnify" />}
-                />
-              }
-              InputRightElement={
-                !!searchPhrase && (
+            {searchBySalon === true ? (
+              <Input
+                placeholder="Search Salons"
+                variant="filled"
+                borderRadius="10"
+                py="2"
+                px="2"
+                value={searchPhrase}
+                onChangeText={setSearchPhrase}
+                InputLeftElement={
                   <Icon
-                    mr="2"
-                    size="6"
+                    onPress={searchSalon}
+                    ml="2"
+                    size="8"
                     color="muted.500"
-                    as={
-                      <MaterialCommunityIcon
-                        name="close"
-                        onPress={() => setSearchPhrase('')}
-                      />
-                    }
+                    as={<MaterialCommunityIcon name="magnify" />}
                   />
-                )
-              }
-            />
+                }
+                InputRightElement={
+                  !!searchPhrase && (
+                    <Icon
+                      mr="2"
+                      size="6"
+                      color="muted.500"
+                      as={
+                        <MaterialCommunityIcon
+                          name="close"
+                          onPress={() => setSearchPhrase('')}
+                        />
+                      }
+                    />
+                  )
+                }
+              />
+            ) : (
+              <Input
+                placeholder="Search Salons By Places"
+                variant="filled"
+                borderRadius="10"
+                py="2"
+                px="2"
+                value={searchPhrase}
+                onChangeText={setSearchPhrase}
+                InputLeftElement={
+                  <Icon
+                    onPress={searchSalonByPlaces}
+                    ml="2"
+                    size="8"
+                    color="muted.500"
+                    as={<MaterialCommunityIcon name="magnify" />}
+                  />
+                }
+                InputRightElement={
+                  !!searchPhrase && (
+                    <Icon
+                      mr="2"
+                      size="6"
+                      color="muted.500"
+                      as={
+                        <MaterialCommunityIcon
+                          name="close"
+                          onPress={() => setSearchPhrase('')}
+                        />
+                      }
+                    />
+                  )
+                }
+              />
+            )}
           </Center>
+          <TouchableOpacity
+            onPress={filterSearch}
+            style={{
+              backgroundColor: '#4f46e5',
+              padding: 10,
+              marginTop: 10,
+              borderRadius: 30,
+              alignSelf: 'flex-end',
+              alignItems: 'center',
+            }}>
+            {searchBySalon === true ? (
+              <Text color={'white'}>Search By Place</Text>
+            ) : (
+              <Text color={'white'}>Search By Salon</Text>
+            )}
+          </TouchableOpacity>
         </Box>
       </Center>
 
@@ -123,11 +235,13 @@ const SearchScreen = () => {
             renderItem={({item}) => <Item item={item} />}
           />
         ) : (
-          <Center>
-            <Box mb={32}>
-              <EmptyList message={searchResult} />
-            </Box>
-          </Center>
+          // <Center>
+          //   <Box>
+          <View style={{alignSelf: 'center', paddingBottom: 130}}>
+            <EmptyList message={searchResult} />
+          </View>
+          //   </Box>
+          // </Center>
         )}
       </Stack>
     </Box>
@@ -139,7 +253,7 @@ const Item = ({item}) => {
   const [imageUri, setImageUri] = useState('');
   const [loading, setLoading] = useState(true);
 
-  console.log('item: ' + JSON.stringify(item));
+  // console.log('item: ' + JSON.stringify(item));
 
   const getSalonImage = async reference => {
     const downloadUrl = await reference.getDownloadURL();
@@ -178,8 +292,8 @@ const Item = ({item}) => {
         rounded="xl"
         overflow="hidden"
         borderColor="coolGray.200"
-        backgroundColor="light.200"
-        shadow="3">
+        backgroundColor="coolGray.200"
+        shadow="2">
         <Stack p="4" space={2}>
           <Stack
             direction="row"

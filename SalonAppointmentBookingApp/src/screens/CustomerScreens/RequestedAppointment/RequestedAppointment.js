@@ -204,16 +204,16 @@ const RequestedAppointment = ({route}) => {
         data={salonInfo}
         renderItem={renderItem}
         keyExtractor={item => item.id}
-        ListFooterComponent={
-          <TouchableOpacity
-            onPress={paymentBtnPressed}
-            // disabled={checkDisable()}
-            style={styles.requestAppointment}>
-            <Text style={{color: 'white', fontSize: 17, alignSelf: 'center'}}>
-              Select Payment Method
-            </Text>
-          </TouchableOpacity>
-        }
+        // ListFooterComponent={
+        //   <TouchableOpacity
+        //     onPress={paymentBtnPressed}
+        //     // disabled={checkDisable()}
+        //     style={styles.requestAppointment}>
+        //     <Text style={{color: 'white', fontSize: 17, alignSelf: 'center'}}>
+        //       Select Payment Method
+        //     </Text>
+        //   </TouchableOpacity>
+        // }
       />
     </>
   );
