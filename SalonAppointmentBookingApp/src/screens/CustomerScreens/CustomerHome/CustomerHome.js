@@ -25,10 +25,11 @@ import PopularSalons from '../../../components/PopularSalons';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import storage from '@react-native-firebase/storage';
-
 import {LogBox} from 'react-native';
+import UserAvatar from 'react-native-user-avatar';
 
 LogBox.ignoreLogs(['NativeBase:']);
+LogBox.ignoreLogs(['Require cycle:']);
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -100,67 +101,79 @@ const HomeScreen = () => {
 
   return (
     <>
-      <StatusBar backgroundColor={'#6200ee'} />
-      <Stack bg="muted.10">
+      <StatusBar backgroundColor={'#6366f1'} />
+      <Stack bg="coolGray.50">
         <ScrollView mx={5} mt={5} mb={5}>
           <VStack space={5}>
-            <HStack justifyContent={'space-between'}>
-              <Center>
-                {customerDatas && (
-                  <Heading size={'md'}>{`Hi ${
-                    customerDatas.name.split(' ')[0]
-                  }`}</Heading>
-                )}
-              </Center>
-              <Center>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('CustomerProfile')}>
-                  {customerDatas.customerImage === undefined ? (
-                    <Avatar
-                      bg="#6200ee"
-                      mr="1"
-                      source={{
-                        uri: 'https://bit.ly/broken-link',
-                      }}>
-                      {customerDatas.name.charAt(0)}
-                    </Avatar>
-                  ) : (
-                    <Avatar
-                      bg="indigo.500"
-                      source={{
-                        uri: customerAvatar,
-                      }}>
-                      {customerDatas.name.charAt(0)}
-                    </Avatar>
-                  )}
-                </TouchableOpacity>
-              </Center>
-            </HStack>
-            <Center>
-              <Box w={'100%'}>
+            <Stack
+              bg={{
+                linearGradient: {
+                  colors: ['indigo.400', 'violet.800'],
+                  start: [0, 0],
+                  end: [1, 0],
+                },
+              }}
+              space={5}
+              px={3}
+              py={4}
+              borderRadius={10}>
+              <HStack justifyContent={'space-between'}>
                 <Center>
-                  <Input
-                    color="amber.100"
-                    placeholder="Search Salons"
-                    variant="filled"
-                    borderRadius="10"
-                    py="2"
-                    px="2"
-                    // borderWidth="1"
-                    onPressIn={() => navigation.navigate('Discover')}
-                    InputLeftElement={
-                      <Icon
-                        ml="2"
-                        size="6"
-                        color="muted.500"
-                        as={<MaterialCommunityIcon name="magnify" />}
-                      />
-                    }
-                  />
+                  {customerDatas && (
+                    <Text color="#f5f5f5" fontSize={'xl'}>{`Hi ${
+                      customerDatas.name.split(' ')[0]
+                    }`}</Text>
+                  )}
                 </Center>
-              </Box>
-            </Center>
-            <Heading size="md" mt="4">
+                <Center>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate('CustomerProfile')}>
+                    {customerDatas.customerImage === undefined ? (
+                      <UserAvatar
+                        size={50}
+                        name={customerDatas.name}
+                        bgColor="#6366f1"
+                      />
+                    ) : (
+                      <Avatar
+                        bg="indigo.500"
+                        source={{
+                          uri: customerAvatar,
+                        }}>
+                        {customerDatas.name.charAt(0)}
+                      </Avatar>
+                    )}
+                  </TouchableOpacity>
+                </Center>
+              </HStack>
+              <Center>
+                <Box w={'100%'}>
+                  <Center>
+                    <Input
+                      borderWidth={2}
+                      color="amber.100"
+                      placeholder="Search Salons"
+                      variant="filled"
+                      borderRadius="10"
+                      py="2"
+                      px="2"
+                      // borderWidth="1"
+                      onPressIn={() => navigation.navigate('Discover')}
+                      InputLeftElement={
+                        <Icon
+                          ml="2"
+                          size="6"
+                          color="muted.500"
+                          as={<MaterialCommunityIcon name="magnify" />}
+                        />
+                      }
+                    />
+                  </Center>
+                </Box>
+              </Center>
+            </Stack>
+
+            <Heading size="md" mt="4" pl={2}>
               Popular Services
             </Heading>
 
@@ -169,16 +182,21 @@ const HomeScreen = () => {
               horizontal
               data={popularServices}
               renderItem={({item}) => (
-                <TouchableOpacity onPress={() => alert('clicked')}>
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate('PopularServices', {
+                      serviceName: item.alias,
+                    })
+                  }>
                   <Box
                     mx="2"
                     size={40}
                     rounded="lg"
                     overflow="hidden"
-                    borderColor="coolGray.200"
-                    borderWidth="1"
+                    borderColor="coolGray.100"
+                    // borderWidth="1"
                     background={item.containerColor}
-                    shadow="3">
+                    shadow="1">
                     <Box mt="4">
                       <AspectRatio w="100%" ratio={16 / 9}>
                         <Center>
@@ -202,7 +220,7 @@ const HomeScreen = () => {
             />
 
             {/* popular Salons */}
-            <Heading size="md" mt="4">
+            <Heading size="md" mt="4" ml={2}>
               Popular Salons
             </Heading>
 
@@ -219,14 +237,4 @@ const HomeScreen = () => {
   );
 };
 
-// const HomeScreen = () => {
-//   return (
-
-//   );
-// };
-
 export default HomeScreen;
-
-// <Center flex={1} px="4">
-//   <HomeUi />
-// </Center>

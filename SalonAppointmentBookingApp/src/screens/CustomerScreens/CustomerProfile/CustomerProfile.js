@@ -123,17 +123,17 @@ const CustomerProfile = () => {
   };
 
   useEffect(() => {
-    console.log('use effect of customer profile');
+    // console.log('use effect of customer profile');
     firestore()
       .collection('customers')
       .doc(auth().currentUser.uid)
       .onSnapshot(document => {
         if (document.exists) {
-          console.log('customer exist');
+          // console.log('customer exist');
           const customerDatas = document.data();
-          console.log(
-            'customer document data: ' + JSON.stringify(customerDatas),
-          );
+          // console.log(
+          //   'customer document data: ' + JSON.stringify(customerDatas),
+          // );
           setCustomerInfo(customerDatas);
           if (customerDatas.customerImage !== undefined) {
             const reference = storage()
@@ -155,7 +155,7 @@ const CustomerProfile = () => {
 
   return (
     <View style={styles.mainContainer}>
-      <StatusBar backgroundColor={'#6200ee'} />
+      <StatusBar backgroundColor={'#6366f1'} />
       <View style={styles.topContainer}>
         <View style={styles.topItems}>
           <View style={styles.imageStyle}>
@@ -272,6 +272,7 @@ export default CustomerProfile;
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
+    backgroundColor: '#f9fafb'
   },
 
   topContainer: {
@@ -280,7 +281,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
-    backgroundColor: '#6200ee',
+    backgroundColor: '#6366f1',
   },
 
   topItems: {
@@ -307,7 +308,7 @@ const styles = StyleSheet.create({
 
   editProfileBtn: {
     width: '30%',
-    backgroundColor: '#6366f1',
+    backgroundColor: '#4338ca',
     paddingVertical: 13,
     borderRadius: 25,
     alignItems: 'center',
@@ -317,7 +318,7 @@ const styles = StyleSheet.create({
 
   signOutBtn: {
     width: '30%',
-    backgroundColor: '#6366f1',
+    backgroundColor: '#4338ca',
     paddingVertical: 13,
     borderRadius: 25,
     alignItems: 'center',

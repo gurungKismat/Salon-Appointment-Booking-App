@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {View, Dimensions, Animated, StyleSheet, Text} from 'react-native';
 import StickyParallaxHeader from 'react-native-sticky-parallax-header';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {Icon} from 'native-base';
+import {Icon, Divider} from 'native-base';
 import {useNavigation} from '@react-navigation/native';
 import ServiceList from './ServicesList';
 import {Rating} from 'react-native-ratings';
@@ -11,48 +11,63 @@ import firestore from '@react-native-firebase/firestore';
 const {event, ValueXY} = Animated;
 const scrollY = new ValueXY();
 
-
 const CutomHeaderScreen = ({data}) => {
   const {salonInfo, salonImage} = data.params;
   const [loading, setLoading] = useState(true);
   const [availableTime, setAvailableTime] = useState('');
-  console.log('salon Name: ' + JSON.stringify(salonInfo.salonName) + "id: "+salonInfo.salonId);
+  const [star, setStar] = useState(0);
+  // console.log("salonInfo: "+JSON.stringify(salonInfo))
+  // console.log('salon Name: ' + JSON.stringify(salonInfo.salonName) + "id: "+salonInfo.salonId);
 
   const navigation = useNavigation();
 
+  const initialStar = () => {
+    if (isNaN(star)) {
+      return 0;
+    } else {
+      return star;
+    }
+  };
+
   // display the content in the tab views
-  const renderContent = () => (
-    <View style={styles.contentContiner}>
-      <View style={styles.basicInfo}>
-        <Text style={{fontSize: 22, color: 'black', fontWeight: '500'}}>
-          {/* Reaver Salon */}
-          {salonInfo.salonName}
-        </Text>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Rating
-            type="custom"
-            ratingBackgroundColor="silver"
-            tintColor="white"
-            ratingColor="blue"
-            readonly
-            imageSize={24}
-            style={{paddingVertical: 5}}
-          />
-          <Text style={{fontWeight: 'bold', color: 'black', marginStart: 5}}>
-            4.5
+  const renderContent = () => {
+    return (
+      <View style={styles.contentContiner}>
+        <View style={styles.basicInfo}>
+          <Text style={{fontSize: 22, color: 'black', fontWeight: '500'}}>
+            {/* Reaver Salon */}
+            {salonInfo.salonName}
+          </Text>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <Rating
+              type="custom"
+              ratingBackgroundColor="silver"
+              tintColor="white"
+              ratingColor="#facc15"
+              startingValue={initialStar()}
+              readonly
+              imageSize={24}
+              style={{paddingVertical: 5}}
+            />
+            <Text style={{fontWeight: 'bold', color: 'black', marginStart: 5}}>
+              {initialStar()}
+            </Text>
+          </View>
+          <Text style={styles.basicInfoTxt}>{salonInfo.address}</Text>
+          <Text style={styles.basicInfoTxt}>
+            Available Time: {availableTime}
           </Text>
         </View>
-        <Text style={styles.basicInfoTxt}>{salonInfo.address}</Text>
-        <Text style={styles.basicInfoTxt}>Available Time: {availableTime}</Text>
+        <Divider thickness={2} my={2} bg="coolGray.200" />
+        <View style={styles.description}>
+          <Text style={{fontSize: 22, fontWeight: 'bold', color: 'black'}}>
+            About
+          </Text>
+          <Text style={styles.descriptionText}>{salonInfo.about}</Text>
+        </View>
       </View>
-      <View style={styles.description}>
-        <Text style={{fontSize: 22, fontWeight: 'bold', color: 'black'}}>
-          About
-        </Text>
-        <Text style={styles.descriptionText}>{salonInfo.about}</Text>
-      </View>
-    </View>
-  );
+    );
+  };
 
   // displays the salon services
   const renderServices = () => {
@@ -87,8 +102,20 @@ const CutomHeaderScreen = ({data}) => {
     );
   };
 
+  const getRating = salonRating => {
+    let totalRating = 0;
+    let totalResponse = 0;
+    for (let x in salonRating) {
+      totalRating += Number(x) * Number(salonRating[x]);
+      totalResponse += Number(salonRating[x]);
+    }
+    let finalRating = totalRating / totalResponse;
+    return finalRating;
+    // setStar(finalRating);
+  };
+
   useEffect(() => {
-    console.log('customer tabbar useeffect');
+    // console.log('customer tabbar useeffect');
     firestore()
       .collection('salonProfile')
       .doc(salonInfo.salonId)
@@ -96,13 +123,31 @@ const CutomHeaderScreen = ({data}) => {
         if (documentSnapshot.exists) {
           const salonAvailableTime =
             documentSnapshot.data().data.salonAvailability.availableTime;
-          console.log('result: ' + JSON.stringify(salonAvailableTime));
+          // console.log('result: ' + JSON.stringify(salonAvailableTime));
           setAvailableTime(salonAvailableTime);
+
+          firestore()
+            .collection('salons')
+            .doc(salonInfo.salonId)
+            .get()
+            .then(documentSnapshot => {
+              if (documentSnapshot.exists) {
+                // console.log(
+                //   'salon data: ' + JSON.stringify(documentSnapshot.data()),
+                // );
+                const salonRating = documentSnapshot.data().ratings;
+                // console.log('salon rating; ' + JSON.stringify(salonRating));
+                const totalRating = getRating(salonRating);
+                // console.log('total rating: ' + totalRating);
+                setStar(totalRating);
+              }
+            });
+
           if (loading) {
             setLoading(false);
           }
-        }else {
-          console.log("salon doesnnot exist")
+        } else {
+          // console.log("salon doesnnot exist")
           setLoading(false);
         }
       });
@@ -119,7 +164,7 @@ const CutomHeaderScreen = ({data}) => {
         // uri:  'https://www.holidify.com/images/cmsuploads/compressed/Bangalore_citycover_20190613234056.jpg',
         uri: salonImage,
       }}
-      backgroundColor={'#6200ee'}
+      backgroundColor={'#6366f1'}
       header={renderHeader}
       title={salonInfo.salonName}
       titleStyle={styles.titleStyle}
@@ -159,7 +204,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#6200ee',
+    backgroundColor: '#6366f1',
   },
   headerWrapper: {
     flexDirection: 'row',
@@ -217,14 +262,15 @@ const styles = StyleSheet.create({
     marginTop: 15,
     padding: 3,
     marginBottom: 10,
+    backgroundColor: '#f9fafb',
   },
 
   basicInfo: {
-    backgroundColor: 'white',
+    backgroundColor: '#f9fafb',
     padding: 10,
     flexDirection: 'column',
-    elevation: 4,
-    borderRadius: 10,
+    // elevation: 4,
+    // borderRadius: 10,
   },
 
   basicInfoTxt: {
@@ -239,11 +285,11 @@ const styles = StyleSheet.create({
   },
 
   description: {
-    marginTop: 10,
+    // marginTop: 10,
     padding: 10,
-    backgroundColor: 'white',
-    borderTopStartRadius: 10,
-    borderTopStartRadius: 10,
-    elevation: 10,
+    backgroundColor: '#f9fafb',
+    // borderTopStartRadius: 10,
+    // borderTopStartRadius: 10,
+    // elevation: 10,
   },
 });

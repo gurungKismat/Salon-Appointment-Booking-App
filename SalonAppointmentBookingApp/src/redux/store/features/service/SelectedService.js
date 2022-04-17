@@ -15,31 +15,50 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import storage from '@react-native-firebase/storage';
-import {serviceDeleted} from './serviceSlice';
+import {serviceDeleted, deleteAllServices} from './serviceSlice';
+import uuid from 'react-native-uuid';
+import {useNavigation} from '@react-navigation/native';
+import {StackActions} from '@react-navigation/native';
 
 const removeService = deleteItem => {
   deleteItem();
 };
 
 // flat list services items
-const Item = ({title, deleteItem}) => (
-  <View style={{paddingHorizontal: 10}}>
-    <View style={styles.item}>
-      <Text style={styles.title}>{title}</Text>
-      <Icon
-        mr="2"
-        size="7"
-        color="white"
-        onPress={() => removeService(deleteItem)}
-        as={<MaterialCommunityIcon name="close" />}
-      />
+const Item = ({title, deleteItem}) => {
+  // console.log('item in selected service: '+JSON.stringify(title));
+  return (
+    <View style={{paddingHorizontal: 10}}>
+      <View style={styles.item}>
+        <Text style={styles.title}>
+          {title.serviceHeading} - {title.serviceName}
+        </Text>
+        <Icon
+          mr="2"
+          size="7"
+          color="white"
+          onPress={() => removeService(deleteItem)}
+          as={<MaterialCommunityIcon name="close" />}
+        />
+      </View>
     </View>
-  </View>
-);
-
+  );
+};
 const SelectedServices = () => {
+  const popAction = StackActions.pop(1);
   const cartItems = useSelector(state => state.service);
-  console.log('cartitms: ' + JSON.stringify(cartItems));
+  // console.log('cartitms: ' + JSON.stringify(cartItems));
+  let totalPrice = 0;
+  let btnDisable = undefined;
+  if (cartItems.length > 0) {
+    cartItems.forEach(item => {
+      totalPrice += Number(item.servicePrice);
+      btnDisable = item.btnDisable;
+      //  console.log('btn disable: '+btnDisable)
+    });
+  }
+
+  const navigation = useNavigation();
   const dispatch = useDispatch();
 
   // const {id} = route.params;
@@ -52,6 +71,8 @@ const SelectedServices = () => {
   const [loading, setLoading] = useState(true);
   const [salonImage, setsalonImage] = useState();
   const [salonAvailability, setSalonAvailability] = useState();
+  const [currSalonId, setCurrSalonId] = useState('');
+  const [star, setStar] = useState(0);
 
   // const service = useSelector(state => state.service);
   // console.log('service ' + JSON.stringify(service));
@@ -67,7 +88,8 @@ const SelectedServices = () => {
   };
 
   const renderItem = ({item}) => (
-    <Item title={item.serviceName} deleteItem={() => deleteItem(item.id)} />
+    // <Item title={item.serviceName} deleteItem={() => deleteItem(item.id)} />
+    <Item title={item} deleteItem={() => deleteItem(item.id)} />
   );
 
   // handles the change after selecting date from the date picker
@@ -139,11 +161,93 @@ const SelectedServices = () => {
     setsalonImage(downloadUrl);
   };
 
+  // request for appointment
+  const requestAppointment = async () => {
+    if (date !== '') {
+      if (time != '') {
+        const custId = auth().currentUser.uid;
+        let customerInfos = {};
+        await firestore()
+          .collection('customers')
+          .doc(custId)
+          .get()
+          .then(doc => {
+            if (doc.exists) {
+              customerInfos = doc.data();
+            }
+          });
+
+        firestore()
+          .collection('Appointments')
+          .doc(uuid.v4())
+          .set({
+            customerId: custId,
+            salonid: currSalonId,
+            customerData: customerInfos,
+            services: cartItems,
+            date: date,
+            time: time,
+            requestResult: 'Pending',
+            salonName: salonInfo.salonName,
+            salonAddress: salonInfo.address,
+            salonImage: salonImage,
+            appointmentCompleted: false,
+          })
+          .then(() => {
+            alert('Appointment Request Sent');
+            // navigation.popToTop();
+            // navigation.dispatch(popAction)
+            navigation.goBack();
+            navigation.navigate('CustomerAppointment');
+            // navigation.navigate('Home');
+            dispatch(deleteAllServices());
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      } else {
+        alert('Please Select Time');
+      }
+    } else {
+      alert('Please Select Date');
+    }
+  };
+
+  // check if request appointment button is disabled
+  function checkDisable() {
+    if (btnDisable === undefined) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  const initialStar = () => {
+    if (isNaN(star)) {
+      return 0;
+    } else {
+      return star;
+    }
+  };
+
+  const getRating = salonRating => {
+    let totalRating = 0;
+    let totalResponse = 0;
+    for (let x in salonRating) {
+      totalRating += Number(x) * Number(salonRating[x]);
+      totalResponse += Number(salonRating[x]);
+    }
+    let finalRating = totalRating / totalResponse;
+    return finalRating;
+    // setStar(finalRating);
+  };
+
   useEffect(() => {
     var salonId;
 
     if (cartItems.length > 0) {
       salonId = cartItems[0].salonId;
+      setCurrSalonId(salonId);
     }
 
     firestore()
@@ -166,13 +270,19 @@ const SelectedServices = () => {
       .get()
       .then(document => {
         if (document.exists) {
-          console.log('document exist');
+          // console.log('document exist');
           const salonDatas = document.data();
+          console.log('salon info: ' + JSON.stringify(salonDatas));
+          const salonRating = salonDatas.ratings;
+          // console.log('salon rating; ' + JSON.stringify(salonRating));
+          const totalRating = getRating(salonRating);
+          // console.log('total rating: ' + totalRating);
+          setStar(totalRating);
           setSalonInfo(salonDatas);
           const imgUri = salonDatas.salonImage;
 
           if (imgUri !== undefined) {
-            console.log('image exist');
+            // console.log('image exist');
             const reference = storage()
               .ref()
               .child('/salonImages')
@@ -199,10 +309,10 @@ const SelectedServices = () => {
 
   return (
     <FlatList
-      style={{backgroundColor: 'white'}}
+      style={{backgroundColor: '#f9fafb'}}
       ListHeaderComponent={
-        <View style={{flex: 1, padding: 13, backgroundColor: 'white'}}>
-          <StatusBar backgroundColor={'#6200ee'} />
+        <View style={{flex: 1, padding: 13, backgroundColor: '#f9fafb'}}>
+          <StatusBar backgroundColor={'#6366f1'} />
           <View style={styles.salonInfo}>
             <View style={styles.leftContent}>
               <Text style={styles.salonName}>{salonInfo.salonName}</Text>
@@ -212,7 +322,7 @@ const SelectedServices = () => {
                   alignItems: 'center',
                   marginTop: 5,
                 }}>
-                <Rating
+                {/* <Rating
                   type="custom"
                   ratingBackgroundColor="silver"
                   tintColor="white"
@@ -220,10 +330,20 @@ const SelectedServices = () => {
                   readonly
                   imageSize={24}
                   style={{paddingVertical: 5}}
+                /> */}
+                <Rating
+                  type="custom"
+                  ratingBackgroundColor="silver"
+                  tintColor="white"
+                  ratingColor="#facc15"
+                  startingValue={initialStar()}
+                  readonly
+                  imageSize={24}
+                  style={{paddingVertical: 5}}
                 />
                 <Text
                   style={{fontWeight: 'bold', color: 'black', marginStart: 5}}>
-                  4.5
+                  {initialStar()}
                 </Text>
               </View>
               <Text style={styles.salonInfoText}>{salonInfo.address}</Text>
@@ -241,6 +361,7 @@ const SelectedServices = () => {
                   }}
                   alt="Default Salon Img"
                   size="lg"
+                  rounded="md"
                 />
               ) : (
                 <Image
@@ -249,11 +370,12 @@ const SelectedServices = () => {
                   }}
                   alt="Salon Image"
                   size="lg"
+                  rounded="md"
                 />
               )}
             </View>
           </View>
-          <Divider my="4" thickness={'3'} />
+          <Divider my="4" thickness={'2'} bg="coolGray.200" />
           <View style={{marginTop: 7}}>
             {/* <DateTimePickerUi /> */}
             <View
@@ -316,11 +438,20 @@ const SelectedServices = () => {
               />
             )}
           </View>
-          <Divider my="4" thickness={'3'} />
+          <Divider my="4" thickness={'2'} bg="coolGray.200" />
 
-          <View style={{marginTop: 7}}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginTop: 7,
+            }}>
             <Text style={{color: 'black', fontSize: 18, fontWeight: 'bold'}}>
               Services
+            </Text>
+            <Text style={{color: 'black', fontSize: 15, fontWeight: 'bold'}}>
+              Total Price: {totalPrice}
             </Text>
           </View>
         </View>
@@ -329,12 +460,16 @@ const SelectedServices = () => {
       renderItem={renderItem}
       keyExtractor={item => item.id}
       ListFooterComponent={
-        <TouchableOpacity style={styles.requestAppointment}>
+        <TouchableOpacity
+          onPress={requestAppointment}
+          disabled={checkDisable()}
+          style={styles.requestAppointment}>
           <Text style={{color: 'white', fontSize: 17, alignSelf: 'center'}}>
             Request Appointment
           </Text>
         </TouchableOpacity>
       }
+      ListFooterComponentStyle={{color: '#f9fafb'}}
     />
   );
 };
@@ -391,7 +526,7 @@ const styles = StyleSheet.create({
     width: '60%',
     marginTop: 30,
     marginBottom: 30,
-    backgroundColor: 'red',
+    backgroundColor: '#6200ee',
     padding: 15,
     borderRadius: 30,
     alignSelf: 'center',

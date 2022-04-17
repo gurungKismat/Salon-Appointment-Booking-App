@@ -11,15 +11,15 @@ import {
   StatusBar,
 } from 'native-base';
 import GetIcons from '../../../components/GetIcons';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 
 const Home = () => {
-    const navigation = useNavigation();
+  const navigation = useNavigation();
   return (
     <Stack space={2} direction="row">
-            <StatusBar backgroundColor={'#6200ee'} />
+      <StatusBar backgroundColor={'#6366f1'} />
       <VStack space={2}>
-        <Pressable onPress={() => navigation.navigate("SalonAppointment")}>
+        <Pressable onPress={() => navigation.navigate('SalonAppointment')}>
           <Box
             width={40}
             height={48}
@@ -29,7 +29,7 @@ const Home = () => {
             borderWidth="1"
             background={'coolGray.50'}
             shadow="3"
-            bg={'red.100'}>
+            bg={'indigo.300'}>
             <Box mt="3">
               <AspectRatio w="100%" ratio={16 / 9}>
                 <Center>
@@ -49,7 +49,7 @@ const Home = () => {
           </Box>
         </Pressable>
 
-        <Pressable onPress={() => navigation.navigate("SalonAvailability")}>
+        <Pressable onPress={() => navigation.navigate('SalonAvailability')}>
           <Box
             width={40}
             height={48}
@@ -59,7 +59,7 @@ const Home = () => {
             borderWidth="1"
             background={'coolGray.50'}
             shadow="3"
-            bg={'red.100'}
+            bg={'rose.200'}
             justifyContent="space-evenly">
             <Box mt="3">
               <AspectRatio w="100%" ratio={16 / 9}>
@@ -82,7 +82,7 @@ const Home = () => {
       </VStack>
 
       <VStack space={2}>
-        <Pressable onPress={() => navigation.navigate("SalonServices")}>
+        <Pressable onPress={() => navigation.navigate('SalonServices')}>
           <Box
             w={40}
             h={56}
@@ -92,7 +92,7 @@ const Home = () => {
             borderWidth="1"
             background={'coolGray.50'}
             shadow="3"
-            bg={'red.100'}
+            bg={'warning.300'}
             justifyContent="space-evenly">
             <Box mt="3">
               <AspectRatio w="100%" ratio={16 / 9}>
@@ -113,7 +113,7 @@ const Home = () => {
           </Box>
         </Pressable>
 
-        <Pressable onPress={() => navigation.navigate("SalonTransaction")}>
+        <Pressable onPress={() => navigation.navigate('SalonProfile')}>
           <Box
             size={40}
             rounded="lg"
@@ -122,14 +122,14 @@ const Home = () => {
             borderWidth="1"
             background={'coolGray.50'}
             shadow="3"
-            bg={'red.100'}
+            bg={'info.400'}
             justifyContent="space-evenly">
             <Box mt="2">
               <AspectRatio w="100%" ratio={16 / 9}>
                 <Center>
                   <Image
-                    size={'md'}
-                    source={GetIcons.transactionHistory}
+                    size={'lg'}
+                    source={GetIcons.profile}
                     alt="image"
                   />
                 </Center>
@@ -137,7 +137,7 @@ const Home = () => {
             </Box>
             <Center p="2">
               <Heading size="sm" color={'white'}>
-                Transaction History
+                Profile
               </Heading>
             </Center>
           </Box>
@@ -149,7 +149,7 @@ const Home = () => {
 
 const Eg = () => {
   return (
-    <Center flex={1} bg="yellow.100" px={'10%'} py={'10%'}>
+    <Center flex={1} bg="coolGray.50" px={'10%'} py={'10%'}>
       <Home />
     </Center>
   );

@@ -18,6 +18,7 @@ const SearchBar = props => {
             onChangeText={props.setSearchPhrase}
             InputLeftElement={
               <Icon
+              onPress={() => alert("search")}
                 ml="2"
                 size="6"
                 color="muted.500"

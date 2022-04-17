@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {
   Button,
   Modal,
@@ -11,14 +11,19 @@ import {
   Stack,
   Select,
   CheckIcon,
+  Text,
   useToast,
 } from 'native-base';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import CategoryList from '../components/CategoryList';
 import uuid from 'react-native-uuid';
+import * as ImagePicker from 'react-native-image-picker';
+import storage from '@react-native-firebase/storage';
 
 const AddNewServiceModal = props => {
+  const [img, setImg] = useState();
+
   const toast = useToast();
   const id = 'test-toast';
   const [categoryTitle, setCategoryTitle] = useState('');
@@ -26,6 +31,7 @@ const AddNewServiceModal = props => {
   const [price, setPrice] = useState('');
   const [duration, setDuration] = useState('');
   const [time, setTime] = useState('Min');
+  const [serviceImage, setServiceImage] = useState('');
   const [categoryError, setCategoryError] = useState({
     error: '',
     isError: false,
@@ -46,9 +52,15 @@ const AddNewServiceModal = props => {
     isError: false,
   });
 
+  const [imageError, setImageError] = useState({
+    error: '',
+    isError: false,
+  });
+
   var newServiceName;
   var newPrice;
   var newDuration;
+  // var newDownloadUrl = '';
 
   // clears the text from the input field
   const clearText = () => {
@@ -60,9 +72,12 @@ const AddNewServiceModal = props => {
     setServiceNameError({isError: false});
     setPriceError({isError: false});
     setDurationError({isError: false});
+    setServiceImage('');
+    setImageError({isError: false});
   };
   const saveData = async data => {
     var countCategoryExist = 0;
+
     // checks whether the category is already in the data and adds the service in the specific category if exist
     function updateCategory(value, index, initialData) {
       if (categoryTitle.toLowerCase() === value.categoryTitle.toLowerCase()) {
@@ -72,6 +87,9 @@ const AddNewServiceModal = props => {
           serviceName: newServiceName,
           price: newPrice,
           duration: newDuration + ' ' + time,
+          serviceImage: serviceImage.assets[0].fileName,
+          imageUri: serviceImage.assets[0].uri,
+    
         });
       }
     }
@@ -80,17 +98,32 @@ const AddNewServiceModal = props => {
       .collection('salonServices')
       .doc(auth().currentUser.uid);
 
-    await docRef.get().then(documentSnapshot => {
+    await docRef.get().then(async documentSnapshot => {
       if (!documentSnapshot.exists) {
         // if the salon service is added for the first time
-        console.log('first time putting data');
-        docRef
-          .set({
-            data: firestore.FieldValue.arrayUnion(data),
-          })
-          .then(() => {
-            displayToast();
-          });
+        // console.log('first time putting data');
+
+        console.log('saving image in store');
+        const reference = storage()
+          .ref()
+          .child('/serviceImages')
+          .child(serviceImage.assets[0].fileName);
+        const task = reference.putFile(serviceImage.assets[0].uri);
+        task.then(async () => {
+          // const downloadUrl = await reference.getDownloadURL();
+          // console.log('donload url: ' + downloadUrl);
+          // console.log('empty data: '+JSON.stringify(data))
+          docRef
+            .set({
+              data: firestore.FieldValue.arrayUnion(data),
+            })
+            .then(() => {
+              displayToast();
+            })
+            .catch(error => {
+              console.log('error1: ' + error);
+            });
+        });
       } else {
         // if the salon services is already added then update the service
         // console.log('DATA ALREADY EXISTS');
@@ -100,7 +133,6 @@ const AddNewServiceModal = props => {
 
         // if category already exist add the service name in that category or else add the whole category and service
         if (countCategoryExist === 0) {
-          // console.log('COUNTCATEGORYEXIST VALUE: ' + countCategoryExist);
           services.push({
             categoryTitle: categoryTitle,
             data: [
@@ -109,17 +141,32 @@ const AddNewServiceModal = props => {
                 serviceName: newServiceName,
                 price: newPrice,
                 duration: newDuration + ' ' + time,
+                serviceImage: serviceImage.assets[0].fileName,
+                imageUri: serviceImage.assets[0].uri,
+              
               },
             ],
           });
         }
-        docRef
-          .set({
-            data: firestore.FieldValue.arrayUnion(...services),
-          })
-          .then(() => {
-            displayToast();
-          });
+
+        // task.then(async () => {
+          const reference = storage()
+          .ref()
+          .child('/serviceImages')
+          .child(serviceImage.assets[0].fileName);
+        const task = reference.putFile(serviceImage.assets[0].uri);
+        task.then(() => {
+          docRef
+            .set({
+              data: firestore.FieldValue.arrayUnion(...services),
+            })
+            .then(() => {
+              displayToast();
+            })
+            .catch(error => {
+              console.log('error 2: ' + error);
+            });
+        });
       }
     });
   };
@@ -136,37 +183,68 @@ const AddNewServiceModal = props => {
     }
   };
 
-  
-
   // add new service to the firestore database
   const addService = () => {
     removeWhiteSpace();
     const result = isEmpty();
     if (!result) {
-      const data = {
-        categoryTitle: categoryTitle,
-        data: [
-          {
-            id: uuid.v4(),
-            serviceName: newServiceName,
-            price: newPrice,
-            duration: newDuration + ' ' + time,
-          },
-        ],
-      };
-      saveData(data);
+      // added laterr
+      // const reference = storage()
+      //   .ref()
+      //   .child('/serviceImages')
+      //   .child(serviceImage.assets[0].fileName);
+      // const task = reference.putFile(serviceImage.assets[0].uri);
+      // task.then(async () => {
+      //   const newDownloadUrl = await reference.getDownloadURL();
+      //   console.log('download url: ' + newDownloadUrl);
+      //   setImg(newDownloadUrl);
+
+        //later
+        const data = {
+          categoryTitle: categoryTitle,
+          data: [
+            {
+              id: uuid.v4(),
+              serviceName: newServiceName,
+              price: newPrice,
+              duration: newDuration + ' ' + time,
+              serviceImage: serviceImage.assets[0].fileName,
+              imageUri: serviceImage.assets[0].uri,
+              // uri: newDownloadUrl,
+            },
+          ],
+        };
+        saveData(data);
+
+
+      
+
+      
     }
   };
 
-
-
-  // removes the whitespace from the textinput 
+  // removes the whitespace from the textinput
   function removeWhiteSpace() {
     newServiceName = serviceName.trim();
     newPrice = price.trim();
     newDuration = duration.trim();
-
   }
+
+  // add service image
+  const addImage = useCallback(() => {
+    const options = {
+      selectionLimit: 1,
+      mediaType: 'photo',
+      includeBase64: false,
+    };
+    ImagePicker.launchImageLibrary(options, response => {
+      // console.log('response: ' + JSON.stringify(response));
+
+      if (!response.didCancel) {
+        setServiceImage(response);
+      }
+    });
+  }, []);
 
   // check if the textinput values are empty or not
   const isEmpty = () => {
@@ -265,6 +343,30 @@ const AddNewServiceModal = props => {
 
       setDurationError({
         ...durationError,
+        ...updatedValue,
+      });
+    }
+
+    if (serviceImage === '') {
+      countError++;
+
+      const newError = {
+        error: 'Image must be selected',
+        isError: true,
+      };
+
+      setImageError({
+        ...imageError,
+        ...newError,
+      });
+    } else {
+      const updatedValue = {
+        error: '',
+        isError: false,
+      };
+
+      setImageError({
+        ...imageError,
         ...updatedValue,
       });
     }
@@ -414,6 +516,25 @@ const AddNewServiceModal = props => {
                     </Radio.Group>
                   </Stack>
                 </HStack>
+              </FormControl>
+            )}
+            {serviceImage === '' ? (
+              <FormControl mt="3">
+                <FormControl.Label>Image</FormControl.Label>
+                <Stack space="4" direction="column">
+                  <Text color="red.600">{imageError.error}</Text>
+                  <Button onPress={addImage}>Add Image</Button>
+                </Stack>
+              </FormControl>
+            ) : (
+              <FormControl mt="3">
+                <FormControl.Label>Image</FormControl.Label>
+                <Stack space="4" direction="column">
+                  <Text color={'blue.600'}>
+                    {serviceImage.assets[0].fileName}
+                  </Text>
+                  <Button onPress={addImage}>Add Image</Button>
+                </Stack>
               </FormControl>
             )}
           </Modal.Body>

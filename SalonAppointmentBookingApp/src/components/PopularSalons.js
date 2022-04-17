@@ -7,7 +7,6 @@ import {
   Image,
   Text,
   Center,
-  Pressable,
   Stack,
   Icon,
 } from 'native-base';
@@ -21,6 +20,19 @@ const PopularSalons = ({item}) => {
   const navigation = useNavigation();
   const [imageUri, setImageUri] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [star, setStar] = useState(0);
+
+  const getRating = () => {
+    const storedRating = item.ratings;
+    let totalRating = 0;
+    let totalResponse = 0;
+    for (let x in storedRating) {
+      totalRating += Number(x) * Number(storedRating[x]);
+      totalResponse += Number(storedRating[x]);
+    }
+    let finalRating = totalRating / totalResponse;
+    setStar(finalRating);
+  };
 
   const getImageUrl = () => {
     firestore()
@@ -37,6 +49,9 @@ const PopularSalons = ({item}) => {
             const reference = storage().ref().child('/salonImages').child(url);
             const downloadUrl = await reference.getDownloadURL();
             setImageUri(downloadUrl);
+
+            getRating();
+
             if (loading) {
               setLoading(false);
             }
@@ -122,10 +137,10 @@ const PopularSalons = ({item}) => {
               <Icon
                 ml="2"
                 size="6"
-                color="gray.400"
+                color="yellow.400"
                 as={<MaterialCommunityIcon name="star" />}
               />
-              <Text>4.5</Text>
+              {isNaN(star) ? <Text>{0}</Text> : <Text>{star}</Text>}
             </Stack>
           </Stack>
           <Stack>

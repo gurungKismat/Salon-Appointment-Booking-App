@@ -36,7 +36,7 @@ const Notification = () => {
 
   return (
     <Stack px="5" mt="5">
-      <StatusBar backgroundColor={'#6200ee'} />
+      <StatusBar backgroundColor={'#6366f1'} />
       <FlatList
         data={datas}
         renderItem={({item}) => (

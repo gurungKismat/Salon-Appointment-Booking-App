@@ -14,6 +14,7 @@ import {
   useToast,
   AlertDialog,
   Button,
+  Image,
 } from 'native-base';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AddNewServiceModal from '../../../components/AddNewServiceModal';
@@ -24,7 +25,7 @@ import UpdateSalonService from '../../../components/UpdateSalonService';
 import {useDispatch} from 'react-redux';
 import {useSelector} from 'react-redux';
 import {updateService} from '../../../redux/store/features/updateService/updateserviceSlice';
-
+import storage from '@react-native-firebase/storage';
 
 const SalonServices = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -51,6 +52,8 @@ const SalonServices = () => {
         service: service.serviceName,
         price: service.price,
         duration: service.duration,
+        serviceImage: service.serviceImage,
+        imageUri: service.imageUri,
       }),
     );
     setUpdateModal(true);
@@ -70,6 +73,8 @@ const SalonServices = () => {
     }
   };
 
+  var imageToDelete = '';
+
   function filterService(value, index, initialService) {
     console.log('current header: ' + currentHeader);
     if (currentHeader.toLowerCase() === value.categoryTitle.toLowerCase()) {
@@ -78,6 +83,9 @@ const SalonServices = () => {
       );
 
       if (serviceIndex !== -1) {
+        // imageToDelete = initialService[index].data[serviceIndex].serviceImage;
+        // console.log('imagetodlet: ' + imageToDelete);
+
         initialService[index].data.splice(serviceIndex, 1);
 
         if (initialService[index].data.length === 0) {
@@ -120,38 +128,119 @@ const SalonServices = () => {
     getData(docRef);
   };
 
+  // section list item
   const Item = ({service, headers, index}) => {
-    // console.log('header: ' + headers);
+    const [select, setSelect] = useState(false);
+    const [serviceImg, setServiceImg] = useState(undefined);
+    const [loading, setLoading] = useState(true);
+
     // console.log('service: ' + JSON.stringify(service));
 
+    // const getServiceImage = async reference => {
+    //   const downloadUrl = await reference.getDownloadURL();
+    //   setServiceImg(downloadUrl);
+    // };
+
+    // downloads the image from the storage
+    const getImageUrl = async () => {
+      const url = service.serviceImage;
+      if (url !== undefined) {
+        // console.log('image exist');
+        const reference = storage().ref().child('/serviceImages').child(url);
+        // getServiceImage(reference);
+
+        const downloadUrl = await reference.getDownloadURL();
+        return downloadUrl;
+      } else {
+        // console.log('image undefined: '+url);
+        return undefined;
+      }
+    };
+
+    useEffect(() => {
+      // console.log('item use effect called');
+      let isMounted = true;
+      getImageUrl()
+        .then(downloadUrl => {
+          if (isMounted) {
+            if (downloadUrl !== undefined) {
+              setServiceImg(downloadUrl);
+            }
+            // if (loading) {
+            //   setLoading(false);
+            // }
+          }
+        })
+        .catch(error => {
+          console.error('error in salon services' + error);
+        });
+
+      return () => {
+        isMounted = false;
+      };
+    }, []);
+
     return (
-      <View style={styles.serviceContainer}>
-        <View style={styles.availableServices}>
-          <View style={styles.itemRow}>
-            <Text style={styles.availableItmText}>{service.serviceName}</Text>
-            <Icon
-              as={<MaterialCommunityIcon name={'pencil'} />}
-              size={7}
-              mr="2"
-              color="white"
-              onPress={() => editService(headers, service, index)}
-            />
-          </View>
-          <View style={styles.deleteServiceRow}>
-            <View>
-              <Text style={styles.servicePrice}>Price: Rs {service.price}</Text>
-              <Text style={styles.serviceDuration}>
-                Duration: {service.duration}
+      <>
+        <Divider bg="muted.400" />
+        <View
+          style={!select ? styles.itemContainer : styles.itemContainerSelected}>
+          <View style={styles.topRowItem}>
+            <View style={styles.columnItems}>
+              <Text style={{color: 'black', paddingVertical: 3, fontSize: 18}}>
+                {service.serviceName}
+              </Text>
+              <Text style={styles.serviceDetail}>
+                Price: Rs {service.price}
+              </Text>
+              <Text style={styles.serviceDetail}>
+                Duration: Rs {service.duration}
               </Text>
             </View>
-            <Icon
-              as={<MaterialCommunityIcon name={'delete'} />}
-              size={7}
-              mr="2"
-              my="5"
-              color="white"
+            {serviceImg === undefined ? (
+              <Image
+                source={{
+                  uri: 'https://wallpaperaccess.com/full/317501.jpg',
+                }}
+                alt="Default Salon Img"
+                size="lg"
+                rounded={10}
+              />
+            ) : (
+              <Image
+                source={{
+                  uri: serviceImg,
+                }}
+                alt="Default Salon Img"
+                size="lg"
+                rounded={10}
+              />
+            )}
+          </View>
+          <View style={styles.rowButtons}>
+            <TouchableOpacity
+              onPress={() => editService(headers, service, index)}
+              style={styles.iconBtn}>
+              <Text style={{color: 'white'}}>Edit Service</Text>
+              <Icon
+                ml="1"
+                size="5"
+                color="white"
+                as={<MaterialCommunityIcon name="pencil" />}
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity
               onPress={() => setIsOpen(!isOpen)}
-            />
+              style={styles.iconBtn}>
+              <Text style={{color: 'white'}}>Remove Service</Text>
+              <Icon
+                ml="1"
+                size="5"
+                color="white"
+                as={<MaterialCommunityIcon name="delete" />}
+              />
+            </TouchableOpacity>
           </View>
           <AlertDialog
             leastDestructiveRef={cancelRef}
@@ -183,8 +272,16 @@ const SalonServices = () => {
             </AlertDialog.Content>
           </AlertDialog>
         </View>
-      </View>
+        <Divider bg="muted.400" />
+      </>
     );
+  };
+
+  const getAvatar = async serviceImg => {
+    const reference = storage().ref().child('/serviceImages').child(serviceImg);
+    const downloadUrl = await reference.getDownloadURL();
+    console.log('downloadurl: ' + downloadUrl);
+    setServiceImg(downloadUrl);
   };
 
   const docRef = firestore()
@@ -192,12 +289,18 @@ const SalonServices = () => {
     .doc(auth().currentUser.uid);
 
   useEffect(() => {
+    // console.log('use effect of salon servcies called');
     const fetchServices = docRef.onSnapshot(documentSnapshot => {
       // console.log('result: ' + JSON.stringify(documentSnapshot.data()));
       if (documentSnapshot.exists) {
         const result = documentSnapshot.data().data;
         // console.log('result ' + JSON.stringify(result));
         setAvailableServices(result);
+        // const serviceImg = documentSnapshot.data().serviceImage;
+        // if (serviceImg !== undefined) {
+        //   getAvatar(serviceImg);
+        // }
+
         if (loading) {
           setLoading(false);
         }
@@ -212,11 +315,11 @@ const SalonServices = () => {
   }, []);
 
   if (loading) {
-    null;
+    return null;
   }
   return (
     <View style={styles.mainContainer}>
-      <StatusBar backgroundColor={'#6200ee'} />
+      <StatusBar backgroundColor={'#6366f1'} />
       <AddNewServiceModal
         showModal={showModal}
         setShowModal={() => setShowModal(!showModal)}
@@ -224,24 +327,24 @@ const SalonServices = () => {
       <UpdateSalonService
         showModal={showUpdateModal}
         setShowModal={() => setUpdateModal(!showUpdateModal)}
-        // sectionUpdated={sectionUpdated}
-        // serviceUpdated={serviceUpdated}
-        // indexUpdated={indexUpdated}
       />
       <View style={styles.addServiceRow}>
         <Heading size="md">Add New Services</Heading>
-        <Icon
-          as={<MaterialCommunityIcon name={'plus'} />}
-          size={10}
-          mr="2"
-          color="muted.400"
-          onPress={() => setShowModal(!showModal)}
-        />
+        <TouchableOpacity onPress={() => setShowModal(!showModal)}>
+          <Icon
+            as={<MaterialCommunityIcon name={'plus'} />}
+            size={10}
+            mr="2"
+            color="muted.400"
+          />
+        </TouchableOpacity>
       </View>
-      <Divider bg="black" thickness="2" my="2" />
-      <Heading size="md" my="4">
-        Available Services
-      </Heading>
+      <Divider bg="coolGray.400" thickness="2" my="1" />
+      <View style={{padding: 5}}>
+        <Heading size="md" my="4">
+          Available Services
+        </Heading>
+      </View>
       <View style={styles.sectionListContainer}>
         {availableServices.length !== 0 ? (
           <SectionList
@@ -271,13 +374,15 @@ export default SalonServices;
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    padding: 15,
+    // padding: 15,
+    backgroundColor: '#f9fafb',
   },
 
   addServiceRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    padding: 10,
   },
 
   sectionListContainer: {
@@ -289,6 +394,7 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: '400',
     margin: 5,
+    padding: 10,
   },
 
   availableServices: {
@@ -300,6 +406,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+
+  itemColumn: {
+    flexDirection: 'column',
   },
 
   serviceContainer: {
@@ -334,5 +444,62 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+
+  // added later;
+  rootContainer: {
+    flex: 1,
+    backgroundColor: '#e7e5e4',
+  },
+
+  itemContainer: {
+    backgroundColor: '#e7e5e4',
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+  },
+
+  itemContainerSelected: {
+    backgroundColor: '#d6d3d1',
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+  },
+
+  columnItems: {
+    flexDirection: 'column',
+  },
+
+  topRowItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+
+  serviceDetail: {
+    color: 'black',
+    fontSize: 17,
+    paddingVertical: 2,
+  },
+
+  rowButtons: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    paddingTop: 20,
+  },
+
+  btnStyle: {
+    backgroundColor: 'red',
+    padding: 10,
+    marginRight: 5,
+    borderRadius: 20,
+  },
+
+  iconBtn: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: 'red',
+    padding: 8,
+    marginRight: 5,
+    borderRadius: 25,
   },
 });
