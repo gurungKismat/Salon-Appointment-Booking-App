@@ -21,21 +21,16 @@ const CutomHeaderScreen = ({data}) => {
 
   const navigation = useNavigation();
 
+  const initialStar = () => {
+    if (isNaN(star)) {
+      return 0;
+    } else {
+      return star;
+    }
+  };
+
   // display the content in the tab views
   const renderContent = () => {
-    // useEffect(() => {
-    //   firestore()
-    //     .collection('salons')
-    //     .doc(salonInfo.salonId)
-    //     .get()
-    //     .then(documentSnapshot => {
-    //       if (documentSnapshot.exists) {
-    //         const salonRating = documentSnapshot.data().ratings;
-    //         console.log('salon rating; ' + JSON.stringify(salonRating));
-    //       }
-    //     });
-    // }, []);
-
     return (
       <View style={styles.contentContiner}>
         <View style={styles.basicInfo}>
@@ -49,13 +44,13 @@ const CutomHeaderScreen = ({data}) => {
               ratingBackgroundColor="silver"
               tintColor="white"
               ratingColor="#facc15"
-              startingValue={star}
+              startingValue={initialStar()}
               readonly
               imageSize={24}
               style={{paddingVertical: 5}}
             />
             <Text style={{fontWeight: 'bold', color: 'black', marginStart: 5}}>
-              {star}
+              {initialStar()}
             </Text>
           </View>
           <Text style={styles.basicInfoTxt}>{salonInfo.address}</Text>
@@ -137,12 +132,13 @@ const CutomHeaderScreen = ({data}) => {
             .get()
             .then(documentSnapshot => {
               if (documentSnapshot.exists) {
-                console.log(
-                  'salon data: ' + JSON.stringify(documentSnapshot.data()),
-                );
+                // console.log(
+                //   'salon data: ' + JSON.stringify(documentSnapshot.data()),
+                // );
                 const salonRating = documentSnapshot.data().ratings;
-                console.log('salon rating; ' + JSON.stringify(salonRating));
+                // console.log('salon rating; ' + JSON.stringify(salonRating));
                 const totalRating = getRating(salonRating);
+                // console.log('total rating: ' + totalRating);
                 setStar(totalRating);
               }
             });

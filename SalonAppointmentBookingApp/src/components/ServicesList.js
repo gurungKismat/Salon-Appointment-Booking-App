@@ -14,19 +14,6 @@ import firestore from '@react-native-firebase/firestore';
 import uuid from 'react-native-uuid';
 import storage from '@react-native-firebase/storage';
 
-const DATA = [
-  {
-    id: 1,
-    name: 'kismat',
-    age: 21,
-  },
-  {
-    id: 2,
-    name: 'gurung',
-    age: 25,
-  },
-];
-
 const Item = ({salonId, serviceName, headers}) => {
   // console.log('serviceName ' + JSON.stringify(serviceName));
   // console.log('headers: ' + headers);
@@ -78,44 +65,7 @@ const Item = ({salonId, serviceName, headers}) => {
         }),
       );
     }
-
-    // console.log('service length: ' + service.length);
-    // if (service.length > 0) {
-    //   console.log('service length greater than 0 ');
-    // }
   };
-
-  // return (
-  //   <View style={styles.item}>
-  //     <TouchableOpacity
-  //       style={styles.servicesItem}
-  //       onPress={() => onValChange(!select)}>
-  //       <View style={{flexDirection: 'column'}}>
-  //         <Text style={styles.title}>{serviceName.serviceName}</Text>
-  //         <Text style={styles.servicePrice}>Price: Rs {serviceName.price}</Text>
-  //         <Text style={styles.serviceDuration}>
-  //           Duration: {serviceName.duration}
-  //         </Text>
-  //       </View>
-  //       {!selectedService(serviceName.serviceName) ? (
-  //         <Icon
-  //           ml="1"
-  //           size="8"
-  //           color="white"
-  //           as={<MaterialCommunityIcon name="plus" />}
-  //         />
-  //       ) : (
-  //         <Icon
-  //           ml="1"
-  //           size="8"
-  //           color="white"
-  //           as={<MaterialCommunityIcon name="check" />}
-  //         />
-  //       )}
-  //     </TouchableOpacity>
-  //   </View>
-  // );
-  // const [selected, setSelected] = useState(false);
 
   // downloads the image from the storage
   const getImageUrl = async () => {
@@ -288,7 +238,6 @@ const styles = StyleSheet.create({
     padding: 15,
     marginVertical: 8,
     borderRadius: 20,
-  
   },
   header: {
     marginVertical: 10,
@@ -331,14 +280,13 @@ const styles = StyleSheet.create({
   },
 
   itemContainer: {
-    backgroundColor: '#e7e5e4',
-
+    backgroundColor: '#e5e7eb',
     paddingHorizontal: 20,
     paddingVertical: 20,
   },
 
   itemContainerSelected: {
-    backgroundColor: '#d6d3d1',
+    backgroundColor: '#d1d5db',
     paddingHorizontal: 20,
     paddingVertical: 20,
   },

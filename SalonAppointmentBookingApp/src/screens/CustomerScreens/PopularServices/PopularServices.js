@@ -246,14 +246,13 @@ const styles = StyleSheet.create({
   },
 
   itemContainer: {
-    backgroundColor: '#e7e5e4',
-
+    backgroundColor: '#e5e7eb',
     paddingHorizontal: 20,
     paddingVertical: 20,
   },
 
   itemContainerSelected: {
-    backgroundColor: '#d6d3d1',
+    backgroundColor: '#d1d5db',
     paddingHorizontal: 20,
     paddingVertical: 20,
   },

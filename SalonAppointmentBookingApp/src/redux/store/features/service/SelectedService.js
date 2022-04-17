@@ -17,8 +17,8 @@ import auth from '@react-native-firebase/auth';
 import storage from '@react-native-firebase/storage';
 import {serviceDeleted, deleteAllServices} from './serviceSlice';
 import uuid from 'react-native-uuid';
-import { useNavigation } from '@react-navigation/native';
-import { StackActions } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
+import {StackActions} from '@react-navigation/native';
 
 const removeService = deleteItem => {
   deleteItem();
@@ -28,20 +28,22 @@ const removeService = deleteItem => {
 const Item = ({title, deleteItem}) => {
   // console.log('item in selected service: '+JSON.stringify(title));
   return (
-  <View style={{paddingHorizontal: 10}}>
-    <View style={styles.item}>
-      <Text style={styles.title}>{title.serviceHeading} - {title.serviceName}</Text>
-      <Icon
-        mr="2"
-        size="7"
-        color="white"
-        onPress={() => removeService(deleteItem)}
-        as={<MaterialCommunityIcon name="close" />}
-      />
+    <View style={{paddingHorizontal: 10}}>
+      <View style={styles.item}>
+        <Text style={styles.title}>
+          {title.serviceHeading} - {title.serviceName}
+        </Text>
+        <Icon
+          mr="2"
+          size="7"
+          color="white"
+          onPress={() => removeService(deleteItem)}
+          as={<MaterialCommunityIcon name="close" />}
+        />
+      </View>
     </View>
-  </View>
-);
-}
+  );
+};
 const SelectedServices = () => {
   const popAction = StackActions.pop(1);
   const cartItems = useSelector(state => state.service);
@@ -50,10 +52,10 @@ const SelectedServices = () => {
   let btnDisable = undefined;
   if (cartItems.length > 0) {
     cartItems.forEach(item => {
-       totalPrice += Number(item.servicePrice);
-       btnDisable = item.btnDisable;
+      totalPrice += Number(item.servicePrice);
+      btnDisable = item.btnDisable;
       //  console.log('btn disable: '+btnDisable)
-    })
+    });
   }
 
   const navigation = useNavigation();
@@ -70,6 +72,7 @@ const SelectedServices = () => {
   const [salonImage, setsalonImage] = useState();
   const [salonAvailability, setSalonAvailability] = useState();
   const [currSalonId, setCurrSalonId] = useState('');
+  const [star, setStar] = useState(0);
 
   // const service = useSelector(state => state.service);
   // console.log('service ' + JSON.stringify(service));
@@ -164,39 +167,44 @@ const SelectedServices = () => {
       if (time != '') {
         const custId = auth().currentUser.uid;
         let customerInfos = {};
-        await firestore().collection('customers').doc(custId).get().then(doc => {
-          if (doc.exists) {
-             customerInfos = doc.data();
-             
-          }
-        })
-        
+        await firestore()
+          .collection('customers')
+          .doc(custId)
+          .get()
+          .then(doc => {
+            if (doc.exists) {
+              customerInfos = doc.data();
+            }
+          });
 
-        firestore().collection('Appointments').doc(uuid.v4()).set({
-          customerId: custId,
-          salonid: currSalonId,
-          customerData: customerInfos,
-          services: cartItems,
-          date: date,
-          time: time,
-          requestResult: 'Pending',
-          salonName: salonInfo.salonName,
-          salonAddress: salonInfo.address,
-          salonImage: salonImage,
-          appointmentCompleted: false,
-        })
-        .then(() => {
-          alert("Appointment Request Sent")
-          // navigation.popToTop();
-          // navigation.dispatch(popAction)
-          navigation.goBack();
-          navigation.navigate('CustomerAppointment')
-          // navigation.navigate('Home');
-          dispatch(deleteAllServices())
-        }).catch(error => {
-          console.error(error);
-        })
-        ;
+        firestore()
+          .collection('Appointments')
+          .doc(uuid.v4())
+          .set({
+            customerId: custId,
+            salonid: currSalonId,
+            customerData: customerInfos,
+            services: cartItems,
+            date: date,
+            time: time,
+            requestResult: 'Pending',
+            salonName: salonInfo.salonName,
+            salonAddress: salonInfo.address,
+            salonImage: salonImage,
+            appointmentCompleted: false,
+          })
+          .then(() => {
+            alert('Appointment Request Sent');
+            // navigation.popToTop();
+            // navigation.dispatch(popAction)
+            navigation.goBack();
+            navigation.navigate('CustomerAppointment');
+            // navigation.navigate('Home');
+            dispatch(deleteAllServices());
+          })
+          .catch(error => {
+            console.error(error);
+          });
       } else {
         alert('Please Select Time');
       }
@@ -209,10 +217,30 @@ const SelectedServices = () => {
   function checkDisable() {
     if (btnDisable === undefined) {
       return false;
-    }else {
+    } else {
       return true;
     }
   }
+
+  const initialStar = () => {
+    if (isNaN(star)) {
+      return 0;
+    } else {
+      return star;
+    }
+  };
+
+  const getRating = salonRating => {
+    let totalRating = 0;
+    let totalResponse = 0;
+    for (let x in salonRating) {
+      totalRating += Number(x) * Number(salonRating[x]);
+      totalResponse += Number(salonRating[x]);
+    }
+    let finalRating = totalRating / totalResponse;
+    return finalRating;
+    // setStar(finalRating);
+  };
 
   useEffect(() => {
     var salonId;
@@ -244,7 +272,12 @@ const SelectedServices = () => {
         if (document.exists) {
           // console.log('document exist');
           const salonDatas = document.data();
-          // console.log('salon info: ' + JSON.stringify(salonDatas));
+          console.log('salon info: ' + JSON.stringify(salonDatas));
+          const salonRating = salonDatas.ratings;
+          // console.log('salon rating; ' + JSON.stringify(salonRating));
+          const totalRating = getRating(salonRating);
+          // console.log('total rating: ' + totalRating);
+          setStar(totalRating);
           setSalonInfo(salonDatas);
           const imgUri = salonDatas.salonImage;
 
@@ -270,8 +303,6 @@ const SelectedServices = () => {
   // getting current date
   const currDate = new Date();
 
-
-
   if (loading) {
     return null;
   }
@@ -291,7 +322,7 @@ const SelectedServices = () => {
                   alignItems: 'center',
                   marginTop: 5,
                 }}>
-                <Rating
+                {/* <Rating
                   type="custom"
                   ratingBackgroundColor="silver"
                   tintColor="white"
@@ -299,10 +330,20 @@ const SelectedServices = () => {
                   readonly
                   imageSize={24}
                   style={{paddingVertical: 5}}
+                /> */}
+                <Rating
+                  type="custom"
+                  ratingBackgroundColor="silver"
+                  tintColor="white"
+                  ratingColor="#facc15"
+                  startingValue={initialStar()}
+                  readonly
+                  imageSize={24}
+                  style={{paddingVertical: 5}}
                 />
                 <Text
                   style={{fontWeight: 'bold', color: 'black', marginStart: 5}}>
-                  4.5
+                  {initialStar()}
                 </Text>
               </View>
               <Text style={styles.salonInfoText}>{salonInfo.address}</Text>
@@ -334,7 +375,7 @@ const SelectedServices = () => {
               )}
             </View>
           </View>
-          <Divider my="4" thickness={'2'} bg="coolGray.200"/>
+          <Divider my="4" thickness={'2'} bg="coolGray.200" />
           <View style={{marginTop: 7}}>
             {/* <DateTimePickerUi /> */}
             <View
@@ -397,9 +438,15 @@ const SelectedServices = () => {
               />
             )}
           </View>
-          <Divider my="4" thickness={'2'} bg="coolGray.200"/>
+          <Divider my="4" thickness={'2'} bg="coolGray.200" />
 
-          <View style={{flexDirection: 'row',justifyContent: 'space-between',alignItems: 'center',marginTop: 7}}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginTop: 7,
+            }}>
             <Text style={{color: 'black', fontSize: 18, fontWeight: 'bold'}}>
               Services
             </Text>
@@ -426,8 +473,6 @@ const SelectedServices = () => {
     />
   );
 };
-
-
 
 export default SelectedServices;
 
