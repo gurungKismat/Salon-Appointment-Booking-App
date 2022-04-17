@@ -11,50 +11,68 @@ import firestore from '@react-native-firebase/firestore';
 const {event, ValueXY} = Animated;
 const scrollY = new ValueXY();
 
-
 const CutomHeaderScreen = ({data}) => {
   const {salonInfo, salonImage} = data.params;
   const [loading, setLoading] = useState(true);
   const [availableTime, setAvailableTime] = useState('');
+  const [star, setStar] = useState(0);
   // console.log("salonInfo: "+JSON.stringify(salonInfo))
   // console.log('salon Name: ' + JSON.stringify(salonInfo.salonName) + "id: "+salonInfo.salonId);
 
   const navigation = useNavigation();
 
   // display the content in the tab views
-  const renderContent = () => (
-    <View style={styles.contentContiner}>
-      <View style={styles.basicInfo}>
-        <Text style={{fontSize: 22, color: 'black', fontWeight: '500'}}>
-          {/* Reaver Salon */}
-          {salonInfo.salonName}
-        </Text>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Rating
-            type="custom"
-            ratingBackgroundColor="silver"
-            tintColor="white"
-            ratingColor="blue"
-            readonly
-            imageSize={24}
-            style={{paddingVertical: 5}}
-          />
-          <Text style={{fontWeight: 'bold', color: 'black', marginStart: 5}}>
-            4.5
+  const renderContent = () => {
+    // useEffect(() => {
+    //   firestore()
+    //     .collection('salons')
+    //     .doc(salonInfo.salonId)
+    //     .get()
+    //     .then(documentSnapshot => {
+    //       if (documentSnapshot.exists) {
+    //         const salonRating = documentSnapshot.data().ratings;
+    //         console.log('salon rating; ' + JSON.stringify(salonRating));
+    //       }
+    //     });
+    // }, []);
+
+    return (
+      <View style={styles.contentContiner}>
+        <View style={styles.basicInfo}>
+          <Text style={{fontSize: 22, color: 'black', fontWeight: '500'}}>
+            {/* Reaver Salon */}
+            {salonInfo.salonName}
+          </Text>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <Rating
+              type="custom"
+              ratingBackgroundColor="silver"
+              tintColor="white"
+              ratingColor="#facc15"
+              startingValue={star}
+              readonly
+              imageSize={24}
+              style={{paddingVertical: 5}}
+            />
+            <Text style={{fontWeight: 'bold', color: 'black', marginStart: 5}}>
+              {star}
+            </Text>
+          </View>
+          <Text style={styles.basicInfoTxt}>{salonInfo.address}</Text>
+          <Text style={styles.basicInfoTxt}>
+            Available Time: {availableTime}
           </Text>
         </View>
-        <Text style={styles.basicInfoTxt}>{salonInfo.address}</Text>
-        <Text style={styles.basicInfoTxt}>Available Time: {availableTime}</Text>
+        <Divider thickness={2} my={2} bg="coolGray.200" />
+        <View style={styles.description}>
+          <Text style={{fontSize: 22, fontWeight: 'bold', color: 'black'}}>
+            About
+          </Text>
+          <Text style={styles.descriptionText}>{salonInfo.about}</Text>
+        </View>
       </View>
-      <Divider thickness={2} my={2} bg="coolGray.200"/>
-      <View style={styles.description}>
-        <Text style={{fontSize: 22, fontWeight: 'bold', color: 'black'}}>
-          About
-        </Text>
-        <Text style={styles.descriptionText}>{salonInfo.about}</Text>
-      </View>
-    </View>
-  );
+    );
+  };
 
   // displays the salon services
   const renderServices = () => {
@@ -89,8 +107,20 @@ const CutomHeaderScreen = ({data}) => {
     );
   };
 
+  const getRating = salonRating => {
+    let totalRating = 0;
+    let totalResponse = 0;
+    for (let x in salonRating) {
+      totalRating += Number(x) * Number(salonRating[x]);
+      totalResponse += Number(salonRating[x]);
+    }
+    let finalRating = totalRating / totalResponse;
+    return finalRating;
+    // setStar(finalRating);
+  };
+
   useEffect(() => {
-    console.log('customer tabbar useeffect');
+    // console.log('customer tabbar useeffect');
     firestore()
       .collection('salonProfile')
       .doc(salonInfo.salonId)
@@ -100,10 +130,27 @@ const CutomHeaderScreen = ({data}) => {
             documentSnapshot.data().data.salonAvailability.availableTime;
           // console.log('result: ' + JSON.stringify(salonAvailableTime));
           setAvailableTime(salonAvailableTime);
+
+          firestore()
+            .collection('salons')
+            .doc(salonInfo.salonId)
+            .get()
+            .then(documentSnapshot => {
+              if (documentSnapshot.exists) {
+                console.log(
+                  'salon data: ' + JSON.stringify(documentSnapshot.data()),
+                );
+                const salonRating = documentSnapshot.data().ratings;
+                console.log('salon rating; ' + JSON.stringify(salonRating));
+                const totalRating = getRating(salonRating);
+                setStar(totalRating);
+              }
+            });
+
           if (loading) {
             setLoading(false);
           }
-        }else {
+        } else {
           // console.log("salon doesnnot exist")
           setLoading(false);
         }
@@ -219,7 +266,7 @@ const styles = StyleSheet.create({
     marginTop: 15,
     padding: 3,
     marginBottom: 10,
-    backgroundColor: '#f9fafb'
+    backgroundColor: '#f9fafb',
   },
 
   basicInfo: {

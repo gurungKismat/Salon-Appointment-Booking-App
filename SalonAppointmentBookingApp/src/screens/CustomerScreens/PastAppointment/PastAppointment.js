@@ -3,7 +3,6 @@ import {View, Text, StatusBar, FlatList, StyleSheet} from 'react-native';
 import {Image, Divider} from 'native-base';
 import {Rating} from 'react-native-ratings';
 import firestore from '@react-native-firebase/firestore';
-import uuid from 'react-native-uuid';
 import auth from '@react-native-firebase/auth';
 
 const Item = ({salonData}) => {
@@ -43,7 +42,7 @@ const PastAppointment = ({route}) => {
   // console.log('past requesetd id: ' + pastDocId);
 
   const ratingCompleted = async rating => {
-    console.log('Rating is: ' + rating);
+    // console.log('Rating is: ' + rating);
 
     await firestore()
       .collection('salons')
@@ -54,7 +53,7 @@ const PastAppointment = ({route}) => {
           // console.log('available time exist');
           salonRating = doc.data().ratings;
           if (salonRating !== undefined) {
-            console.log('salon rating is not undefined');
+            // console.log('salon rating is not undefined');
             salonRating[rating] = Number(salonRating[rating]) + 1;
             firestore()
               .collection('salons')
@@ -72,7 +71,7 @@ const PastAppointment = ({route}) => {
                 firestore().collection('Appointments').doc(pastDocId).update({
                   ratingDatas: ratingData,
                 });
-                console.log('Salon Rated');
+                // console.log('Salon Rated');
               });
           } else {
             const ratingData = {
@@ -98,7 +97,7 @@ const PastAppointment = ({route}) => {
                   customerId: auth().currentUser.uid,
                 });
               });
-            console.log('initial rating');
+            // console.log('initial rating');
           }
         }
       });
