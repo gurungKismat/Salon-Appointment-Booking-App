@@ -109,7 +109,8 @@ const CutomHeaderScreen = ({data}) => {
       totalRating += Number(x) * Number(salonRating[x]);
       totalResponse += Number(salonRating[x]);
     }
-    let finalRating = totalRating / totalResponse;
+    let finalRating = Math.round(totalRating / totalResponse);
+    // console.log('final rating: ' + finalRating);
     return finalRating;
     // setStar(finalRating);
   };

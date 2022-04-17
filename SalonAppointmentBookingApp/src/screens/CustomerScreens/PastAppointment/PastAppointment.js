@@ -30,16 +30,31 @@ const PastAppointment = ({route}) => {
   const [ratingData, setRatingData] = useState({});
   const [startingRating, setStartingRating] = useState(0);
   const [ratingStatus, setRatingStatus] = useState(false);
-  const [rating, setRating] = useState({
-    5: '0',
-    4: '0',
-    3: '0',
-    2: '0',
-    1: '0',
-  });
+  const [totalRating, setTotalRating] = useState(0);
 
   const {pastDocId} = route.params;
   // console.log('past requesetd id: ' + pastDocId);
+
+  const initialStar = () => {
+    if (isNaN(totalRating)) {
+      return 0;
+    } else {
+      return totalRating;
+    }
+  };
+
+  const getRating = salonRating => {
+    let totalRating = 0;
+    let totalResponse = 0;
+    for (let x in salonRating) {
+      totalRating += Number(x) * Number(salonRating[x]);
+      totalResponse += Number(salonRating[x]);
+    }
+    let finalRating = Math.round(totalRating / totalResponse);
+    // console.log('final rating: ' + finalRating);
+    return finalRating;
+    // setStar(finalRating);
+  };
 
   const ratingCompleted = async rating => {
     // console.log('Rating is: ' + rating);
@@ -68,9 +83,15 @@ const PastAppointment = ({route}) => {
                   salonId: salonId,
                   customerId: auth().currentUser.uid,
                 };
-                firestore().collection('Appointments').doc(pastDocId).update({
-                  ratingDatas: ratingData,
-                });
+                firestore()
+                  .collection('Appointments')
+                  .doc(pastDocId)
+                  .update({
+                    ratingDatas: ratingData,
+                  })
+                  .then(() => {
+                    alert('Salon Rated');
+                  });
                 // console.log('Salon Rated');
               });
           } else {
@@ -151,6 +172,7 @@ const PastAppointment = ({route}) => {
             });
 
           let salonAddress = '';
+          let totalRating = 0;
           await firestore()
             .collection('salons')
             .doc(salonId)
@@ -159,6 +181,9 @@ const PastAppointment = ({route}) => {
               if (doc.exists) {
                 // console.log('available time exist');
                 salonAddress = doc.data().address;
+                const ratings = doc.data().ratings;
+                totalRating = getRating(ratings);
+                // console.log('total rating: ' + totalRating);
               }
             });
 
@@ -171,6 +196,7 @@ const PastAppointment = ({route}) => {
           }
 
           // console.log('slaon address: '+salonAddress)
+          setTotalRating(totalRating);
           setAvailableTime(availableTime);
           setSalonAddress(salonAddress);
           setAppointmentInfo(documentSanpshot.data());
@@ -212,7 +238,8 @@ const PastAppointment = ({route}) => {
                     type="custom"
                     ratingBackgroundColor="silver"
                     tintColor="white"
-                    // ratingColor="blue"
+                    ratingColor="#facc15"
+                    startingValue={initialStar()}
                     readonly
                     imageSize={24}
                     style={{paddingVertical: 5}}
@@ -223,7 +250,7 @@ const PastAppointment = ({route}) => {
                       color: 'black',
                       marginStart: 5,
                     }}>
-                    4.5
+                    {initialStar()}
                   </Text>
                 </View>
                 <Text style={styles.salonInfoText}>{salonAddress}</Text>

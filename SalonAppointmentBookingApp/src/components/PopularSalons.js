@@ -30,7 +30,7 @@ const PopularSalons = ({item}) => {
       totalRating += Number(x) * Number(storedRating[x]);
       totalResponse += Number(storedRating[x]);
     }
-    let finalRating = totalRating / totalResponse;
+    let finalRating = Math.round(totalRating / totalResponse);
     setStar(finalRating);
   };
 

@@ -36,17 +36,34 @@ const RequestedAppointment = ({route}) => {
   const [appointmentInfo, setAppointmentInfo] = useState({});
   const [availableTime, setAvailableTime] = useState('');
   const [salonAddress, setSalonAddress] = useState('');
+  const [salonRating, setSalonRating] = useState({});
 
   const {requestedAppointmentId} = route.params;
   // console.log('requesetd id: ' + requestedAppointmentId);
 
-  // handle payment method select
-  const paymentBtnPressed = () => {
-    alert('hello');
-  };
-
   const renderItem = ({item}) => {
     return <Item salonData={item} />;
+  };
+
+  const initialStar = () => {
+    if (isNaN(salonRating)) {
+      return 0;
+    } else {
+      return salonRating;
+    }
+  };
+
+  const getRating = salonRating => {
+    let totalRating = 0;
+    let totalResponse = 0;
+    for (let x in salonRating) {
+      totalRating += Number(x) * Number(salonRating[x]);
+      totalResponse += Number(salonRating[x]);
+    }
+    let finalRating = Math.round(totalRating / totalResponse);
+    // console.log('final rating: ' + finalRating);
+    return finalRating;
+    // setStar(finalRating);
   };
 
   useEffect(() => {
@@ -79,6 +96,7 @@ const RequestedAppointment = ({route}) => {
             });
 
           let salonAddress = '';
+          let totalRating = 0;
           await firestore()
             .collection('salons')
             .doc(salonId)
@@ -87,10 +105,14 @@ const RequestedAppointment = ({route}) => {
               if (doc.exists) {
                 // console.log('available time exist');
                 salonAddress = doc.data().address;
+                const ratings = doc.data().ratings;
+                totalRating = getRating(ratings);
+                // console.log('total rating: ' + totalRating);
               }
             });
 
-            // console.log('slaon address: '+salonAddress)
+          // console.log('slaon address: '+salonAddress)
+          setSalonRating(totalRating);
           setAvailableTime(availableTime);
           setSalonAddress(salonAddress);
           setAppointmentInfo(documentSanpshot.data());
@@ -101,10 +123,6 @@ const RequestedAppointment = ({route}) => {
           }
         }
       });
-
-    // if (loading) {
-    //   setLoading(false);
-    // }
   }, []);
 
   if (loading) {
@@ -133,7 +151,8 @@ const RequestedAppointment = ({route}) => {
                     type="custom"
                     ratingBackgroundColor="silver"
                     tintColor="white"
-                    ratingColor="blue"
+                    ratingColor="#facc15"
+                    startingValue={initialStar()}
                     readonly
                     imageSize={24}
                     style={{paddingVertical: 5}}
@@ -144,7 +163,7 @@ const RequestedAppointment = ({route}) => {
                       color: 'black',
                       marginStart: 5,
                     }}>
-                    4.5
+                    {initialStar()}
                   </Text>
                 </View>
                 <Text style={styles.salonInfoText}>{salonAddress}</Text>
