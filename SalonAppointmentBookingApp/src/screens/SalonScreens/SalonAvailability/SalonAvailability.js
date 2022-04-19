@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, StatusBar, FlatList, StyleSheet, Switch} from 'react-native';
 import {Pressable, Divider, Text, Box, Center, useToast} from 'native-base';
 import DateTimePicker from '@react-native-community/datetimepicker';

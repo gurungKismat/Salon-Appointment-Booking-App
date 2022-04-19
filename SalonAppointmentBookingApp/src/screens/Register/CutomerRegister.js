@@ -57,8 +57,18 @@ const CustomerRegister = () => {
   }
 
   function toggleLoading(value) {
-    console.log('animation visible');
+    // console.log('animation visible');
     setLoading(value);
+  }
+
+  // validate email address
+  function validateEmail() {
+    let regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (email.match(regexEmail)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   // validate data
@@ -94,7 +104,7 @@ const CustomerRegister = () => {
       // console.log('usererror: ' + JSON.stringify(userNameError));
     } else if (hasNumber(userName)) {
       // if username contains any number
-      console.log('contains number');
+      // console.log('contains number');
       error += 1;
       const updated = {
         error: 'Can not contain numeric values',
@@ -107,7 +117,7 @@ const CustomerRegister = () => {
     } else {
       // if user name is suitable
       // console.log('no error');
-      console.log('username correct');
+      // console.log('username correct');
       const updated = {
         error: '',
         isError: false,
@@ -119,7 +129,7 @@ const CustomerRegister = () => {
     }
 
     if (mobileNo.length == 0) {
-      console.log('null mobile');
+      // console.log('null mobile');
       error += 1;
 
       const updatedValue = {
@@ -132,7 +142,7 @@ const CustomerRegister = () => {
         ...updatedValue,
       });
     } else if (mobileNo.length !== 10 || isNaN(mobileNo)) {
-      console.log('length incorrect');
+      // console.log('length incorrect');
       error += 1;
 
       const updatedValue = {
@@ -145,7 +155,7 @@ const CustomerRegister = () => {
         ...updatedValue,
       });
     } else {
-      console.log('no error');
+      // console.log('no error');
 
       const updatedValue = {
         error: '',
@@ -159,11 +169,24 @@ const CustomerRegister = () => {
     }
 
     if (email.length === 0) {
-      console.log('email null');
+      // console.log('email null');
 
       error += 1;
       const updatedValue = {
         error: 'Require',
+        isError: true,
+      };
+
+      setEmailError({
+        ...emailError,
+        ...updatedValue,
+      });
+    } else if (!validateEmail()) {
+      // console.log('email  invalid');
+      error += 1;
+
+      const updatedValue = {
+        error: 'Invalid email address',
         isError: true,
       };
 
@@ -184,7 +207,7 @@ const CustomerRegister = () => {
     }
 
     if (password.length === 0) {
-      console.log('password null');
+      // console.log('password null');
 
       error += 1;
       const updatedValue = {
@@ -209,7 +232,7 @@ const CustomerRegister = () => {
     }
 
     if (confirmPassword.length === 0) {
-      console.log('confirm password null');
+      // console.log('confirm password null');
 
       error += 1;
       const updatedValue = {
@@ -222,7 +245,7 @@ const CustomerRegister = () => {
         ...updatedValue,
       });
     } else if (confirmPassword !== password) {
-      console.log('password not same');
+      // console.log('password not same');
 
       error += 1;
       const updatedValue = {
@@ -249,12 +272,12 @@ const CustomerRegister = () => {
     if (error === 0) {
       // alert('Signup Successful');
       toggleLoading(true);
-      console.log('all good');
-      console.log('count val ' + error);
+      // console.log('all good');
+      // console.log('count val ' + error);
       return true;
     } else {
-      console.log('all wrong');
-      console.log('count val ' + error);
+      // console.log('all wrong');
+      // console.log('count val ' + error);
       setLoading(false);
       return false;
     }
@@ -265,7 +288,7 @@ const CustomerRegister = () => {
     let success = validateForm();
 
     if (success !== true) {
-      console.log('registeration failed');
+      // console.log('registeration failed');
       toggleLoading(false);
       return null;
     }
@@ -278,7 +301,6 @@ const CustomerRegister = () => {
           // userId: auth().currentUser.uid,
           name: userName,
           email,
-          password,
           mobileNo: mobileNo,
         });
         toggleLoading(false);
@@ -286,11 +308,11 @@ const CustomerRegister = () => {
       })
       .catch(error => {
         if (error.code === 'auth/email-already-in-use') {
-          console.log('That email address is already in use!');
+          alert('That email address is already in use!');
         }
 
         if (error.code === 'auth/invalid-email') {
-          console.log('That email address is invalid!');
+          alert('That email address is invalid!');
         }
         toggleLoading(false);
         console.error(error);
@@ -360,6 +382,7 @@ const CustomerRegister = () => {
                   value={String(mobileNo)}
                   onChangeText={setMobileNo}
                   placeholder="Mobile Number"
+                  keyboardType="numeric"
                 />
                 <FormControl.ErrorMessage
                   leftIcon={<WarningOutlineIcon size="xs" />}>
@@ -373,6 +396,7 @@ const CustomerRegister = () => {
                   value={String(mobileNo)}
                   onChangeText={setMobileNo}
                   placeholder="Mobile Number"
+                  keyboardType="numeric"
                 />
               </FormControl>
             )}

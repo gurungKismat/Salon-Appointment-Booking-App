@@ -140,7 +140,7 @@ const CustomerProfile = () => {
               .ref()
               .child('/customerProfilePicture')
               .child(customerDatas.customerImage);
-              getImageUrl(reference);
+            getImageUrl(reference);
           }
           if (loading) {
             setLoading(false);
@@ -251,12 +251,6 @@ const CustomerProfile = () => {
               <Text style={{color: 'black', fontSize: 17}}>About</Text>
               <Text
                 style={{color: 'black', fontSize: 17, textAlign: 'justify'}}>
-                {/* Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry. Lorem Ipsum has been the industry's standard dummy
-                text ever since the 1500s, when an unknown printer took a galley
-                of type and scrambled it to make a type specimen book. It has
-                survived not only five centuries, but also the leap into
-                electronic typesetting, remaining essentially unchanged. */}
                 {customerInfo.about}
               </Text>
             </View>
@@ -272,11 +266,11 @@ export default CustomerProfile;
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: '#f9fafb'
+    backgroundColor: '#f9fafb',
   },
 
   topContainer: {
-    flex: 1,
+    flex: 2,
     justifyContent: 'center',
     alignItems: 'center',
     borderBottomLeftRadius: 20,

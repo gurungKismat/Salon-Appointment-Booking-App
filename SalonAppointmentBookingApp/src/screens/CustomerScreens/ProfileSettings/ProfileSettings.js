@@ -193,10 +193,17 @@ const ProfileSettings = ({route}) => {
       toast.show({
         id,
         title: 'Profile Updated',
-        status: 'success',
-        placement: 'bottom',
+        placement: 'top',
       });
     }
+
+    // if (!toast.isActive(id)) {
+    //   toast.show({
+    //     id,
+    //     title: 'Profile Updated',
+    //     placement: 'top',
+    //   });
+    // }
   };
 
   // add new customer
@@ -233,7 +240,7 @@ const ProfileSettings = ({route}) => {
     setMobileNo('');
     setAbout('');
     setCustomerNameError({isError: false});
-    setAddressError({isError: false});
+    // setAddressError({isError: false});
     setMobileNoError({isError: false});
     setAboutError({isError: false});
   };

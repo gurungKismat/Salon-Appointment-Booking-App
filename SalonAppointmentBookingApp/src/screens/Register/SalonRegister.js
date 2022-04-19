@@ -63,6 +63,16 @@ const SalonRegister = () => {
     setLoading(value);
   }
 
+  // validate email address
+  function validateEmail() {
+    let regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (email.match(regexEmail)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   // validate data
   function validateForm() {
     let error = 0;
@@ -103,7 +113,7 @@ const SalonRegister = () => {
     }
 
     if (address.length == 0) {
-      console.log('null address');
+      // console.log('null address');
       error += 1;
 
       const updatedValue = {
@@ -116,7 +126,7 @@ const SalonRegister = () => {
         ...updatedValue,
       });
     } else if (address.length < 3) {
-      console.log('length incorrect');
+      // console.log('length incorrect');
       error += 1;
 
       const updatedValue = {
@@ -129,7 +139,7 @@ const SalonRegister = () => {
         ...updatedValue,
       });
     } else {
-      console.log('no error');
+      // console.log('no error');
 
       const updatedValue = {
         error: '',
@@ -143,7 +153,7 @@ const SalonRegister = () => {
     }
 
     if (mobileNo.length == 0) {
-      console.log('null mobile');
+      // console.log('null mobile');
       error += 1;
 
       const updatedValue = {
@@ -156,7 +166,7 @@ const SalonRegister = () => {
         ...updatedValue,
       });
     } else if (mobileNo.length !== 10 || isNaN(mobileNo)) {
-      console.log('length incorrect');
+      // console.log('length incorrect');
       error += 1;
 
       const updatedValue = {
@@ -169,7 +179,7 @@ const SalonRegister = () => {
         ...updatedValue,
       });
     } else {
-      console.log('no error');
+      // console.log('no error');
 
       const updatedValue = {
         error: '',
@@ -183,11 +193,24 @@ const SalonRegister = () => {
     }
 
     if (email.length === 0) {
-      console.log('email null');
+      // console.log('email null');
 
       error += 1;
       const updatedValue = {
         error: 'Require',
+        isError: true,
+      };
+
+      setEmailError({
+        ...emailError,
+        ...updatedValue,
+      });
+    } else if (!validateEmail()) {
+      // console.log('email  invalid');
+      error += 1;
+
+      const updatedValue = {
+        error: 'Invalid email address',
         isError: true,
       };
 
@@ -208,7 +231,7 @@ const SalonRegister = () => {
     }
 
     if (password.length === 0) {
-      console.log('password null');
+      // console.log('password null');
 
       error += 1;
       const updatedValue = {
@@ -233,7 +256,7 @@ const SalonRegister = () => {
     }
 
     if (confirmPassword.length === 0) {
-      console.log('confirm password null');
+      // console.log('confirm password null');
 
       error += 1;
       const updatedValue = {
@@ -246,7 +269,7 @@ const SalonRegister = () => {
         ...updatedValue,
       });
     } else if (confirmPassword !== password) {
-      console.log('password not same');
+      // console.log('password not same');
 
       error += 1;
       const updatedValue = {
@@ -271,12 +294,12 @@ const SalonRegister = () => {
     }
 
     if (error === 0) {
-      console.log('all good');
-      console.log('error val: ' + error);
+      // console.log('all good');
+      // console.log('error val: ' + error);
       toggleLoading(true);
       return true;
     } else {
-      console.log('all wrong');
+      // console.log('all wrong');
       toggleLoading(false);
       return false;
     }
@@ -286,7 +309,7 @@ const SalonRegister = () => {
   const registerCustomer = () => {
     let success = validateForm();
     if (success !== true) {
-      console.log("registeration failed")
+      // console.log('registeration failed');
       toggleLoading(false);
       return null;
     }
@@ -299,22 +322,20 @@ const SalonRegister = () => {
           address: address,
           mobileNo: mobileNo,
           email,
-          password,
         });
         toggleLoading(false);
-        alert("account created")
+        alert('account created');
       })
       .catch(error => {
         if (error.code === 'auth/email-already-in-use') {
-          console.log('That email address is already in use!');
+          alert('That email address is already in use!');
         }
 
         if (error.code === 'auth/invalid-email') {
-          console.log('That email address is invalid!');
+          alert('That email address is invalid!');
         }
         toggleLoading(false);
         console.error(error);
-        
       });
   };
 
@@ -405,6 +426,7 @@ const SalonRegister = () => {
                   value={mobileNo}
                   onChangeText={setMobileNo}
                   placeholder="Mobile Number"
+                  keyboardType="numeric"
                 />
                 <FormControl.ErrorMessage
                   leftIcon={<WarningOutlineIcon size="xs" />}>
@@ -418,6 +440,7 @@ const SalonRegister = () => {
                   value={mobileNo}
                   onChangeText={setMobileNo}
                   placeholder="Mobile Number"
+                  keyboardType="numeric"
                 />
               </FormControl>
             )}

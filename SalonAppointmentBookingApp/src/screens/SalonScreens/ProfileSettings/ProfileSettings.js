@@ -14,6 +14,7 @@ import {
   HStack,
   Text,
   WarningOutlineIcon,
+  useToast,
 } from 'native-base';
 import AnimatedLoader from 'react-native-animated-loader';
 
@@ -46,6 +47,9 @@ const ProfileSettings = ({route}) => {
   var newMobileNo;
   var newSalonName;
   var newAbout;
+
+  const toast = useToast();
+  const id = 'update-toast';
 
   // display loading animation
   function toggleLoading(value) {
@@ -93,7 +97,7 @@ const ProfileSettings = ({route}) => {
     }
 
     if (newAddress.length === 0) {
-      console.log('null address');
+      // console.log('null address');
       error += 1;
 
       const updatedValue = {
@@ -106,7 +110,7 @@ const ProfileSettings = ({route}) => {
         ...updatedValue,
       });
     } else if (newAddress.length < 3) {
-      console.log('length incorrect');
+      // console.log('length incorrect');
       error += 1;
 
       const updatedValue = {
@@ -119,7 +123,7 @@ const ProfileSettings = ({route}) => {
         ...updatedValue,
       });
     } else {
-      console.log('no error');
+      // console.log('no error');
 
       const updatedValue = {
         error: '',
@@ -133,7 +137,7 @@ const ProfileSettings = ({route}) => {
     }
 
     if (newMobileNo.length === 0) {
-      console.log('null mobile');
+      // console.log('null mobile');
       error += 1;
 
       const updatedValue = {
@@ -146,7 +150,7 @@ const ProfileSettings = ({route}) => {
         ...updatedValue,
       });
     } else if (newMobileNo.length !== 10 || isNaN(newMobileNo)) {
-      console.log('length incorrect');
+      // console.log('length incorrect');
       error += 1;
 
       const updatedValue = {
@@ -159,7 +163,7 @@ const ProfileSettings = ({route}) => {
         ...updatedValue,
       });
     } else {
-      console.log('no error');
+      // console.log('no error');
 
       const updatedValue = {
         error: '',
@@ -173,7 +177,7 @@ const ProfileSettings = ({route}) => {
     }
 
     if (newAbout.length === 0) {
-      console.log('about null');
+      // console.log('about null');
 
       error += 1;
       const updatedValue = {
@@ -198,12 +202,12 @@ const ProfileSettings = ({route}) => {
     }
 
     if (error === 0) {
-      console.log('all good');
-      console.log('error val: ' + error);
+      // console.log('all good');
+      // console.log('error val: ' + error);
       toggleLoading(true);
       return true;
     } else {
-      console.log('all wrong');
+      // console.log('all wrong');
       return false;
     }
   }
@@ -221,7 +225,7 @@ const ProfileSettings = ({route}) => {
     let success = validateForm();
     if (success) {
       removeWhiteSpace();
-      console.log('newAddress: ' + address);
+      // console.log('newAddress: ' + address);
       firestore()
         .collection('salons')
         .doc(auth().currentUser.uid)
@@ -232,8 +236,16 @@ const ProfileSettings = ({route}) => {
           about: newAbout,
         })
         .then(() => {
-          console.log('User updated!');
+          // console.log('User updated!');
           toggleLoading(false);
+          // display toast message after updating profile
+          if (!toast.isActive(id)) {
+            toast.show({
+              id,
+              title: 'Profile Updated',
+              placement: 'top',
+            });
+          }
         })
         .catch(error => {
           console.error(error);
@@ -255,7 +267,7 @@ const ProfileSettings = ({route}) => {
   };
 
   useEffect(() => {
-    console.log('params: ' + JSON.stringify(route.params));
+    // console.log('params: ' + JSON.stringify(route.params));
 
     const paramsDatas = route.params;
     setSalonName(paramsDatas.salonName);
@@ -275,7 +287,7 @@ const ProfileSettings = ({route}) => {
   }
 
   return (
-    <ScrollView bg='coolGray.50'>
+    <ScrollView bg="coolGray.50">
       <StatusBar backgroundColor={'#6366f1'} />
       <Center w="100%">
         <AnimatedLoader
