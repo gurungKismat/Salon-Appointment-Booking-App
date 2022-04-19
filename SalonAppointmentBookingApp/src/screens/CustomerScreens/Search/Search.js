@@ -75,7 +75,7 @@ const SearchScreen = () => {
 
               salonData.push(mergedData);
             });
-            console.log('Salon Data: ' + JSON.stringify(salonData));
+            // console.log('Salon Data: ' + JSON.stringify(salonData));
             setSearchedSalon(salonData);
           }
         });
@@ -126,7 +126,7 @@ const SearchScreen = () => {
 
               salonData.push(mergedData);
             });
-            console.log('Salon Data: ' + JSON.stringify(salonData));
+            // console.log('Salon Data: ' + JSON.stringify(salonData));
             setSearchedSalon(salonData);
           }
         });

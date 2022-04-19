@@ -196,14 +196,6 @@ const ProfileSettings = ({route}) => {
         placement: 'top',
       });
     }
-
-    // if (!toast.isActive(id)) {
-    //   toast.show({
-    //     id,
-    //     title: 'Profile Updated',
-    //     placement: 'top',
-    //   });
-    // }
   };
 
   // add new customer
