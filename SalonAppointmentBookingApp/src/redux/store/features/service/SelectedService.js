@@ -58,6 +58,8 @@ const SelectedServices = () => {
     });
   }
 
+
+
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
@@ -322,15 +324,6 @@ const SelectedServices = () => {
                   alignItems: 'center',
                   marginTop: 5,
                 }}>
-                {/* <Rating
-                  type="custom"
-                  ratingBackgroundColor="silver"
-                  tintColor="white"
-                  ratingColor="blue"
-                  readonly
-                  imageSize={24}
-                  style={{paddingVertical: 5}}
-                /> */}
                 <Rating
                   type="custom"
                   ratingBackgroundColor="silver"
